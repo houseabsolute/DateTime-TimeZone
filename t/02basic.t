@@ -16,7 +16,7 @@ my @names = DateTime::TimeZone::all_names;
 my $is_maintainer = -d './CVS' ? 1 : 0;
 
 my $tests_per_zone = $is_maintainer ? 7 : 4;
-plan tests => 28 + ( $tests_per_zone * scalar @names );
+plan tests => 29 + ( $tests_per_zone * scalar @names );
 
 foreach my $name (@names)
 {
@@ -155,4 +155,9 @@ my $tz = DateTime::TimeZone->new( name => 'America/Chicago' );
     eval { $dt->set_time_zone( 'Australia/Sydney' ) };
     ok( ! $@, 'should be able to set time zone' );
     ok( $dt->is_dst, 'is_dst should be true' );
+}
+
+{
+    my $tz = DateTime::TimeZone->new( name => '-0100' );
+    ok( ! $tz->is_olson, 'is_olson is false for offset only time zone' );
 }
