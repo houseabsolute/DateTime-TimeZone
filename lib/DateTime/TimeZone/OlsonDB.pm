@@ -619,13 +619,12 @@ sub two_changes_as_span
     if ( defined $c1->start_date )
     {
         $local_start = $c1->start_date->utc_rd_as_seconds;
+        $local_start += $c1->offset - $c0->offset;
 
         # UTC start is local minus the offset when we start, plus the
         # difference in offset between the current offste and the
         # previous offset
         $utc_start = $local_start - $c1->offset;
-
-        $utc_start += $c1->offset - $c0->offset;
     }
     else
     {
