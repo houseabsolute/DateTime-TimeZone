@@ -8,29 +8,28 @@ sub local_time_zone
 {
     my $tz;
 
-    $tz = _from_env();
-    return $tz if $tz;
-
-    $tz = _from_etc_localtime();
-    return $tz if $tz;
-
-    $tz = _from_etc_timezone();
-    return $tz if $tz;
-
-    $tz = _from_etc_sysconfig_clock();
-    return $tz if $tz;
+    foreach ( qw( _from_env _from_etc_localtime _from_etc_timezone
+                  _from_etc_sysconfig_clock ) )
+    {
+	$tz = __PACKAGE__->$_();
+	return $tz if $tz;
+    }
 
     die "Cannot determine local time zone\n";
 }
 
 sub _from_env
 {
-    if ( defined $ENV{TZ} &&
-         $ENV{TZ} ne 'local' &&
-         _could_be_valid_time_zone( $ENV{TZ} )
-       )
+    # names with '$' are for VMS
+    foreach my $k ( qw( TZ SYS$TIMEZONE_RULE SYS$TIMEZONE_NAME UCX$TZ TCPIP$TZ ) )
     {
-        return eval { DateTime::TimeZone->new( name => $ENV{TZ} ) };
+	if ( defined $ENV{$k} &&
+	     $ENV{$k} ne 'local' &&
+	     _could_be_valid_time_zone( $ENV{$k} )
+	   )
+	{
+	    return eval { DateTime::TimeZone->new( name => $ENV{$k} ) };
+	}
     }
 }
 
@@ -65,11 +64,20 @@ sub _from_etc_localtime
 
 sub _from_etc_timezone
 {
-    return unless -f '/etc/timezone' && -r _;
+    my $tz_file;
+    foreach ( qw( /etc/timezone /etc/TIMEZONE ) )
+    {
+	if ( -f && -r _ )
+	{
+	    $tz_file = $_;
+	    last
+	}
+    }
+    return unless $tz_file;
 
     local *TZ;
-    open TZ, "</etc/timezone"
-        or die "Cannot read /etc/timezone: $!";
+    open TZ, "<$tz_file"
+        or die "Cannot read $tz_file: $!";
     my $name = join '', <TZ>;
     close TZ;
 
