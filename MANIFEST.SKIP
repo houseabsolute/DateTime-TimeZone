@@ -17,3 +17,4 @@ CVS/.*
 _uu$
 \.cvsignore
 MANIFEST\.SKIP
+^t/zd_
