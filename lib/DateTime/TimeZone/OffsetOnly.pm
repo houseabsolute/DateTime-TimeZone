@@ -21,12 +21,13 @@ sub new
     return bless $self, $class;
 }
 
-sub observance_for_datetime { return }
-
 sub offset_for_datetime { $_[0]->{offset} }
 
-sub is_floating { 0 }
+sub short_name_for_datetime { undef }
 
+sub name { undef }
+
+sub category { undef }
 
 1;
 
@@ -49,7 +50,9 @@ the date.
 
 =head1 USAGE
 
-This class has the following methods:
+This class has the same methods as a real time zone object, but the
+C<short_name_for_datetime()>, C<name()>, and C<category()> methods all
+return undef.
 
 =over 4
 
@@ -66,7 +69,5 @@ No matter what date is given, the offset provided to the constructor
 is always used.
 
 =back
-
-This class does not support the C<observance_for_datetime()> method.
 
 =cut
