@@ -36,7 +36,7 @@ foreach my $name (@names)
         eval { $dt = DateTime->now( time_zone => $name ) };
         is( $@, '', "Can call DateTime->now with $name" );
         eval { $dt->add( years => 50 ) };
-        is( $@, '', "Can add 200 years with $name" );
+        is( $@, '', "Can add 50 years with $name" );
         eval { $dt->subtract( years => 400 ) };
         is( $@, '', "Can subtract 400 years with $name" );
         eval { $dt = DateTime->new( year => 2000, month => 6, hour => 1, time_zone => $name ) };
