@@ -211,8 +211,6 @@ sub offset_as_string
 {
     my $offset = shift;
 
-    return '0' unless $offset;
-
     return $offset if $offset =~ /^[\+\-]\d\d\d\d(?:\d\d)?$/;
 
     my $sign = $offset < 0 ? '-' : '+';
