@@ -156,7 +156,7 @@ my $tz = DateTime::TimeZone->new( name => 'America/Chicago' );
     # before the LOCAL_END.
     my $dt = DateTime->from_object( object => TestHack->new );
 
-    eval { $dt->set_time_zone( 'Australia/Sydney' ) };
+    eval { $dt->set_time_zone('UTC')->set_time_zone( 'Australia/Sydney' ) };
     ok( ! $@, 'should be able to set time zone' );
     ok( $dt->is_dst, 'is_dst should be true' );
 }
