@@ -164,30 +164,31 @@ sub _span_for_datetime
 
     my $method = $type . '_rd_as_seconds';
 
+    my $span;
     my $seconds = $dt->$method();
     if ( $seconds < $self->max_span->{"${type}_end"} )
     {
-        my $span = $self->_spans_binary_search( $type, $seconds );
-
-        # This means someone gave a local time that doesn't exist
-        # (like during a transition into savings time)
-        unless ( defined $span )
-        {
-            my $err = 'Invalid local time for date';
-            $err .= ' ' . $dt->iso8601 if $type eq 'utc';
-            $err .= " in time zone: " . $self->name;
-            $err .= "\n";
-
-            die $err;
-        }
-
-        return $span;
+        $span = $self->_spans_binary_search( $type, $seconds );
     }
     else
     {
         my $until_year = $dt->utc_year + 1;
-        return $self->_generate_spans_until_match( $until_year, $seconds, $type );
+        $span = $self->_generate_spans_until_match( $until_year, $seconds, $type );
     }
+
+    # This means someone gave a local time that doesn't exist
+    # (like during a transition into savings time)
+    unless ( defined $span )
+    {
+        my $err = 'Invalid local time for date';
+        $err .= ' ' . $dt->iso8601 if $type eq 'utc';
+        $err .= " in time zone: " . $self->name;
+        $err .= "\n";
+
+        die $err;
+    }
+
+    return $span;
 }
 
 sub max_span { $_[0]->{spans}[-1] }
