@@ -1,3 +1,20 @@
+0.13
+
+- Fixed DateTime::TimeZone::OffsetOnly constructor so that it only
+accepted valid offsets.  Previously, invalid offsets like "foo" were
+turned into zero internally.
+
+- Made "local" look for /etc/localtime symlink as part of determining
+local time zone.
+
+- Added a links() function to DateTime::TimeZone.
+
+- Included all the links from Olson db file named backwards, which
+includes things like "US/Central".
+
+- Added a few links for names like CST and CDT.  If you want more
+added, let me know.
+
 0.12     2003-04-12
 
 - Updated to latest Olson database (2003a).
