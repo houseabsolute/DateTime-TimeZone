@@ -382,6 +382,7 @@ EOF
     delete $last_observance->{utc_start_datetime}{local_c};
     delete $last_observance->{local_start_datetime}{local_c};
     delete $last_observance->{rules};
+    delete $last_observance->{first_rule};
 
     # This assumes that there is only one observance from end of
     # changes til end of time, which should be guaranteed by code in
@@ -395,6 +396,11 @@ EOF
     $generator =~ s/!LAST_OBSERVANCE/Dumper $last_observance/eg;
     $generator =~
         s/\$VAR1->{'local_start_datetime'}{'tz'}/bless( {
+      'name' => 'floating',
+      'offset' => 0
+    }, 'DateTime::TimeZone::Floating' )/;
+    $generator =~
+        s/\$VAR1->{'utc_start_datetime'}{'tz'}/bless( {
       'name' => 'floating',
       'offset' => 0
     }, 'DateTime::TimeZone::Floating' )/;
