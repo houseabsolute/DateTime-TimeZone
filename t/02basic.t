@@ -14,6 +14,8 @@ is( $tz->category, 'America', 'check ->category' );
 is( $tz->is_floating, 0, 'should not be floating' );
 is( $tz->is_utc, 0, 'should not be UTC' );
 
+# These tests are odd since we're feeding UTC times into the time zone
+# object, which isn't what will happen in real usage (I think).
 {
     my $dt = DateTime->new( year => 2001,
                             month => 9,
