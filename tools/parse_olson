@@ -97,7 +97,7 @@ unless ( $opts{name} || $opts{file} )
 
 my ( @zones, %categories, %links );
 
-foreach my $f (@files)
+foreach my $f ( sort @files )
 {
     my $file = File::Spec->catfile( $opts{dir}, $f );
 
@@ -111,7 +111,7 @@ foreach my $f (@files)
 
     %links = ( %links, $odb->links );
 
-    foreach my $zone_name ( $odb->zone_names )
+    foreach my $zone_name ( sort $odb->zone_names )
     {
         if ( $opts{name} )
         {
