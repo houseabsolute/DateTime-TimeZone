@@ -338,6 +338,8 @@ sub new
     return bless $self, $class;
 }
 
+sub name { $_[0]->{name} }
+
 sub expand_observances
 {
     my $self = shift;
