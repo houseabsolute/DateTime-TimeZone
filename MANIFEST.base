@@ -17,7 +17,6 @@ t/06no-dst.t
 t/07offset-only.t
 t/08name.t
 t/09changes.t
-t/10invalid.t
 t/11valid-name.t
 t/12storable.t
 t/99-pod.t
