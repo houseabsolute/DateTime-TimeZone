@@ -29,22 +29,10 @@ sub new
 
     my $self = bless \%args, $class;
 
-    if ( $self->{TZOFFSETTO} eq '0' )
-    {
-        $self->{offset} = 0;
-    }
-    elsif ( $self->{TZOFFSETTO} =~ /^([\+\-])(\d\d)(\d\d)(\d\d)?$/ )
-    {
-        my ( $sign, $hours, $minutes, $seconds ) = ( $1, $2, $3, $4 );
+    $self->{offset} =
+        DateTime::TimeZone::offset_as_seconds( $self->{TZOFFSETTO} );
 
-        $self->{offset} = ($hours * 60 * 60) + ($minutes * 60);
-        $self->{offset} += $seconds if $seconds;
-        $self->{offset} *= -1 if $sign eq '-';
-    }
-    else
-    {
-        die "Invalid offset $self->{TZOFFSETTO}";
-    }
+    die "Invalid offset $self->{TZOFFSETTO}" unless defined $self->{offset};
 
     $self->_build_date_set;
 
