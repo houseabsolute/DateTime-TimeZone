@@ -63,7 +63,7 @@ push @files, qw( etcetera factory systemv )
     if $opts{old};
 
 copy( 'MANIFEST.base', 'MANIFEST' );
-open MAN, ">>MANIFEST";
+open MAN, ">>MANIFEST" or die "Cannot write to MANIFEST: $!";
 
 my ( @zones, %categories, %links );
 
@@ -89,7 +89,7 @@ foreach my $f (@files)
         push @{ $categories{$category} }, $name;
 
         (my $dir = $category) =~ tr/-/_/;
-        (my $file = $name) =~ tr/-/_/;
+        (my $outfile1 = $name) =~ tr/-/_/;
 
         (my $mod_name = $zone_name) =~ s/\//::/g;
         $mod_name =~ tr/-/_/;
@@ -143,7 +143,7 @@ $generator
 
 EOF
 
-        my @name_pieces = split /\//, $file;
+        my @name_pieces = split /\//, $outfile1;
         my $filename = (pop @name_pieces) . '.pm';
 
         my $outdir = File::Spec->catdir( qw( lib DateTime TimeZone ),
@@ -151,13 +151,13 @@ EOF
 
         mkpath( $outdir, 1, 0755 );
 
-        my $outfile = File::Spec->catfile( $outdir, $filename );
+        my $outfile2 = File::Spec->catfile( $outdir, $filename );
 
-        open OUT,">$outfile" or die "Cannot write to $outfile: $!";
-        print OUT $body;
-        close (OUT);
+        open OUT,">$outfile2" or die "Cannot write to $outfile2: $!";
+        print OUT $body or die "Cannot write to $outfile2: $!";
+        close (OUT) or die "Cannot write to $outfile2: $!";
 
-        print MAN "$outfile\n";
+        print MAN "$outfile2\n" or die "Cannot write to MANIFEST: $!";
     }
 }
 
@@ -254,8 +254,8 @@ so that applications can easily present a list of timezones.
 EOF
 
 open OUT2, ">lib/DateTime/TimeZoneCatalog.pm" or die $!;
-print OUT2 $zonecatalog;
-close OUT2;
+print OUT2 $zonecatalog or die $!;
+close OUT2 or die $!;
 
 sub zone_as_data
 {
