@@ -41,7 +41,7 @@ sub new
 
         if ( $p{name} eq 'local' )
         {
-            return DateTime::TimeZone::Local::local_time_zone;
+            return DateTime::TimeZone::Local::local_time_zone();
         }
 
         if ( $p{name} eq 'UTC' || $p{name} eq 'Z' )
