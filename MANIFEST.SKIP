@@ -16,3 +16,4 @@ CVS/.*
 \.zip$
 _uu$
 \.cvsignore
+MANIFEST\.SKIP

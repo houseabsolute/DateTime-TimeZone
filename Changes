@@ -1,4 +1,4 @@
-0.13
+0.13     2003-05-03
 
 - Fixed DateTime::TimeZone::OffsetOnly constructor so that it only
 accepts valid offsets.  Previously, invalid offsets like "foo" were
@@ -21,12 +21,14 @@ problems when doing date math.
 string form when their name() or short_name_for_datetime() methods are
 called.  Suggested by Rick Measham.
 
+
 0.12     2003-04-12
 
 - Updated to latest Olson database (2003a).
 
 - Fixed a bug in handling time zones with only one historical offset,
 like Pacific/Johnston.
+
 
 0.11     2003-03-26  the "Asia/Baghdad release"
 
@@ -36,17 +38,20 @@ affected time zones that have exactly two historical offsets (one of
 which would be the current offset), such as Pacific/Tarawa.  Reported
 by Eric Cholet.
 
+
 0.10     2003-03-20
 
 - Fixed a bug in the DateTime::TimeZone::offset_as_seconds bug when
 trying given a negative number that resulted in an offset that
 included minutes (not a whole hour).  Found by Flavio Glock.
 
+
 0.09     2003-02-26
 
 - Fixed an infinite recursion bug in generating future time zone data
 that occurred when $ENV{TZ} was something like "America/Chicago".
 Sort of reported by Eugene van der Pijll ;)
+
 
 0.08     2003-02-22
 
@@ -56,11 +61,13 @@ OffsetOnly constructor instead of a number.  Reported by Eric Cholet.
 - Fix DateTime::TimeZone::OffsetOnly documentation to specify that
 offset must be specified as string, not a number.
 
+
 0.07     2003-02-19
 
 - Skip tests unless DateTime.pm 0.06 is installed.  Otherwise we have
 a bootstrapping problem since DateTime 0.06 needs DateTime::TimeZone
 0.06+.
+
 
 0.06     2003-02-16
 
@@ -77,6 +84,7 @@ binary search algorithm.  This eliminates the need to install
 Tree::RedBlack, and makes looking up time zone data quicker.
 Suggested by Jonathan Peacock.
 
+
 0.05     2003-02-13
 
 - The offset_as_string function did not handle negative offsets
@@ -92,10 +100,12 @@ is_dst_for_datetime do so.
 always assumes its arg is a string and the latter always assumes it
 got a number.
 
+
 0.04     2003-02-10
 
 - Be forgiving of bad names in $ENV{TZ} and just calculate local
 offset instead.
+
 
 0.03     2003-02-09
 
@@ -104,11 +114,13 @@ to not be loadable.
 
 - Added is_dst_for_datetime method.
 
+
 0.02     2003-02-09
 
 - Updated version number to non-dev-release so that it's visible when
 CPAN.pm looks for it as a prereq to DateTime.pm.  Otherwise identical
 to 0.02 and still alpha/beta-ish.
+
 
 0.01_01  2003-02-06
 
@@ -116,6 +128,7 @@ to 0.02 and still alpha/beta-ish.
 
 - Fix a buglet that caused test 01load.t to fail with some versions of
 Test::More.  Reported by John Peacock.
+
 
 0.01_00  2003-02-04
 

@@ -26,6 +26,8 @@ foreach my $name (@names)
     is( $tz->is_floating, 0, 'should not be floating' );
     is( $tz->is_utc, 0, 'should not be UTC' );
 
+    # adding these tests makes the test suite take a _long_ time to
+    # finish, and it uses up lots of memory too.
     if ( $is_maintainer )
     {
         my $dt;
