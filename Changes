@@ -11,6 +11,7 @@ rules.  The symptom would be the error "Invalid local time for date
 - Time zone data is now stored in a simple array, and searched using a
 binary search algorithm.  This eliminates the need to install
 Tree::RedBlack, and makes looking up time zone data quicker.
+Suggested by Jonathan Peacock.
 
 0.05     2003-02-13
 
