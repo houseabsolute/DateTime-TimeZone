@@ -26,6 +26,7 @@ Module::Build->new( module_name => 'DateTime::TimeZone',
                     license     => 'perl',
                     requires    => { 'Params::Validate' => 0,
                                      'Class::Singleton' => 1.03,
+                                     'Pod::Man'    => 1.14,
                                    },
 		    sign        => 1,
                   )->create_build_script;
