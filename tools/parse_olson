@@ -22,10 +22,37 @@ my $INFINITY  = 10 ** 10 ** 10;
 my %opts;
 GetOptions( 'dir:s' => \$opts{dir},
             'old'   => \$opts{old},
+            'help'  => \$opts{help},
           );
 
-die "Must provide a directory containing Olson DB files\n"
+
+$opts{help} = 1
     unless defined $opts{dir} && -d $opts{dir};
+if ( $opts{help} )
+{
+    print <<'EOF';
+
+This script parses the Olson time zone database files and turns them
+into a set of Perl modules.  It also generates the
+DateTime::TimeZoneCatalog module, which contains a list of all the
+available time zone names.
+
+By default, it looks for files named africa, antarctica, asia,
+australasia, europe, northamerica, pacificnew, southamerica, and
+ignores any others.
+
+It takes the following arguments:
+
+  --dir   A directory containing Olson db files.
+
+  --old   Also look for files named backward, etcetera, factory, and systemv
+
+  --help  What you are reading
+
+EOF
+
+    exit;
+}
 
 my @files = qw( africa antarctica asia australasia
                 europe northamerica pacificnew
