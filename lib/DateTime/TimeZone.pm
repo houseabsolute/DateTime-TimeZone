@@ -67,10 +67,10 @@ sub new
     $subclass =~ s/\//::/g;
     my $real_class = "DateTime::TimeZone::$subclass";
 
-    eval "require $real_class";
+    eval "require $real_class";warn $@ if $@;
     die "Invalid time zone name: $p{name}" if $@;
 
-    return $real_class->load( name => $p{name} );
+    return $real_class->instance( name => $p{name} );
 }
 
 sub _init
@@ -98,7 +98,10 @@ sub _build_span_tree
     $tree->cmp( \&_is_in_span );
     foreach my $span (@$spans)
     {
-        $tree->insert( [ $span->{start_date}, $span->{end_date} ], $span );
+        $tree->insert( { utc   => [ $span->{utc_start},   $span->{utc_end} ],
+                         local => [ $span->{local_start}, $span->{local_end} ],
+                       },
+                       $span );
     }
 
     $self->{tree} = $tree;
@@ -109,24 +112,24 @@ sub _is_in_span
     my ($i1, $i2) = @_;
 
     # We have to compare two spans when adding nodes to the tree.
-    if ( ref $i1 && ref $i2 )
+    if ( ref $i1 eq 'HASH' && ref $i2 eq 'HASH' )
     {
-        return -1 if $i1->[0] < $i2->[0];
-        return  1 if $i1->[1] > $i2->[1];
+        return -1 if $i1->{utc}[0] < $i2->{utc}[0];
+        return  1 if $i1->{utc}[1] > $i2->{utc}[1];
 
         return  0;
     }
-    elsif ( ref $i1 )
+    elsif ( ref $i1 eq 'HASH' )
     {
-        return -1 if $i2 <  $i1->[0];
-        return  1 if $i2 >= $i1->[1];
+        return -1 if $i2->[1] <  $i1->{ $i2->[0] }[0];
+        return  1 if $i2->[1] >= $i1->{ $i2->[0] }[1];
 
         return  0;
     }
     else
     {
-        return -1 if $i1 <  $i2->[0];
-        return  1 if $i1 >= $i2->[1];
+        return -1 if $i1->[1] <  $i2->{ $i1->[0] }[0];
+        return  1 if $i1->[1] >= $i2->{ $i1->[0] }[1];
 
         return  0;
     }
@@ -136,7 +139,16 @@ sub offset_for_datetime
 {
     my $self = shift;
 
-    my $span = $self->_span_for_datetime( $_[0] );
+    my $span = $self->_span_for_datetime( 'utc', $_[0] );
+
+    return $span->{offset};
+}
+
+sub offset_for_local_datetime
+{
+    my $self = shift;
+
+    my $span = $self->_span_for_datetime( 'local', $_[0] );
 
     return $span->{offset};
 }
@@ -145,7 +157,7 @@ sub short_name_for_datetime
 {
     my $self = shift;
 
-    my $span = $self->_span_for_datetime( $_[0] );
+    my $span = $self->_span_for_datetime( 'utc', $_[0] );
 
     return $span->{short_name};
 }
@@ -153,11 +165,14 @@ sub short_name_for_datetime
 sub _span_for_datetime
 {
     my $self = shift;
+    my $type = shift;
     my $dt   = shift;
 
-    my $number = $self->_numeric_dt($dt);
+    my $method = $type . '_rd_as_seconds';
 
-    if ( my $span = $self->{tree}->find($number) )
+    my $seconds = $dt->$method();
+
+    if ( my $span = $self->{tree}->find( [ $type, $seconds ] ) )
     {
         return $span;
     }
@@ -165,17 +180,6 @@ sub _span_for_datetime
     {
         return $self->_generate_spans_until_match($dt);
     }
-}
-
-sub _numeric_dt
-{
-    my $utc_dt = $_[1]->as_utc;
-
-    # add 0 to force numification
-    sprintf( '%04d%02d%02d%02d%02d%02d',
-             $utc_dt->year, $utc_dt->month, $utc_dt->day,
-             $utc_dt->hour, $utc_dt->minute, $utc_dt->second,
-           ) + 0;
 }
 
 sub is_floating { 0 }
