@@ -15,7 +15,9 @@ use DateTime::TimeZone;
 
 {
     # make sure it doesn't find an /etc/localtime file
+    $^W = 0;
     local *DateTime::TimeZone::readlink = sub { undef };
+    $^W = 1;
 
     local $ENV{TZ} = 'this will not work';
 
@@ -35,7 +37,9 @@ use DateTime::TimeZone;
 }
 
 {
+    $^W = 0;
     local *DateTime::TimeZone::readlink = sub { '/usr/share/zoneinfo/US/Eastern' };
+    $^W = 1;
 
     my $tz;
     eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
