@@ -12,3 +12,4 @@ lib/DateTime/TimeZoneCatalog.pm
 lib/DateTime/TimeZone/Floating.pm
 lib/DateTime/TimeZone/OffsetOnly.pm
 lib/DateTime/TimeZone/OlsonDB.pm
+lib/DateTime/TimeZone/UTC.pm
