@@ -7,6 +7,7 @@ README
 Changes
 Makefile.PL
 tools/parse_olson
+tools/tests_from_zdump
 t/01load.t
 t/02basic.t
 t/03link.t
