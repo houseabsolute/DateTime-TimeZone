@@ -139,8 +139,14 @@ sub _span_for_datetime
 
         # This means someone gave a local time that doesn't exist
         # (like during a transition into savings time)
-        die "Invalid local time for date " . $dt->iso8601
-            unless defined $span;
+        unless ( defined $span )
+        {
+            my $err = 'Invalid local time for date';
+            $err .= ' ' . $dt->iso8601 if $type eq 'utc';
+            $err .= "\n";
+
+            die $err;
+        }
 
         return $span;
     }
