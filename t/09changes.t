@@ -132,23 +132,15 @@ plan tests => 32;
 # same tests without using UTC as intermediate
 {
     # wrapped in eval because if change data is buggy it can throw exception
-    my $dt =
-        eval { DateTime->new( year => 1982, month => 3, day => 28,
-                              hour => 1, minute => 59,
-                              time_zone => 'Europe/Vienna' ) };
+    my $dt = DateTime->new( year => 1982, month => 3, day => 28,
+                            hour => 1, minute => 59,
+                            time_zone => 'Europe/Vienna' );
 
-    if ($@)
-    {
-        ok( 0, "1982-03-28T01:59:00: $@" ) for 1..2;
-    }
-    else
-    {
-        is( $dt->hour, 1, 'E/V 1982: hour should be 1' );
+    is( $dt->hour, 1, 'E/V 1982: hour should be 1' );
 
-        $dt->add( minutes => 1 );
+    $dt->add( minutes => 1 );
 
-        is( $dt->hour, 3, 'E/V 1982: hour should be 3' );
-    }
+    is( $dt->hour, 3, 'E/V 1982: hour should be 3' );
 }
 
 {
@@ -169,9 +161,12 @@ plan tests => 32;
 
 # same tests without using UTC as intermediate
 {
+    # can't be created directly because of overlap between changes
     my $dt = DateTime->new( year => 1997, month => 10, day => 26,
-                            hour => 2, minute => 59,
+                            hour => 1, minute => 59,
                             time_zone => 'Europe/Vienna' );
+
+    $dt->add( hours => 1 );
 
     is( $dt->hour, 2, 'E/V 1997: hour should be 2' );
 
@@ -182,29 +177,23 @@ plan tests => 32;
 
 # future
 {
-    my $dt =
-        eval { DateTime->new( year => 2040, month => 3, day => 25,
-                              hour => 1, minute => 59,
-                              time_zone => 'Europe/Vienna' ) };
+    my $dt = DateTime->new( year => 2040, month => 3, day => 25,
+                            hour => 1, minute => 59,
+                            time_zone => 'Europe/Vienna' );
 
-    if ($@)
-    {
-        ok( 0, "2040-03-25T01:59:00: $@" ) for 1..2;
-    }
-    else
-    {
-        is( $dt->hour, 1, 'E/V 2040: hour should be 1' );
+    is( $dt->hour, 1, 'E/V 2040: hour should be 1' );
 
-        $dt->add( minutes => 1 );
+    $dt->add( minutes => 1 );
 
-        is( $dt->hour, 3, 'E/V 2040: hour should be 3' );
-    }
+    is( $dt->hour, 3, 'E/V 2040: hour should be 3' );
 }
 
 {
     my $dt = DateTime->new( year => 2040, month => 10, day => 28,
-                            hour => 2, minute => 59,
+                            hour => 1, minute => 59,
                             time_zone => 'Europe/Vienna' );
+
+    $dt->add( hours => 1 );
 
     is( $dt->hour, 2, 'E/V 2040: hour should be 2' );
 
