@@ -1,15 +1,34 @@
-pod2text DateTime::TimeZone.pm > README
+OVERVIEW
 
-If this is still here it means the programmer was too lazy to create the readme file.
+The DateTime::TimeZone modules provide a Perl interface to the Olson
+time zone database.  Rather than using the database directly, we parse
+the database files and turn them into a set of modules, one for each
+time zone defined.  This allows for various optimizations in doing
+time zone calculations.  This conversion is done with the script in
+tools/parse_olson.
 
-You can create it now by using the command shown above from this directory.
+The Olson time zone database is the best available source for world
+wide time zone information.  It is available from
+ftp://elsie.nci.nih.gov/pub/.  A good starting point for information
+on the database, and time zones in general, is
+http://www.twinsun.com/tz/tz-link.htm.
 
-At the very least you should be able to use this set of instructions
-to install the module...
+INSTALLATION
 
-perl Makefile.PL
-make
-make test
-make install
+To install this module type the following in the distribution
+directory:
 
-If you are on a windows box you should use 'nmake' rather than 'make'.
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+This distribution is dependent on DateTime.pm, but it does not list it
+as a prerequisite.  This is because DateTime.pm is in turn dependent
+on this distribution, and we don't want to create a cyclical chain of
+prerequisites!
+
+This distribution will skip its tests if DateTime.pm isn't yet
+installed.  If this weren't done, then neither module would be
+installable via CPAN.  But this distribution's functionality only
+works in concert with DateTime.pm.
