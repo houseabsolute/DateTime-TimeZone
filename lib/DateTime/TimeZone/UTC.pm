@@ -1,0 +1,48 @@
+package DateTime::TimeZone::UTC;
+
+use strict;
+
+use vars qw ($VERSION);
+$VERSION = 0.01;
+
+sub new
+{
+    my $class = shift;
+
+    return bless {}, $class;
+}
+
+sub offset_for_datetime { 0 }
+
+sub short_name_for_datetime { 'UTC' }
+
+sub name { 'UTC' }
+
+sub category { undef }
+
+1;
+
+__END__
+
+=head1 NAME
+
+DateTime::TimeZone::UTC - A DateTime::TimeZone object that just contains an offset
+
+=head1 SYNOPSIS
+
+  my $utc_tz = DateTime::TimeZone::UTC->new;
+
+=head1 DESCRIPTION
+
+This class is used to provide the DateTime::TimeZone API needed by
+DateTime.pm for the UTC time zone, which is not explicitly included in
+the Olson time zone database.
+
+The offset for this object will always be zero.
+
+=head1 USAGE
+
+This class has the same methods as a real time zone object, but the
+C<category()> method returns undef.
+
+=cut
