@@ -5,9 +5,12 @@ use strict;
 use vars qw( $VERSION $INFINITY $NEG_INFINITY );
 $VERSION = 0.01;
 
-use DateTime::TimeZone::Floating;
 use DateTime::TimeZoneCatalog;
+use DateTime::TimeZone::Floating;
+use DateTime::TimeZone::OffsetOnly;
+use DateTime::TimeZone::UTC;
 use Params::Validate qw( validate validate_pos SCALAR ARRAYREF );
+use Time::Local;
 use Tree::RedBlack;
 
 $INFINITY = 10 ** 10 ** 10;
@@ -20,9 +23,37 @@ sub new
                       { name => { type => SCALAR } },
                     );
 
-    if ( $p{name} eq 'floating' )
+    unless ( $p{name} =~ m,/, )
     {
-        return DateTime::TimeZone::Floating->new;
+        if ( $p{name} eq 'floating' )
+        {
+            return DateTime::TimeZone::Floating->new;
+        }
+
+        if ( $p{name} eq 'local' )
+        {
+            my @t = gmtime;
+
+            my $local = Time::Local::timelocal(@t);
+            my $gm    = Time::Local::timegm(@t);
+
+            return DateTime::TimeZone::OffsetOnly( offset => $gm - $local );
+        }
+
+        if ( $p{name} eq 'UTC' )
+        {
+            return DateTime::TimeZone::UTC->new;
+        }
+
+        if ( my $offset = offset_as_seconds( $p{name} ) )
+        {
+            return DateTime::TimeZone::OffsetOnly->new( offset => $offset );
+        }
+
+        if ( $p{name} eq '0' )
+        {
+            return DateTime::TimeZone::UTC->new;
+        }
     }
 
     if ( exists $DateTime::TimeZone::Links{ $p{name} } )
@@ -161,8 +192,8 @@ sub offset_as_seconds
 {
     my $offset = shift;
 
-    # if it's just numbers assume it's seconds
-    return $offset if $offset =~ /^\d+$/;
+    # if it's just a number assume it's seconds
+    return $offset if $offset =~ /^-?\d+$/;
 
     return undef unless $offset =~ /^([\+\-])?(\d\d?):?(\d\d)(?::?(\d\d))?$/;
 
