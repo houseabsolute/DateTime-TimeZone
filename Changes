@@ -1,3 +1,11 @@
+0.23     2003-07-03
+
+- $_ was being overwritten if you specified a time zone of "local".
+This could cause problems in for loops with implicit iterators if you
+were to create a DateTime object with a "local" time zone inside your
+own loops.  Fixed by Iain Truskett.
+
+
 0.22     2003-06-28
 
 - The is_olson method was returning true for all objects.  Reported by
