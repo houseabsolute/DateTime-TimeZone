@@ -357,6 +357,7 @@ sub expand_observances
                   local_start_datetime => $obs->local_start_datetime,
                   short_name => sprintf( $obs->format, $letter ),
                   observance => $obs,
+                  $rule ? ( rule => $rule ) : (),
                 );
 
         $self->add_change($change);
@@ -447,21 +448,27 @@ sub new
     my $offset_from_utc = DateTime::TimeZone::offset_as_seconds( $p{gmtoff} );
     my $offset_from_std = DateTime::TimeZone::offset_as_seconds( $p{offset_from_std} );
 
+    my $self = bless { %p,
+                       offset_from_utc => $offset_from_utc,
+                       offset_from_std => $offset_from_std,
+                       until => [ split /\s+/, $p{until} ],
+                     }, $class;
+
     my $local_start_datetime;
     if ( $p{utc_start_datetime} )
     {
+        my $first_rule = $self->first_rule;
+        $offset_from_std += $first_rule->offset_from_std if $first_rule;
+
         $local_start_datetime = $p{utc_start_datetime}->clone;
 
         $local_start_datetime +=
             DateTime::Duration->new( seconds => $offset_from_utc + $offset_from_std );
+
+        $self->{local_start_datetime} = $local_start_datetime;
     }
 
-    return bless { %p,
-                   local_start_datetime => $local_start_datetime,
-                   offset_from_utc => $offset_from_utc,
-                   offset_from_std => $offset_from_std,
-                   until => [ split /\s+/, $p{until} ],
-                 }, $class;
+    return $self;
 }
 
 sub offset_from_utc { $_[0]->{offset_from_utc} }
