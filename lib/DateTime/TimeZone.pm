@@ -2,8 +2,8 @@ package DateTime::TimeZone;
 
 use strict;
 
-use vars qw( $VERSION $INFINITY $NEG_INFINITY );
-$VERSION = '0.11';
+use vars qw( $VERSION );
+$VERSION = '0.12';
 
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
@@ -425,6 +425,10 @@ Given an offset as a number, this returns the offset as a string.
 
 Support for this module is provided via the datetime@perl.org email
 list.  See http://lists.perl.org/ for more details.
+
+Please submit bugs to the CPAN RT system at
+http://rt.cpan.org/NoAuth/ReportBug.html?Queue=datetime%3A%3Atimezone
+or via email at bug-datetime-timezone@rt.cpan.org.
 
 =head1 AUTHOR
 
