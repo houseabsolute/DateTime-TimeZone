@@ -377,7 +377,11 @@ EOF
     my $last_observance = ($zone->sorted_changes)[-1]->observance;
 
     # hack to trim size of dumped object
-    delete $last_observance->{start}{language};
+    delete $last_observance->{utc_start_datetime}{locale};
+    delete $last_observance->{local_start_datetime}{locale};
+    delete $last_observance->{utc_start_datetime}{local_c};
+    delete $last_observance->{local_start_datetime}{local_c};
+    delete $last_observance->{rules};
 
     # This assumes that there is only one observance from end of
     # changes til end of time, which should be guaranteed by code in
@@ -389,6 +393,11 @@ EOF
     # This is cleaner than making the above a double-quoted string
     $generator =~ s/!RULES/Dumper \@rules/eg;
     $generator =~ s/!LAST_OBSERVANCE/Dumper $last_observance/eg;
+    $generator =~
+        s/\$VAR1->{'local_start_datetime'}{'tz'}/bless( {
+      'name' => 'floating',
+      'offset' => 0
+    }, 'DateTime::TimeZone::Floating' )/;
     $generator =~ s/!OFFSET/$offset/g;
     $generator =~ s/!OFFSET/$offset/g;
 
