@@ -98,6 +98,7 @@ sub _from_etc_sysconfig_clock
 sub _read_etc_sysconfig_clock
 {
     local *CLOCK;
+    local $_;
     open CLOCK, '</etc/sysconfig/clock'
         or die "Cannot read /etc/sysconfig/clock: $!";
 
