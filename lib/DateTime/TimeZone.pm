@@ -3,14 +3,13 @@ package DateTime::TimeZone;
 use strict;
 
 use vars qw( $VERSION );
-$VERSION = '0.18';
+$VERSION = '0.19';
 
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
 use DateTime::TimeZone::Local;
 use DateTime::TimeZone::OffsetOnly;
 use DateTime::TimeZone::UTC;
-use File::Spec;
 use Params::Validate qw( validate validate_pos SCALAR ARRAYREF );
 
 use constant INFINITY     =>       100 ** 100 ** 100 ;
