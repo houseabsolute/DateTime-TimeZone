@@ -3,7 +3,7 @@ package DateTime::TimeZone;
 use strict;
 
 use vars qw( $VERSION );
-$VERSION = '0.2503';
+$VERSION = '0.2504';
 
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
@@ -505,7 +505,7 @@ with the name contained in the file.
 
 Finally, it checks for a file called F</etc/sysconfig/clock>.  If this
 file exists, it looks for a line inside the file matching
-C</ZONE="([^"]+)"/>.  If this line exists, it tries the value as a
+C</^(?:TIME)ZONE="([^"]+)"/>.  If this line exists, it tries the value as a
 time zone name.
 
 If none of these methods work, it gives up and dies.

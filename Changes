@@ -1,4 +1,4 @@
-0.2xxx
+0.2504   2003-10-25
 
 - If a timezone module cannot be loaded, give a more useful error
 message if the failure is due to a syntax error in the module, as
@@ -7,6 +7,9 @@ from Alexey Mahotkin.
 
 - Require Pod::Man 1.14+, so that head3/head4 markup doesn't cause
 installation to die.
+
+- SuSE puts TIMEZONE="Foo/Bar" in the /etc/sysconfig/clock file, but
+the module just looked for ZONE="...".  Reported by Pete.
 
 
 0.2503   2003-10-06
