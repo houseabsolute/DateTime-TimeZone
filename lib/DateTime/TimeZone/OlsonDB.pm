@@ -563,6 +563,19 @@ sub expand_from_rules
     {
         $max_year = $until->year;
     }
+    else
+    {
+        # Some zones, like Asia/Tehran, have a predefined fixed set of
+        # rules that go well into the future (2037 for Asia/Tehran)
+        my $max_rule_year = 0;
+        foreach my $rule ( $self->rules )
+        {
+            $max_rule_year = $rule->max_year
+                if $rule->max_year && $rule->max_year > $max_rule_year;
+        }
+
+        $max_year = $max_rule_year if $max_rule_year > $max_year;
+    }
 
     foreach my $year ( $min_year .. $max_year )
     {
@@ -570,21 +583,13 @@ sub expand_from_rules
 
         foreach my $rule (@rules)
         {
-            if ( $year == $max_year )
-            {
-                my $until = $self->until(0);
-                my $dt =
-                    $rule->utc_start_datetime_for_year
-                        ( $year, $self->offset_from_utc, 0 );
-
-                next if $until && $until == $dt;
-            }
-
             my $dt =
                 $rule->utc_start_datetime_for_year
                     ( $year, $self->offset_from_utc, $zone->last_change->offset_from_std );
 
             next if $self->utc_start_datetime && $dt <= $self->utc_start_datetime;
+
+            my $until = $self->until( $zone->last_change->offset_from_std );
 
             next if $until && $dt >= $until;
 
@@ -691,18 +696,28 @@ sub _first_rule
     foreach my $rule (@rules)
     {
         next if $rule->min_year > $year;
-        next if $rule->max_year && $rule->max_year < $year - 1;
 
         $possible_rules{$rule} = $rule;
     }
 
     return unless keys %possible_rules;
 
+    my $earliest_year = $year - 1;
+    foreach my $rule (@rules)
+    {
+        $earliest_year = $rule->min_year
+            if $rule->min_year < $earliest_year;
+    }
+
     # figure out what date each rule would start on _if_ that rule
-    # were applied to this current observance.  this could be a date
-    # in the previous year.
+    # were applied to this current observance.  this could be a rule
+    # that started much earlier, but is only now active because of an
+    # observance switch.  An obnoxious example of this is
+    # America/Phoenix in 1944, which applies the US rule in April,
+    # thus (re-)instating the "war time" rule from 1942.  Can you say
+    # ridiculous crack-smoking stupidity?
     my @rule_dates;
-    foreach my $y ( $year - 1, $year )
+    foreach my $y ( $earliest_year .. $year )
     {
       RULE:
         foreach my $rule ( values %possible_rules )
