@@ -12,7 +12,7 @@ sub new
 {
     my $class = shift;
 
-    return bless {}, $class;
+    return bless { name => 'UTC' }, $class;
 }
 
 sub is_dst_for_datetime { 0 }
@@ -21,8 +21,6 @@ sub offset_for_datetime { 0 }
 sub offset_for_local_datetime { 0 }
 
 sub short_name_for_datetime { 'UTC' }
-
-sub name { 'UTC' }
 
 sub category { undef }
 
