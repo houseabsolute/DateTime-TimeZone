@@ -5,7 +5,8 @@ use strict;
 use vars qw ($VERSION @ISA);
 $VERSION = 0.01;
 
-@ISA = 'DateTime::TimeZone::OffsetOnly';
+use DateTime::TimeZone;
+use base 'DateTime::TimeZone::OffsetOnly';
 
 sub new
 {
