@@ -36,12 +36,18 @@ use DateTime::TimeZone;
 }
 
 {
-    local $ENV{TZ} = 'America/Chicago';
+    $^W = 0;
+    local *DateTime::TimeZone::Local::readlink = sub { undef };
+    local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { undef };
+    local *DateTime::TimeZone::Local::_local_from_etc_timezone = sub { undef };
+    $^W = 1;
+
+    local $ENV{TZ} = 'Africa/Kinshasa';
 
     my $tz;
     eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
     is( $@, '', 'valid time zone name in $ENV{TZ} should not die' );
-    isa_ok( $tz, 'DateTime::TimeZone::America::Chicago' );
+    isa_ok( $tz, 'DateTime::TimeZone::Africa::Kinshasa' );
 }
 
 SKIP:
