@@ -220,11 +220,7 @@ sub parse_day_spec
                                 time_zone => 'UTC',
                               );
 
-        my $dur =
-            ( $2 eq '<' ?
-              $DateTime::TimeZone::OlsonDB::MINUS_ONE_DAY_DUR :
-              $DateTime::TimeZone::OlsonDB::PLUS_ONE_DAY_DUR
-            );
+        my $dur = $2 eq '<' ? $MINUS_ONE_DAY_DUR : $PLUS_ONE_DAY_DUR;
 
         while ( $dt->day_of_week != $dow )
         {
