@@ -62,7 +62,7 @@ sub new
 
     my $subclass = $p{name};
     $subclass =~ s/-/_/g;
-    $subclass =~ s/\//::/g;
+    $subclass =~ s{/}{::}g;
     my $real_class = "DateTime::TimeZone::$subclass";
 
     unless ( $real_class->can('instance') )
@@ -351,6 +351,12 @@ sub is_utc { 0 }
 sub name      { $_[0]->{name} }
 sub category  { (split /\//, $_[0]->{name}, 2)[0] }
 
+sub is_valid_name
+{
+    my $tz = eval { $_[0]->new( name => $_[1] ) };
+
+    return $tz && UNIVERSAL::isa( $tz, 'DateTime::TimeZone') ? 1 : 0
+}
 
 #
 # Functions
@@ -567,6 +573,20 @@ database.
 
 Returns the part of the time zone name before the first slash.  For
 example, the "America/Chicago" time zone would return "America".
+
+=back
+
+=head2 Class Methods
+
+This class provides one class method:
+
+=over 4
+
+=item * is_valid_name ($name)
+
+Given a string, this method returns a boolean value indicating whether
+or not the string is a valid time zone name.  If you are using
+C<DateTime::TimeZone::Alias>, any aliases you've created will be valid.
 
 =back
 

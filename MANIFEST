@@ -18,6 +18,7 @@ t/07offset-only.t
 t/08name.t
 t/09changes.t
 t/10invalid.t
+t/11valid-name.t
 t/99-pod.t
 t/check_datetime_version.pl
 lib/DateTime/TimeZone.pm

@@ -1,3 +1,8 @@
+0.xx
+
+- Added DateTime::TimeZone->is_valid_name class method.
+
+
 0.2507   2004-02-14  the "nothing says love like timezones" release
 
 - Fix a test failure in t/04-local.t on systems where /etc/localtime
