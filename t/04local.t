@@ -9,7 +9,7 @@ use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
 
-plan tests => 10;
+plan tests => 12;
 
 use DateTime::TimeZone;
 
@@ -20,12 +20,12 @@ SKIP:
 
     # make sure it doesn't find an /etc/localtime file
     $^W = 0;
-    local *DateTime::TimeZone::readlink = sub { undef };
+    local *DateTime::TimeZone::Local::readlink = sub { undef };
+    local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { undef };
+    local *DateTime::TimeZone::Local::_local_from_etc_timezone = sub { undef };
     $^W = 1;
 
     local $ENV{TZ} = 'this will not work';
-
-    local $ENV{NO_ETC_TIMEZONE} = 1;
 
     my $tz;
     eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
@@ -33,23 +33,19 @@ SKIP:
           'invalid time zone name in $ENV{TZ} should die' );
 }
 
-SKIP:
 {
-    skip "/etc/localtime is not a symlink", 1
-        unless -l '/etc/localtime';
-
     $^W = 0;
-    local *DateTime::TimeZone::readlink = sub { undef };
+    local *DateTime::TimeZone::Local::readlink = sub { undef };
+    local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { undef };
+    local *DateTime::TimeZone::Local::_local_from_etc_timezone = sub { undef };
     $^W = 1;
 
     local $ENV{TZ} = '123/456';
 
-    local $ENV{NO_ETC_TIMEZONE} = 1;
-
     my $tz;
     eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
     like( $@, qr/cannot determine local time zone/i,
-          'invalid time zone name in $ENV{TZ} should die' );
+          'invalid time zone name in $ENV{TZ} and no other info available should die' );
 }
 
 {
@@ -67,12 +63,34 @@ SKIP:
         unless -l '/etc/localtime';
 
     $^W = 0;
-    local *DateTime::TimeZone::readlink = sub { '/usr/share/zoneinfo/US/Eastern' };
+    local *DateTime::TimeZone::Local::readlink = sub { '/usr/share/zoneinfo/US/Eastern' };
+    local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { undef };
     $^W = 1;
+
+    local $ENV{TZ} = '';
 
     my $tz;
     eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
     is( $@, '', 'valid time zone name in /etc/localtime should not die' );
+    isa_ok( $tz, 'DateTime::TimeZone::America::New_York' );
+}
+
+SKIP:
+{
+    skip "cannot read /etc/sysconfig/clock", 2
+        unless -r '/etc/sysconfig/clock' && -f _;
+
+    $^W = 0;
+    local *DateTime::TimeZone::Local::readlink = sub { undef };
+    local *DateTime::TimeZone::Local::_local_from_etc_timezone = sub { undef };
+    local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { 'US/Eastern' };
+    $^W = 1;
+
+    local $ENV{TZ} = '';
+
+    my $tz;
+    eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
+    is( $@, '', 'valid time zone name in /etc/sysconfig/clock should not die' );
     isa_ok( $tz, 'DateTime::TimeZone::America::New_York' );
 }
 
@@ -91,7 +109,7 @@ SKIP:
     isa_ok( $tz, 'DateTime::TimeZone::America::Chicago' );
 
     $^W = 0;
-    local *DateTime::TimeZone::readlink = sub { undef };
+    local *DateTime::TimeZone::Local::readlink = sub { undef };
     $^W = 1;
 
     eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
