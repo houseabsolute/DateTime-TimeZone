@@ -218,9 +218,10 @@ sub _spans_binary_search
             {
                 my $next = $self->{spans}[$i + 1];
 
-                if ( $next->[$start] <= $seconds &&
-                     $seconds        >= $next->[$end] &&
-                     ! $next->[IS_DST] )
+                if ( ( ! $next->[IS_DST] )
+                     && $next->[$start] <= $seconds
+                     && $seconds        <= $next->[$end]
+                   )
                 {
                     return $next;
                 }
@@ -239,18 +240,45 @@ sub _generate_spans_until_match
     my $type = shift;
 
     my @changes;
-    foreach my $rule (@{$self->_rules})
+    my @rules = @{ $self->_rules };
+    foreach my $year ( $self->{max_year} .. $generate_until_year )
     {
-        foreach my $year ( $self->{max_year} .. $generate_until_year )
+        for ( my $x = 0; $x < @rules; $x++ )
         {
-            my $next = $rule->utc_start_datetime_for_year( $year, $self->{last_offset} );
+            my $last_offset_from_std;
+
+            if ( @rules == 2 )
+            {
+                $last_offset_from_std =
+                    $x ? $rules[0]->offset_from_std : $rules[1]->offset_from_std;
+            }
+            elsif ( @rules == 1 )
+            {
+                $last_offset_from_std = $rules[0]->offset_from_std;
+            }
+            else
+            {
+                my $count = scalar @rules;
+                die "Cannot generate future changes for zone with $count infinite rules\n";
+            }
+
+            my $rule = $rules[$x];
+
+            my $next =
+                $rule->utc_start_datetime_for_year
+                    ( $year, $self->{last_offset}, $last_offset_from_std );
 
             # don't bother with changes we've seen already
             next if $next->utc_rd_as_seconds < $self->max_span->[UTC_END];
 
             push @changes,
                 DateTime::TimeZone::OlsonDB::Change->new
-                    ( utc_start_datetime => $next,
+                    ( utc_start_datetime   => $next,
+                      local_start_datetime =>
+                      $next +
+                      DateTime::Duration->new
+                          ( seconds => $self->{last_observance}->total_offset +
+                                       $rule->offset_from_std ),
                       short_name =>
                       sprintf( $self->{last_observance}->format, $rule->letter ),
                       observance => $self->{last_observance},
