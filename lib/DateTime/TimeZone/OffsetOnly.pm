@@ -34,11 +34,10 @@ sub is_dst_for_datetime { 0 }
 sub offset_for_datetime { $_[0]->{offset} }
 sub offset_for_local_datetime { $_[0]->{offset} }
 
-sub short_name_for_datetime { undef }
-
 sub is_utc { $_[0]->{offset} ? 0 : 1 }
 
-sub name { undef }
+sub name { DateTime::TimeZone::offset_as_string( $_[0]->{offset} ) }
+*short_name_for_datetime = \&name;
 
 sub category { undef }
 
@@ -64,8 +63,7 @@ the date.
 =head1 USAGE
 
 This class has the same methods as a real time zone object, but the
-C<short_name_for_datetime()>, C<name()>, and C<category()> methods all
-return undef.
+C<category()> method returns undef.
 
 =over 4
 
@@ -79,6 +77,10 @@ C<DateTime::TimeZone::offset_as_seconds()> function.
 
 No matter what date is given, the offset provided to the constructor
 is always used.
+
+=item * name(), short_name_for_datetime()
+
+Both of these methods return the offset in string form.
 
 =back
 
