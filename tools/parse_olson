@@ -157,7 +157,6 @@ use DateTime::TimeZone::OlsonDB;
 my \$spans =
 $spans;
 
-my \$max_year = $max_year;
 sub _max_year { $max_year }
 
 sub _new_instance
