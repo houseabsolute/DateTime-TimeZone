@@ -41,11 +41,12 @@ foreach my $infile (@files)
 
     push @zones, "$dir/$zone";
 
+    $zone =~ tr/-/_/;
+
     my $outdir = "lib/DateTime/TimeZone/$dir";
     mkpath( $outdir, 1, 0755 );
 
     my $modname = "${dir}::$zone";
-    $modname =~ tr/-/_/;
 
     open IN, "<$infile" or die $!;
     my @lines = <IN>;
