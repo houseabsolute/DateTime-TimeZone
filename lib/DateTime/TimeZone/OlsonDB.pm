@@ -269,6 +269,13 @@ sub utc_datetime_for_time_spec
     $minute = 0 unless defined $minute;
     $second = 0 unless defined $second;
 
+    my $add_day = 0;
+    if ( $hour == 24 )
+    {
+        $hour = 0;
+        $add_day = 1;
+    }
+
     my $utc;
     if ($is_utc)
     {
@@ -300,6 +307,8 @@ sub utc_datetime_for_time_spec
 
         $utc = $local - $dur;
     }
+
+    $utc->add( days => 1 ) if $add_day;
 
     return $utc;
 }
@@ -695,7 +704,18 @@ sub _first_rule
     my $year = $date->year;
     foreach my $rule (@rules)
     {
-        next if $rule->min_year > $year;
+        # We need to look at what the year _would_ be if we added the
+        # rule's offset to the UTC date.  Otherwise we can end up with
+        # a UTC date in year X, and a rule that starts in _local_ year
+        # X + 1, where that rule really does apply to that UTC date.
+        my $temp_year =
+            $date->clone->add
+                ( seconds => $self->offset_from_utc + $rule->offset_from_std )->year;
+
+        # Save the highest value
+        $year = $temp_year if $temp_year > $year;
+
+        next if $rule->min_year > $temp_year;
 
         $possible_rules{$rule} = $rule;
     }
@@ -724,8 +744,21 @@ sub _first_rule
         {
             # skip rules that can't have applied the year before the
             # observance started.
-            next RULE if $rule->min_year > $y;
-            next RULE if $rule->max_year && $rule->max_year < $y;
+            if ( $rule->min_year > $y )
+            {
+                warn "Skipping rule beginning in ", $rule->min_year, ".  Year is $y.\n"
+                    if DateTime::TimeZone::OlsonDB::DEBUG;
+
+                next RULE;
+            }
+
+            if ( $rule->max_year && $rule->max_year < $y )
+            {
+                warn "Skipping rule ending in ", $rule->max_year, ".     Year is $y.\n"
+                    if DateTime::TimeZone::OlsonDB::DEBUG;
+
+                next RULE;
+            }
 
             my $rule_start =
                 $rule->utc_start_datetime_for_year
