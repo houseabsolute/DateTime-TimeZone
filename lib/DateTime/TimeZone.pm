@@ -243,14 +243,14 @@ sub _generate_spans_until_match
     {
         foreach my $year ( $self->{max_year} .. $generate_until_year )
         {
-            my $next = $rule->date_for_year( $year, $self->{last_offset} );
+            my $next = $rule->utc_start_datetime_for_year( $year, $self->{last_offset} );
 
             # don't bother with changes we've seen already
-            next if $next->{utc}->utc_rd_as_seconds < $self->max_span->[UTC_END];
+            next if $next->utc_rd_as_seconds < $self->max_span->[UTC_END];
 
             push @changes,
                 DateTime::TimeZone::OlsonDB::Change->new
-                    ( start_date => $next->{local},
+                    ( utc_start_datetime => $next,
                       short_name =>
                       sprintf( $self->{last_observance}->format, $rule->letter ),
                       observance => $self->{last_observance},
@@ -261,7 +261,7 @@ sub _generate_spans_until_match
 
     $self->{max_year} = $generate_until_year;
 
-    my @sorted = sort { $a->start_date <=> $b->start_date } @changes;
+    my @sorted = sort { $a->utc_start_datetime <=> $b->utc_start_datetime } @changes;
 
     my ( $start, $end ) = _keys_for_type($type);
 
