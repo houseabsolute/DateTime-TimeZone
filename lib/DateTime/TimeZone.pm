@@ -23,6 +23,11 @@ sub new
                       { name => { type => SCALAR } },
                     );
 
+    if ( exists $DateTime::TimeZone::Links{ $p{name} } )
+    {
+        $p{name} = $DateTime::TimeZone::Links{ $p{name} };
+    }
+
     unless ( $p{name} =~ m,/, )
     {
         if ( $p{name} eq 'floating' )
@@ -55,11 +60,6 @@ sub new
         }
 
         return DateTime::TimeZone::OffsetOnly->new( offset => $p{name} );
-    }
-
-    if ( exists $DateTime::TimeZone::Links{ $p{name} } )
-    {
-        $p{name} = $DateTime::TimeZone::Links{ $p{name} };
     }
 
     my $subclass = $p{name};
