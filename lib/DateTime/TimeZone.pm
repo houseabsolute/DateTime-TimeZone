@@ -185,7 +185,8 @@ sub _span_for_datetime
     }
     else
     {
-        return $self->_generate_spans_until_match($dt);
+        my $until_year = $dt->utc_year + 1;
+        return $self->_generate_spans_until_match( $until_year, $seconds, $type );
     }
 }
 
