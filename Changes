@@ -1,3 +1,12 @@
+0.2xxx
+
+- Lots of fixes and improvements in how offsets are converted from
+strings to numbers.  Also, a DT::TZ::OffsetOnly object now normalizes
+its offset so that two offsets created from different strings, but
+representing the same offset, now return the same value from the
+name() method.  Patched by Joshua Hoblitt.
+
+
 0.2501   2003-08-10
 
 - Fixed a test that failed because of a change in the DateTime.pm
