@@ -94,15 +94,16 @@ package DateTime::TimeZone::$mod_name;
 
 use strict;
 
+use Class::Singleton;
 use DateTime::TimeZone;
 use DateTime::TimeZone::OlsonDB;
 
-\@DateTime::TimeZone::${mod_name}::ISA = 'DateTime::TimeZone';
+\@DateTime::TimeZone::${mod_name}::ISA = ( 'Class::Singleton', 'DateTime::TimeZone' );
 
 my \$spans =
 $spans;
 
-sub load
+sub _new_instance
 {
     return shift->_init( \@_, spans => \$spans );
 }
