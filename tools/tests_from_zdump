@@ -99,7 +99,7 @@ foreach my $tz_name (@names)
                         \s+
                         (\d\d\d\d)    # UTC year
                         \s+
-                        UTC
+                        (?:UTC|GMT)   # some systems say one, some the other
                         \s+
                         =
                         \s+
