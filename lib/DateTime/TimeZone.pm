@@ -219,6 +219,8 @@ sub offset_as_seconds
 
     return undef unless defined $offset;
 
+    return 0 if $offset eq '0';
+
     return undef unless $offset =~ /^([\+\-])?(\d\d?):?(\d\d)(?::?(\d\d))?$/;
 
     my ( $sign, $hours, $minutes, $seconds ) = ( $1, $2, $3, $4 );
