@@ -79,6 +79,8 @@ sub _init
     return $self;
 }
 
+sub is_olson { exists $_[0]->{name} ? 1 : 0 }
+
 sub is_dst_for_datetime
 {
     my $self = shift;
@@ -396,6 +398,11 @@ floating time zone, as defined by RFC 2445.
 
 Indicates whether or not this object represents the UTC (GMT) time
 zone.
+
+=item * is_olson
+
+Returns true if the time zone is a named time zone from the Olson
+database.
 
 =item * category
 
