@@ -39,7 +39,7 @@ push @files, qw( backward etcetera factory systemv )
 copy( 'MANIFEST.base', 'MANIFEST' );
 open MAN, ">>MANIFEST";
 
-my ( @zones, %categories );
+my ( @zones, %categories, @links );
 foreach my $f (@files)
 {
     my $file = File::Spec->catfile( $opts{dir}, $f );
@@ -51,6 +51,8 @@ foreach my $f (@files)
     my $odb = DateTime::TimeZone::OlsonDB->new;
 
     $odb->parse_file($file);
+
+    push @links, $odb->links;
 
     foreach my $zone_name ( $odb->zone_names )
     {
@@ -66,12 +68,16 @@ foreach my $f (@files)
 
         my $mod_name = "${dir}::$clean_name";
 
-        my $zone = $odb->expanded_zone($zone_name);
+        my $zone = $odb->expanded_zone( name => $zone_name,
+                                        expand_to_year => (localtime)[5] + 1910,
+                                      );
 
         my $spans = Dumper zone_as_data($zone);
 
         $spans =~ s/'inf'/\$DateTime::TimeZone::INFINITY/;
         $spans =~ s/'-inf'/\$DateTime::TimeZone::NEG_INFINITY/;
+
+        $spans =~ s/('(?:start|end)_date'\s+=>\s+)'(\d+)'/$1$2/g;
 
         my $generator = zone_generator($zone);
 
@@ -147,6 +153,11 @@ EOF
     }
 }
 
+my $links = Dumper { @links };
+$links =~ s/{/(/;
+$links =~ s/}/)/;
+
+
 my $zones = join "\n", map { "  $_" } sort @zones;
 my $cat_names = join "\n", map { "  $_" } sort keys %categories;
 my $cat = '';
@@ -180,6 +191,10 @@ $cat_names
 (
 $cat
 );
+
+\%DateTime::TimeZone::Links =
+$links
+;
 
 sub All { wantarray ? \@DateTime::TimeZone::ALL : \\\@DateTime::TimeZone::ALL }
 sub Categories { wantarray ? \@DateTime::TimeZone::CATEGORY_NAMES : \\\@DateTime::TimeZone::CATEGORY_NAMES }
