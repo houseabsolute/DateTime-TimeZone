@@ -8,10 +8,15 @@ sub local_time_zone
 {
     my $tz;
 
-    foreach ( qw( _from_env _from_etc_localtime _from_etc_timezone
-                  _from_etc_sysconfig_clock ) )
+    foreach ( qw( env
+                  etc_localtime
+                  etc_timezone
+                  etc_sysconfig_clock
+                ) )
     {
-	$tz = __PACKAGE__->$_();
+        my $meth = "_from_$_";
+	$tz = __PACKAGE__->$meth();
+
 	return $tz if $tz;
     }
 
@@ -42,7 +47,7 @@ sub _from_etc_localtime
     }
     else
     {
-        $real_name = _find_matching_zoneinfo_file();
+        $real_name = _find_matching_zoneinfo_file( '/etc/localtime' );
     }
 
     if ( defined $real_name )
@@ -69,6 +74,8 @@ sub _from_etc_localtime
     undef;
 }
 
+sub _readlink { readlink $_[0] }
+
 sub _from_etc_timezone
 {
     my $tz_file;
@@ -93,38 +100,44 @@ sub _from_etc_timezone
     return eval { DateTime::TimeZone->new( name => $name ) };
 }
 
-sub _readlink { readlink($_[0]) }
-
-# for systems where /etc/localtime is a copy of a zone info file
+# for systems where /etc/localtime is a copy of a zoneinfo file
 sub _find_matching_zoneinfo_file
 {
+    my $file_to_match = shift;
+
     return unless -d '/usr/share/zoneinfo';
 
     require File::Find;
     require File::Compare;
 
-    my $size = -s '/etc/localtime';
+    my $size = -s $file_to_match;
 
     my $real_name;
 
-    local $File::Find::prune;
     local $_;
     eval
     {
         File::Find::find
-            ( sub
-              {
-                  if ( ! defined $real_name
-                       && -f $_
-                       && $size == -s $_
-                       && File::Compare::compare( $_, '/etc/localtime' ) == 0
-                     )
-                  {
-                      $real_name = $File::Find::name;
-                      die { found => 1 };
-                  }
-          },
-          '/usr/share/zoneinfo' );
+            ( { wanted =>
+                sub
+                {
+                    if ( ! defined $real_name
+                         && -f $_
+                         && $size == -s $_
+                         && File::Compare::compare( $_, $file_to_match ) == 0
+                       )
+                    {
+                        $real_name = $_;
+
+                        # File::Find has no mechanism for bailing in the
+                        # middle of a scan
+                        die { found => 1 };
+                    }
+                },
+                no_chdir => 1,
+              },
+              '/usr/share/zoneinfo',
+            );
     };
 
     if ($@)
