@@ -1,4 +1,12 @@
+0.02     2003-02-09
+
+- Updated version number to non-dev-release so that it's visible when
+CPAN.pm looks for it as a prereq to DateTime.pm.  Otherwise identical
+to 0.02 and still alpha/beta-ish.
+
 0.01_01  2003-02-06
+
+- Don't make pod for generated timezone modules.
 
 - Fix a buglet that caused test 01load.t to fail with some versions of
 Test::More.  Reported by John Peacock.
