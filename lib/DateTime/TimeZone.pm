@@ -346,12 +346,16 @@ sub offset_as_seconds
 
     return 0 if $offset eq '0';
 
-    return undef unless $offset =~ /^([\+\-])?(\d\d?):?(\d\d)(?::?(\d\d))?$/;
+    return undef unless $offset =~ /^([\+\-])?(\d\d)(:?)(\d\d)(?:\3(\d\d))?$/;
 
-    my ( $sign, $hours, $minutes, $seconds ) = ( $1, $2, $3, $4 );
+    my ( $sign, $hours, $minutes, $seconds ) = ( $1, $2, $4, $5 );
+
     $sign = '+' unless defined $sign;
+    return undef unless $hours >= 0 && $hours <= 99;
+    return undef unless $minutes >= 0 && $minutes <= 59;
+    return undef unless ! defined( $seconds ) || ( $seconds >= 0 && $seconds <= 59 );
 
-    my $total =  ($hours * 60 * 60) + ($minutes * 60);
+    my $total =  $hours * 3600 + $minutes * 60;
     $total += $seconds if $seconds;
     $total *= -1 if $sign eq '-';
 
@@ -363,17 +367,17 @@ sub offset_as_string
     my $offset = shift;
 
     return undef unless defined $offset;
+    return undef unless $offset >= -359999 && $offset <= 359999;
 
     my $sign = $offset < 0 ? '-' : '+';
 
     $offset = abs($offset);
 
-    my $hours = $offset / ( 60 * 60 );
-    $hours = $hours % 24;
-
-    my $mins = ( $offset % ( 60 * 60 ) ) / 60;
-
-    my $secs = $offset % 60;
+    my $hours = int( $offset / 3600 );
+    $offset %= 3600;
+    my $mins = int( $offset / 60 );
+    $offset %= 60;
+    my $secs = int( $offset );
 
     return ( $secs ?
              sprintf( '%s%02d%02d%02d', $sign, $hours, $mins, $secs ) :
@@ -569,10 +573,12 @@ an array reference, while in list context it returns an array.
 
 Given an offset as a string, this returns the number of seconds
 represented by the offset as a positive or negative number.
+Returns C<undef> if $offset is not in the range C<-99:59:59> to C<+99:59:59>.
 
 =item * offset_as_string( $offset )
 
 Given an offset as a number, this returns the offset as a string.
+Returns C<undef> if $offset is not in the range C<-359999> to C<359999>.
 
 =back
 
