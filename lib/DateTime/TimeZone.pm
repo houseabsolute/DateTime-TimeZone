@@ -11,7 +11,6 @@ use DateTime::TimeZone::OffsetOnly;
 use DateTime::TimeZone::UTC;
 use Params::Validate qw( validate validate_pos SCALAR ARRAYREF );
 use Time::Local;
-use Tree::RedBlack;
 
 $INFINITY = 10 ** 10 ** 10;
 $NEG_INFINITY = -1 * $INFINITY;
@@ -82,61 +81,11 @@ sub _init
                       },
                     );
 
-    my $self = bless { name => $p{name},
+    my $self = bless { name  => $p{name},
+                       spans => $p{spans},
                      }, $class;
 
-    $self->_build_span_tree( $p{spans} );
-
     return $self;
-}
-
-sub _build_span_tree
-{
-    my $self = shift;
-    my $spans = shift;
-
-    my $tree = Tree::RedBlack->new;
-    $tree->cmp( \&_is_in_span );
-    foreach my $span (@$spans)
-    {
-        $tree->insert( { utc   => [ $span->{utc_start},   $span->{utc_end} ],
-                         local => [ $span->{local_start}, $span->{local_end} ],
-                       },
-                       $span );
-    }
-
-    $self->{tree} = $tree;
-
-    $self->{max_span} = $self->{tree}->max->val;
-}
-
-sub _is_in_span
-{
-    my ($i1, $i2) = @_;
-
-    # We have to compare two spans when adding nodes to the tree.
-    if ( ref $i1 eq 'HASH' && ref $i2 eq 'HASH' )
-    {
-        return -1 if $i1->{utc}[0] < $i2->{utc}[0];
-        return  1 if $i1->{utc}[1] > $i2->{utc}[1];
-
-        return  0;
-    }
-    elsif ( ref $i1 eq 'HASH' )
-    {
-
-        return  1 if $i2->[1] <  $i1->{ $i2->[0] }[0];
-        return -1 if $i2->[1] >= $i1->{ $i2->[0] }[1];
-
-        return  0;
-    }
-    else
-    {
-        return -1 if $i1->[1] <  $i2->{ $i1->[0] }[0];
-        return  1 if $i1->[1] >= $i2->{ $i1->[0] }[1];
-
-        return  0;
-    }
 }
 
 sub is_dst_for_datetime
@@ -184,10 +133,9 @@ sub _span_for_datetime
     my $method = $type . '_rd_as_seconds';
 
     my $seconds = $dt->$method();
-
-    if ( $seconds < $self->{max_span}{"${type}_end"} )
+    if ( $seconds < $self->max_span->{"${type}_end"} )
     {
-        my $span = $self->{tree}->find( [ $type, $seconds ] );
+        my $span = $self->_spans_binary_search( $type, $seconds );
 
         # This means someone gave a local time that doesn't exist
         # (like during a transition into savings time)
@@ -199,6 +147,65 @@ sub _span_for_datetime
     else
     {
         return $self->_generate_spans_until_match($dt);
+    }
+}
+
+sub max_span { $_[0]->{spans}[-1] }
+
+sub _spans_binary_search
+{
+    my $self = shift;
+    my ( $type, $seconds ) = @_;
+
+    my $start = "${type}_start";
+    my $end   = "${type}_end";
+
+    my $min = 0;
+    my $max = scalar @{ $self->{spans} } + 1;
+    my $i = int( $max / 2 );
+    $i++ if $max % 2;
+
+    while (1)
+    {
+        my $current = $self->{spans}[$i];
+
+        if ( $seconds < $current->{$start} )
+        {
+            $max = $i;
+            my $c = int( ( $i - $min ) / 2 );
+            $c ||= 1;
+
+            $i -= $c;
+
+            return if $i < $min;
+        }
+        elsif ( $seconds >= $current->{$end} )
+        {
+            $min = $i;
+            my $c = int( ( $max - $i ) / 2 );
+            $c ||= 1;
+
+            $i += $c;
+
+            return if $i >= $max;
+        }
+        else
+        {
+            # Special case for overlapping ranges because of DST.
+            # Always prefer earliest span.
+            if ( ! $current->{is_dst} && $type eq 'local' )
+            {
+                my $prev = $self->{spans}[$i - 1];
+
+                if ( $prev->{$start} <= $seconds &&
+                     $seconds        <= $prev->{$end} )
+                {
+                    return $prev;
+                }
+            }
+
+            return $current;
+        }
     }
 }
 
