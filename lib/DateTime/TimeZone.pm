@@ -134,8 +134,8 @@ sub _is_in_span
     elsif ( ref $i1 eq 'HASH' )
     {
 
-        return -1 if $i2->[1] <  $i1->{ $i2->[0] }[0];
-        return  1 if $i2->[1] >= $i1->{ $i2->[0] }[1];
+        return  1 if $i2->[1] <  $i1->{ $i2->[0] }[0];
+        return -1 if $i2->[1] >= $i1->{ $i2->[0] }[1];
 
         return  0;
     }
