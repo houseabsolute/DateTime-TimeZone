@@ -659,6 +659,8 @@ sub two_changes_as_span
 {
     my ( $c1, $c2, $last_offset ) = @_;
 
+    $last_offset ||= 0;
+
     my ( $utc_start, $local_start );
 
     if ( defined $c1->start_date )
