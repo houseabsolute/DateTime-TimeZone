@@ -255,10 +255,11 @@ sub zone_as_data
     {
         my $last_observance = $changes[-1]->observance;
 
-        my $end_date = @spans ? $spans[-1]{end_date} : -1 * $INFINITY;
+        my $utc_end =
+            @spans ? $spans[-1]{utc_end} : -1 * $INFINITY;
 
-        push @spans, { start_date => $end_date,
-                       end_date   => $INFINITY,
+        push @spans, { utc_start  => $utc_end,
+                       utc_end    => $INFINITY,
                        short_name => sprintf( $last_observance->format, '' ),
                        offset     => $last_observance->offset,
                      };
@@ -314,7 +315,7 @@ sub _generate_spans_until_match
 
     my @sorted = sort { $a->start_date <=> $b->start_date } @changes;
 
-    my $number = $self->_numeric_dt($dt);
+    my $seconds = $dt->utc_rd_as_seconds;
     my $match;
     for ( my $x = 1; $x < @sorted; $x++ )
     {
@@ -322,10 +323,13 @@ sub _generate_spans_until_match
             DateTime::TimeZone::OlsonDB::Change::two_changes_as_span
                 ( @sorted[ $x - 1, $x ] );
 
-        $self->{tree}->insert( [ $span->{start_date}, $span->{end_date} ], $span );
+        $self->{tree}->insert( { utc   => [ $span->{utc_start},   $span->{utc_end} ],
+                                 local => [ $span->{local_start}, $span->{local_end} ],
+                               },
+                               $span );
 
         $match = $span
-            if $number >= $span->{start_date} && $number < $span->{end_date};
+            if $seconds >= $span->{utc_start} && $seconds < $span->{utc_end};
     }
 
     return $match;
