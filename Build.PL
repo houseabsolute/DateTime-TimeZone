@@ -29,4 +29,5 @@ Module::Build->new( module_name => 'DateTime::TimeZone',
                                      'Pod::Man'    => 1.14,
                                    },
 		    sign        => 1,
+                    create_makefile_pl => 'passthrough',
                   )->create_build_script;
