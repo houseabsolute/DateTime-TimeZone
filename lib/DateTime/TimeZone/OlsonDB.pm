@@ -428,10 +428,14 @@ sub new
     my $offset_from_utc = DateTime::TimeZone::offset_as_seconds( $p{gmtoff} );
     my $offset_from_std = DateTime::TimeZone::offset_as_seconds( $p{offset_from_std} );
 
-    my $local_start_datetime = $p{utc_start_datetime};
-    $local_start_datetime +=
-        DateTime::Duration->new( seconds => $offset_from_utc + $offset_from_std )
-            if $local_start_datetime;
+    my $local_start_datetime;
+    if ( $p{utc_start_datetime} )
+    {
+        $local_start_datetime = $p{utc_start_datetime}->clone;
+
+        $local_start_datetime +=
+            DateTime::Duration->new( seconds => $offset_from_utc + $offset_from_std );
+    }
 
     return bless { %p,
                    local_start_datetime => $local_start_datetime,
