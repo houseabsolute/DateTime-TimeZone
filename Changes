@@ -1,3 +1,10 @@
+0.12     2003-04-12
+
+- Updated to latest Olson database (2003a).
+
+- Fixed a bug in handling time zones with only one historical offset,
+like Pacific/Johnston.
+
 0.11     2003-03-26  the "Asia/Baghdad release"
 
 - Fixed two bugs, both of which made some time zones unusable..  One
