@@ -5,13 +5,13 @@ use strict;
 use vars qw ($VERSION);
 $VERSION = 0.01;
 
-use DateTime::TimeZoneCatalog;
-use DateTime::TimeZoneObservance;
-
 use Date::ICal; # will go away later
 use Date::ICal::Duration; # will go away later
 #use DateTime;
 #use DateTime::Duration;
+
+use DateTime::TimeZoneCatalog;
+use DateTime::TimeZoneObservance;
 
 use Params::Validate qw( validate validate_pos SCALAR HASHREF );
 
@@ -22,12 +22,11 @@ sub new
                       { name => { type => SCALAR } },
                     );
 
-    $p{name} =~ s/-/_/g;     # modules can't have - in them.
+    $p{name} =~ s/-/_/g;
     $p{name} =~ s/\//::/g;
     my $class = "DateTime::TimeZone::" . $p{name};
 
     eval "require $class";
-    warn $@ if $@;
     die "Invalid time zone name: $p{name}" if $@;
 
     return $class->new;
@@ -140,6 +139,56 @@ sub offset_for_datetime
     $_[0]->observance_for_datetime->offset( $_[1] );
 }
 
+sub offset_string_for_datetime { offset_as_string( $_[0]->offset_for_datetime( $_[1] ) ) }
+
+sub is_floating { 0 }
+
+#
+# Functions
+#
+
+sub offset_as_seconds
+{
+    my $offset = shift;
+
+    # if it's just numbers assume it's seconds
+    return $offset if $offset =~ /^\d+$/;
+
+    return undef unless $offset =~ /^([\+\-])(\d\d)(\d\d)(\d\d)?$/;
+
+    my ( $sign, $hours, $minutes, $seconds ) = ( $1, $2, $3, $4 );
+
+    my $total =  ($hours * 60 * 60) + ($minutes * 60);
+    $total += $seconds if $seconds;
+    $total *= -1 if $sign eq '-';
+
+    return $total;
+}
+
+sub offset_as_string
+{
+    my $offset = shift;
+
+    return '0' unless $offset;
+
+    return $offset if $offset =~ /^[\+\-]\d\d\d\d(?:\d\d)?$/;
+
+    my $sign = $offset < 0 ? '-' : '+';
+
+    my $hours = $offset / ( 60 * 60 );
+    $hours %= 24;
+
+    my $mins = ( $offset % ( 60 * 60 ) ) / 60;
+
+    my $secs = $offset % 60;
+
+    return ( $secs ?
+             sprintf( '%s%02d%02d%02d', $sign, $hours, $mins, $secs ) :
+             sprintf( '%s%02d%02d', $sign, $hours, $mins )
+           );
+}
+
+
 1;
 
 __END__
@@ -162,7 +211,46 @@ describes the offset from GMT for a given time period.
 
 =head1 USAGE
 
+This class has the following methods:
 
+=over 4
+
+=item * new ( name => $tz_name )
+
+Given a valid time zone name, this method returns a new time zone
+blessed into the appropriate subclass.  Subclasses are named for the
+given time zone, so that the time zone "America/Chicago" is the
+DateTime::TimeZone::America::Chicago class.
+
+=item * offset_for_datetime( $datetime )
+
+Given an object which implements the DateTime.pm API, this method
+returns the offset in seconds for the given datetime.  This takes into
+account historical time zone information, as well as Daylight Saving
+Time.
+
+=item * offset_string_for_datetime( $datetime )
+
+Given an object which implements the DateTime.pm API, this method
+returns the offset as a string for the given datetime.
+
+=back
+
+This class also contains two functions, which are not exported.
+
+=over 4
+
+=item * offset_as_seconds( $offset )
+
+Given an offset as a string or number, this returns the number of
+seconds represented by the offset as a positive or negative number.
+
+=item * offset_as_string( $offset )
+
+Given an offset as a string or number, this returns the offset as
+string.
+
+=back
 
 =head1 SUPPORT
 
