@@ -643,6 +643,7 @@ sub two_changes_as_span
              local_end   => $local_end,
              short_name  => $c1->short_name,
              offset      => $c1->offset,
+             is_dst      => ($c1->rule && $c1->rule->offset != 0 ? 1 : 0),
            };
 }
 
