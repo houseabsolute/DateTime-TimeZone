@@ -9,7 +9,7 @@ use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
 
-plan tests => 32;
+plan tests => 34;
 
 # The point of this group of tests is to try to check that DST changes
 # are occuring at exactly the right time in various time zones.  It's
@@ -217,12 +217,14 @@ plan tests => 32;
                           );
 
     is( $dt->time_zone_short_name, 'WEST', 'short name is WEST' );
+    is( $dt->is_dst, 1, 'is dst' );
 
     # observance ends, new rule starts, net effect is same offset,
-    # different short name
+    # different short name, no longer is DST
     $dt->add( minutes => 1 );
 
     is( $dt->time_zone_short_name, 'CET', 'short name is CET' );
+    is( $dt->is_dst, 0, 'is not dst' );
 }
 
 # Asia/Aqtau has an observance  that ends at 1995-09-24T00:00:00 local
