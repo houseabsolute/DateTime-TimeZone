@@ -32,3 +32,9 @@ This distribution will skip its tests if DateTime.pm isn't yet
 installed.  If this weren't done, then neither module would be
 installable via CPAN.  But this distribution's functionality only
 works in concert with DateTime.pm.
+
+PERL 5.6.0
+
+This module probably won't work with Perl 5.6.0, according to reports
+I've had from users.
+
