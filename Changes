@@ -1,3 +1,18 @@
+0.05     2003-02-13
+
+- The offset_as_string function did not handle negative offsets
+properly.  Patch from Kellan.
+
+- Allow 'Z' as an offset name, equivalent to 'UTC'.  Patch from
+Kellan.
+
+- Make sure DT::TZ subclasses which need to override
+is_dst_for_datetime do so.
+
+- Changed offset_as_seconds and offset_as_string so that the former
+always assumes its arg is a string and the latter always assumes it
+got a number.
+
 0.04     2003-02-10
 
 - Be forgiving of bad names in $ENV{TZ} and just calculate local
