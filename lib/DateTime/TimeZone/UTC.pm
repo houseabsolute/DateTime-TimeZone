@@ -15,6 +15,8 @@ sub new
     return bless {}, $class;
 }
 
+sub is_dst_for_datetime { 0 }
+
 sub offset_for_datetime { 0 }
 sub offset_for_local_datetime { 0 }
 
