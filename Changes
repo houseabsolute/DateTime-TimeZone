@@ -1,3 +1,9 @@
+0.07     2003-02-19
+
+- Skip tests unless DateTime.pm 0.06 is installed.  Otherwise we have
+a bootstrapping problem since DateTime 0.06 needs DateTime::TimeZone
+0.06+.
+
 0.06     2003-02-16
 
 - Changes to work with DateTime.pm 0.06.
