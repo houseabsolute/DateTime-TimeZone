@@ -1,3 +1,10 @@
+0.15     2003-05-05
+
+- Fixed some bugs in calculations of offsets for future datetimes
+could be incorrect.  This also quiets some warnings from DateTime.pm's
+time zone tests.
+
+
 0.14     2003-05-05
 
 - Make sure tests always run with warnings on.
