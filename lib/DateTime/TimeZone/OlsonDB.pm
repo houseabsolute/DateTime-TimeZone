@@ -4,6 +4,8 @@ use strict;
 
 use vars qw( %MONTHS %DAYS );
 
+use Params::Validate qw( validate SCALAR );
+
 my $x = 1;
 %MONTHS = map { $_ => $x++ }
           qw( Jan Feb Mar Apr May Jun
@@ -16,10 +18,8 @@ $x = 1;
 sub new
 {
     my $class = shift;
-    my %p = ();#validate( @_, {} );
 
-    return bless { %p,
-                   rules => {},
+    return bless { rules => {},
                    zones => {},
                    links => {},
                  }, $class;
@@ -157,10 +157,14 @@ sub zone
 sub expanded_zone
 {
     my $self = shift;
+    my %p = validate( @_, { name => { type => SCALAR },
+                            expand_to_year => { type => SCALAR,
+                                                default => (localtime)[5] + 1910 },
+                          } );
 
-    my $zone = $self->zone(@_);
+    my $zone = $self->zone( $p{name} );
 
-    $zone->expand_observances($self);
+    $zone->expand_observances( $self, $p{expand_to_year} );
 
     return $zone;
 }
@@ -217,6 +221,7 @@ sub expand_observances
 {
     my $self = shift;
     my $odb = shift;
+    my $max_year = shift;
 
     foreach my $obs ( @{ $self->{observances} } )
     {
@@ -231,7 +236,7 @@ sub expand_observances
 
         if ( defined $obs->rules )
         {
-            $obs->expand_from_rules( $odb, $self );
+            $obs->expand_from_rules( $odb, $self, $max_year );
         }
     }
 }
@@ -307,11 +312,10 @@ sub expand_from_rules
 {
     my $self = shift;
     my $odb  = shift;
-    my $zone = shift;
 
     foreach my $rule ( $odb->rule( $self->{rules} ) )
     {
-        $self->_expand_one_rule( $rule, $zone );
+        $self->_expand_one_rule( $rule, @_ );
     }
 }
 
@@ -320,13 +324,19 @@ sub _expand_one_rule
     my $self = shift;
     my $rule = shift;
     my $zone = shift;
+    # real max is year + 1 so we include max year
+    my $max_year = (shift) + 1;
+
+    my $min_year = $rule->min_year;
+    $max_year = $rule->max_year if defined $rule->max_year;
 
     my $min_dt = $self->start;
     my $max_dt = $self->until;
-    $max_dt ||= DateTime->now;
-
-    my $min_year = $rule->min_year;
-    my $max_year = $rule->max_year || $max_dt->year + 10;
+    $max_dt ||= DateTime->new( year   => $max_year,
+                               month  => 1,
+                               day    => 1,
+                               offset => 0,
+                             );
 
     my $date;
     my $month = $rule->month;
@@ -338,7 +348,7 @@ sub _expand_one_rule
         $date = $rule->date_for_year( $year, $self->{offset} );
 
         next if $min_dt && $date < $min_dt;
-        last if $max_dt && $date > $max_dt;
+        last if $date >= $max_dt;
 
         my $change =
             DateTime::TimeZone::OlsonDB::Change->new
