@@ -1,6 +1,6 @@
 0.20     2003-06-20
 
-- Load File::Spec in DT::TZ::Local.
+- Load File::Spec in DT::TZ::Local.  Reported by John Siracusa.
 
 
 0.19     2003-06-13
