@@ -1,3 +1,9 @@
+0.2505   2003-10-27
+
+- The change in 0.2504 to accomodate SuSE's /etc/sysconfig/clock file
+broke this feature on RedHat.  Sigh.  Reported by John Siracusa.
+
+
 0.2504   2003-10-25
 
 - If a timezone module cannot be loaded, give a more useful error
@@ -9,7 +15,7 @@ from Alexey Mahotkin.
 installation to die.
 
 - SuSE puts TIMEZONE="Foo/Bar" in the /etc/sysconfig/clock file, but
-the module just looked for ZONE="...".  Reported by Pete.
+DT::TZ::Local just looked for ZONE="...".  Reported by Pete.
 
 
 0.2503   2003-10-06
