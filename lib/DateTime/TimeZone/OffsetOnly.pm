@@ -26,6 +26,8 @@ sub new
     return bless $self, $class;
 }
 
+sub is_utc { $_[0]->{offset} ? 0 : 1 }
+
 sub offset_for_datetime { $_[0]->{offset} }
 
 sub short_name_for_datetime { undef }
