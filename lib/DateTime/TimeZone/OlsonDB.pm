@@ -430,7 +430,7 @@ sub _expand_one_rule
         $max_dt = DateTime->new( year   => $max_year,
                                  month  => 1,
                                  day    => 1,
-                                 time_zone => 'UTC',
+                                 time_zone => 'floating',
                                );
     }
 
@@ -504,7 +504,7 @@ sub until
                                hour   => $hour,
                                minute => $minute,
                                second => $second,
-                               time_zone => 'UTC',
+                               time_zone => 'floating',
                              );
 
     return { local => $local,
@@ -579,7 +579,7 @@ sub date_for_year
                                hour   => $hour,
                                minute => $minute,
                                second => $second,
-                               time_zone => 'UTC',
+                               time_zone => 'floating',
                              );
 
     return { local => $local,
