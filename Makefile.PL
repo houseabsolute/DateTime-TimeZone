@@ -1,59 +1,29 @@
 use strict;
 
-use ExtUtils::MakeMaker;
-use File::Spec;
+unless (eval "use Module::Build::Compat 0.02; 1" ) {
+    print "This module requires Module::Build to install itself.\n";
 
-unless ( -e File::Spec->catfile( qw( lib DateTime TimeZone America Chicago.pm ) ) )
-{
-    warn <<'EOF';
+    require ExtUtils::MakeMaker;
+    my $yn = ExtUtils::MakeMaker::prompt
+        ('  Install Module::Build from CPAN?', 'y');
 
-It looks like you haven't run tools/parse_olson to generate the time
-zone modules yet.
+    if ($yn =~ /^y/i) {
+        require Cwd;
+        require File::Spec;
+        require CPAN;
 
-This script needs the Olson database files to run, which can be found
-at ftp://elsie.nci.nih.gov/pub/ in a file called tzdata*.tar.gz.
+        # Save this 'cause CPAN will chdir all over the place.
+        my $cwd = Cwd::cwd();
+        my $makefile = File::Spec->rel2abs($0);
 
-Once you've run this script you will be able to test and install this
-distribution.
+        CPAN::Shell->install('Module::Build::Compat');
 
-EOF
-
-    exit;
+        chdir $cwd or die "Cannot chdir() back to $cwd: $!";
+        exec $^X, $makefile, @ARGV;  # Redo now that we have Module::Build
+    } else {
+        warn " *** Cannot install without Module::Build.  Exiting ...\n";
+        exit 1;
+    }
 }
-
-WriteMakefile( NAME         => 'DateTime::TimeZone',
-               VERSION_FROM => 'lib/DateTime/TimeZone.pm',
-               AUTHOR       => 'Dave Rolsky <autarch@urth.org>',
-               PREREQ_PM => { 'Params::Validate' => 0,
-                              'Class::Singleton' => 1.03,
-                            },
-               MAN3PODS     =>
-               { 'lib/DateTime/TimeZone.pm' =>
-                 '$(INST_MAN3DIR)/DateTime::TimeZone.$(MAN3EXT)',
-
-                 'lib/DateTime/TimeZoneCatalog.pm' =>
-                 '$(INST_MAN3DIR)/DateTime::TimeZoneCatalog.$(MAN3EXT)',
-
-                 'lib/DateTime/TimeZone/Floating.pm' =>
-                 '$(INST_MAN3DIR)/DateTime::TimeZone::Floating.$(MAN3EXT)',
-
-                 'lib/DateTime/TimeZone/OffsetOnly.pm' =>
-                 '$(INST_MAN3DIR)/DateTime::TimeZone::OffsetOnly.$(MAN3EXT)',
-
-                 'lib/DateTime/TimeZone/OffsetOnly.pm' =>
-                 '$(INST_MAN3DIR)/DateTime::TimeZone::OlsonDB.$(MAN3EXT)',
-
-                 'lib/DateTime/TimeZone/UTC.pm' =>
-                 '$(INST_MAN3DIR)/DateTime::TimeZone::UTC.$(MAN3EXT)',
-               },
-             );
-
-package MY;
-
-sub libscan
-{
-    my $self = shift;
-    my $file = shift;
-
-    return $file =~ /\.cvsignore$/ ? 0 : $self->SUPER::libscan($file);
-}
+Module::Build::Compat->run_build_pl(args => \@ARGV);
+Module::Build::Compat->write_makefile();
