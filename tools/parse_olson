@@ -15,14 +15,16 @@ use Getopt::Long;
 $Data::Dumper::Indent = 1;
 $Data::Dumper::Terse = 1;
 
-my $VERSION = "0.03";
+my $VERSION = "0.04";
 
-my $INFINITY  = 10 ** 10 ** 10;
+my $INFINITY  = 100 ** 100 ** 100;
 
 my %opts;
-GetOptions( 'dir:s' => \$opts{dir},
-            'old'   => \$opts{old},
-            'help'  => \$opts{help},
+GetOptions( 'dir:s'  => \$opts{dir},
+            'old'    => \$opts{old},
+            'file:s' => \$opts{file},
+            'name:s' => \$opts{name},
+            'help'   => \$opts{help},
           );
 
 
@@ -33,7 +35,7 @@ if ( $opts{help} )
     print <<'EOF';
 
 This script parses the Olson time zone database files and turns them
-into a set of Perl modules.  It also generates the
+into a set of Perl modules.  It also generates the MANIFEST and the
 DateTime::TimeZoneCatalog module, which contains a list of all the
 available time zone names.
 
@@ -45,25 +47,44 @@ It takes the following arguments:
 
   --dir   A directory containing Olson db files.
 
+  --file  Parse just the file with the given name.  For debugging.
+
+  --name  Only create the specified time zone.  For debugging.
+
   --old   Also look for files named etcetera, factory, and systemv
 
   --help  What you are reading
+
+If the --file or --name options are specified, the MANIFEST and
+DateTime::TimeZoneCatalog files will not be generated.
 
 EOF
 
     exit;
 }
 
-my @files = qw( africa antarctica asia australasia
-                europe northamerica pacificnew
-                southamerica backward
-              );
+my @files;
 
-push @files, qw( etcetera factory systemv )
-    if $opts{old};
+if ( $opts{file} )
+{
+    @files = $opts{file};
+}
+else
+{
+    @files = qw( africa antarctica asia australasia
+                 europe northamerica pacificnew
+                 southamerica backward
+               );
 
-copy( 'MANIFEST.base', 'MANIFEST' );
-open MAN, ">>MANIFEST" or die "Cannot write to MANIFEST: $!";
+    push @files, qw( etcetera factory systemv )
+        if $opts{old};
+}
+
+unless ( $opts{name} )
+{
+    copy( 'MANIFEST.base', 'MANIFEST' );
+    open MAN, ">>MANIFEST" or die "Cannot write to MANIFEST: $!";
+}
 
 my ( @zones, %categories, %links );
 
@@ -83,6 +104,12 @@ foreach my $f (@files)
 
     foreach my $zone_name ( $odb->zone_names )
     {
+        if ( $opts{name} )
+        {
+            next unless $zone_name eq $opts{name};
+        }
+        print "  creating zone $zone_name\n";
+
         push @zones, $zone_name;
 
         my ($category, $name) = split /\//, $zone_name, 2;
@@ -157,9 +184,14 @@ EOF
         print OUT $body or die "Cannot write to $outfile2: $!";
         close (OUT) or die "Cannot write to $outfile2: $!";
 
-        print MAN "$outfile2\n" or die "Cannot write to MANIFEST: $!";
+        unless ( $opts{name} )
+        {
+            print MAN "$outfile2\n" or die "Cannot write to MANIFEST: $!"
+        }
     }
 }
+
+exit if $opts{name};
 
 # override some links and add others
 %links =
@@ -318,7 +350,7 @@ sub _generate_spans_until_match
             my $next = $rule->date_for_year( $year, !OFFSET );
 
             # don't bother with changes we've seen already
-            next if $next->{utc}->utc_rd_as_seconds < $self->{max_span}{utc_end};
+            next if $next->{utc}->utc_rd_as_seconds < $self->max_span->{utc_end};
 
             push @changes,
                 DateTime::TimeZone::OlsonDB::Change->new
@@ -340,7 +372,7 @@ sub _generate_spans_until_match
     for ( my $x = 1; $x < @sorted; $x++ )
     {
         my $last_offset =
-            $x == 1 ? $self->{max_span}{offset} : $changes[ $x - 2 ]->offset;
+            $x == 1 ? $self->max_span->{offset} : $changes[ $x - 2 ]->offset;
 
         my $span =
             DateTime::TimeZone::OlsonDB::Change::two_changes_as_span
