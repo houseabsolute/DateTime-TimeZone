@@ -3,6 +3,11 @@
 - Switched to Module::Build, which should fix the installation
 problems caused by very long Makefile lines on some platforms.
 
+- Fixed a bug in finding the correct data for a given datetime.  This
+could occur when calling set_time_zone on an object that was very
+close to a DST transition, though it only affected some time zones in
+a few specific circumstances.  Reported by Ben Bennett.
+
 
 0.20     2003-06-20
 
