@@ -320,7 +320,8 @@ sub expand_observances
 
         if ( defined $obs->rules )
         {
-            $obs->expand_from_rules( $odb, $self, $max_year );
+            my $is_last = $obs eq $self->{observances}[-1] ? 1 : 0;
+            $obs->expand_from_rules( $odb, $self, $max_year, $is_last );
         }
     }
 }
@@ -411,6 +412,7 @@ sub _expand_one_rule
     my $zone = shift;
     # real max is year + 1 so we include max year
     my $max_year = (shift) + 1;
+    my $is_last = shift;
 
     my $min_year = $rule->min_year;
     $max_year = $rule->max_year if defined $rule->max_year;
@@ -454,7 +456,7 @@ sub _expand_one_rule
         $zone->add_change($change);
     }
 
-    unless ( $rule->is_finite )
+    if ( $is_last && ! $rule->is_finite )
     {
         $zone->add_infinite_rule($rule);
     }
