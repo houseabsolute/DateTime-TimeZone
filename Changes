@@ -1,3 +1,9 @@
+0.2601
+
+- Fix test failure which could happen if tests were run before
+DateTime.pm is installed.
+
+
 0.26     2004-03-09
 
 - Added DateTime::TimeZone->is_valid_name class method.
