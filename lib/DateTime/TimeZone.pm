@@ -5,6 +5,7 @@ use strict;
 use vars qw( $VERSION $INFINITY $NEG_INFINITY );
 $VERSION = 0.01;
 
+use DateTime::TimeZone::Floating;
 use DateTime::TimeZoneCatalog;
 use Params::Validate qw( validate validate_pos SCALAR ARRAYREF );
 use Tree::RedBlack;
@@ -18,6 +19,16 @@ sub new
     my %p = validate( @_,
                       { name => { type => SCALAR } },
                     );
+
+    if ( $p{name} eq 'floating' )
+    {
+        return DateTime::TimeZone::Floating->new;
+    }
+
+    if ( exists $DateTime::TimeZone::Links{ $p{name} } )
+    {
+        $p{name} = $DateTime::TimeZone::Links{ $p{name} };
+    }
 
     my $subclass = $p{name};
     $subclass =~ s/-/_/g;
@@ -111,10 +122,7 @@ sub _span_for_datetime
     my $self = shift;
     my $dt   = shift;
 
-    my $number = sprintf( '%04d%02d%02d%02d%02d%02d',
-                          $dt->year, $dt->month, $dt->day,
-                          $dt->hour, $dt->minute, $dt->second,
-                        );
+    my $number = $self->_numeric_dt($dt);
 
     if ( my $span = $self->{tree}->find($number) )
     {
@@ -124,6 +132,15 @@ sub _span_for_datetime
     {
         return $self->_generate_spans_until_match($dt);
     }
+}
+
+sub _numeric_dt
+{
+    # add 0 to force numification
+    sprintf( '%04d%02d%02d%02d%02d%02d',
+             $_[1]->year, $_[1]->month, $_[1]->day,
+             $_[1]->hour, $_[1]->minute, $_[1]->second,
+           ) + 0;
 }
 
 sub is_floating { 0 }
