@@ -8,6 +8,8 @@ $VERSION = 0.01;
 use DateTime::TimeZone;
 use base 'DateTime::TimeZone';
 
+use Params::Validate qw( validate SCALAR );
+
 sub new
 {
     my $class = shift;
