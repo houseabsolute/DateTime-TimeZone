@@ -51,7 +51,7 @@ DateTime::TimeZone::OffsetOnly - A DateTime::TimeZone object that just contains 
 
 =head1 SYNOPSIS
 
-  my $offset_tz = DateTime::TimeZone::OffsetOnly->new( offset => '-0300' );
+  my $offset_tz = DateTime::TimeZone->new( name => '-0300' );
 
 =head1 DESCRIPTION
 
