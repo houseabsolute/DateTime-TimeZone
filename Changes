@@ -1,4 +1,4 @@
-0.21
+0.21     2003-06-25
 
 - Switched to Module::Build, which should fix the installation
 problems caused by very long Makefile lines on some platforms.
