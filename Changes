@@ -1,3 +1,13 @@
+0.16
+
+- Fixed a bug where a POSIX time zone in $ENV{TZ} could cause the code
+to try to load a module named something like
+"DateTime::TimeZone::5.0::03".
+
+- The feature which attempts to read /etc/localtime to determine the
+time zone was broken.  Reported by John Siracusa.
+
+
 0.15     2003-05-05
 
 - Fixed some bugs in calculations of offsets for future datetimes
