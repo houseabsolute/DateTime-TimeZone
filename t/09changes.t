@@ -229,8 +229,8 @@ plan tests => 108;
 
 # Asia/Aqtau has an observance that ends at 1995-09-24T00:00:00 local
 # time, and a new rule that starts four hours later!  The net effect
-# is that right before the end of the observance, the offset if +0600,
-# then the observance ends, the offset if +0500 for 4 hours, and then
+# is that right before the end of the observance, the offset is +0600,
+# then the observance ends, the offset is +0500 for 4 hours, and then
 # +0400.  Confused yet?
 
 # Rule RussiaAsia	1993	max	-	Mar	lastSun	 2:00s	1:00	S
@@ -246,20 +246,20 @@ plan tests => 108;
                           );
 
     is( $dt->time_zone_short_name, 'AQTST', 'short name is AQTST' );
-    is( $dt->offset, 3600 * 6, 'offset if +0600' );
+    is( $dt->offset, 3600 * 6, 'offset is +0600' );
 
     # observance ends, old rule still in effect, same short name,
     # different offset
     $dt->add( minutes => 1 );
 
     is( $dt->time_zone_short_name, 'AQTST', 'short name is AQTST' );
-    is( $dt->offset, 3600 * 5, 'offset if +0500' );
+    is( $dt->offset, 3600 * 5, 'offset is +0500' );
 
     # rule ends, new name, new offset
     $dt->add( hours => 4 );
 
     is( $dt->time_zone_short_name, 'AQTT', 'short name is AQTT' );
-    is( $dt->offset, 3600 * 4, 'offset if +0400' );
+    is( $dt->offset, 3600 * 4, 'offset is +0400' );
 }
 
 {
