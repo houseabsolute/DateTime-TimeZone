@@ -39,13 +39,13 @@ available time zone names.
 
 By default, it looks for files named africa, antarctica, asia,
 australasia, europe, northamerica, pacificnew, southamerica, and
-ignores any others.
+backward.  All other files are ignored.
 
 It takes the following arguments:
 
   --dir   A directory containing Olson db files.
 
-  --old   Also look for files named backward, etcetera, factory, and systemv
+  --old   Also look for files named etcetera, factory, and systemv
 
   --help  What you are reading
 
@@ -56,16 +56,17 @@ EOF
 
 my @files = qw( africa antarctica asia australasia
                 europe northamerica pacificnew
-                southamerica
+                southamerica backward
               );
 
-push @files, qw( backward etcetera factory systemv )
+push @files, qw( etcetera factory systemv )
     if $opts{old};
 
 copy( 'MANIFEST.base', 'MANIFEST' );
 open MAN, ">>MANIFEST";
 
-my ( @zones, %categories, @links );
+my ( @zones, %categories, %links );
+
 foreach my $f (@files)
 {
     my $file = File::Spec->catfile( $opts{dir}, $f );
@@ -78,7 +79,7 @@ foreach my $f (@files)
 
     $odb->parse_file($file);
 
-    push @links, $odb->links;
+    %links = ( %links, $odb->links );
 
     foreach my $zone_name ( $odb->zone_names )
     {
@@ -160,10 +161,33 @@ EOF
     }
 }
 
-my $links = Dumper { @links };
+# override some links and add others
+%links =
+    ( %links,
+      'EST'         => 'America/New_York',
+      'EDT'         => 'America/New_York',
+      'CST'         => 'America/Chicago',
+      'CDT'         => 'America/Chicago',
+      'MST'         => 'America/Denver',
+      'MDT'         => 'America/Denver',
+      'KST'         => 'Asia/Seoul',
+      'KDT'         => 'Asia/Seoul',
+      'JST'         => 'Asia/Tokyo',
+      'JDT'         => 'Asia/Tokyo',
+      'HKST'        => 'Asia/Hong_Kong',
+      'HKDT'        => 'Asia/Hong_Kong',
+      'Etc/GMT+0'   => 'UTC',
+      'Etc/Universal' => 'UTC',
+      'Etc/Zulu'    => 'UTC',
+      'Etc/UCT'     => 'UTC',
+      'GMT0'        => 'UTC',
+    );
+
+delete $links{UTC};
+
+my $links = Dumper \%links;
 $links =~ s/{/(/;
 $links =~ s/}/)/;
-
 
 my $zones = join "\n", map { "  $_" } sort @zones;
 my $cat_names = join "\n", map { "  $_" } sort keys %categories;
