@@ -2,6 +2,9 @@
 
 - Added DateTime::TimeZone->is_valid_name class method.
 
+- Added Storable freeze & thaw hooks.  This should fix RT ticket
+#5542, reported by Dan Rowles (I hope).
+
 
 0.2507   2004-02-14  the "nothing says love like timezones" release
 
