@@ -3,6 +3,9 @@
 - Fixed test failures on system where /etc/localtime is not a symlink.
 Diagnosed by Iain Truskett.
 
+- If time zone is set to "local", we now also check for the existence
+of an /etc/timezone file.
+
 
 0.16     2003-05-07
 

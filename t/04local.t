@@ -9,7 +9,7 @@ use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
 
-plan tests => 8;
+plan tests => 10;
 
 use DateTime::TimeZone;
 
@@ -25,19 +25,12 @@ SKIP:
 
     local $ENV{TZ} = 'this will not work';
 
+    local $ENV{NO_ETC_TIMEZONE} = 1;
+
     my $tz;
     eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
     like( $@, qr/cannot determine local time zone/i,
           'invalid time zone name in $ENV{TZ} should die' );
-}
-
-{
-    local $ENV{TZ} = 'America/Chicago';
-
-    my $tz;
-    eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
-    is( $@, '', 'valid time zone name in $ENV{TZ} should not die' );
-    isa_ok( $tz, 'DateTime::TimeZone::America::Chicago' );
 }
 
 SKIP:
@@ -51,10 +44,21 @@ SKIP:
 
     local $ENV{TZ} = '123/456';
 
+    local $ENV{NO_ETC_TIMEZONE} = 1;
+
     my $tz;
     eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
     like( $@, qr/cannot determine local time zone/i,
           'invalid time zone name in $ENV{TZ} should die' );
+}
+
+{
+    local $ENV{TZ} = 'America/Chicago';
+
+    my $tz;
+    eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
+    is( $@, '', 'valid time zone name in $ENV{TZ} should not die' );
+    isa_ok( $tz, 'DateTime::TimeZone::America::Chicago' );
 }
 
 SKIP:
@@ -76,7 +80,7 @@ SKIP:
 {
     use Sys::Hostname;
 
-    skip "Cannot run this test without explicitly knowing local time zone first (only runs on developers' machine)", 2
+    skip "Cannot run these tests without explicitly knowing local time zone first (only runs on developers' machine)", 4
         unless hostname =~ /houseabsolute/ && -d 'CVS';
 
     local $ENV{TZ} = '';
@@ -84,5 +88,13 @@ SKIP:
     my $tz;
     eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
     is( $@, '', 'valid time zone name in /etc/localtime should not die' );
+    isa_ok( $tz, 'DateTime::TimeZone::America::Chicago' );
+
+    $^W = 0;
+    local *DateTime::TimeZone::readlink = sub { undef };
+    $^W = 1;
+
+    eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
+    is( $@, '', 'valid time zone name in /etc/timezone should not die' );
     isa_ok( $tz, 'DateTime::TimeZone::America::Chicago' );
 }

@@ -103,6 +103,24 @@ sub _local_timezone
         }
     }
 
+    # The env var is a hack so we can test other parts of this
+    # subroutine without always succeeding in finding a local time
+    # zone through this file.
+    if ( -f '/etc/timezone' && -r _ && ! $ENV{NO_ETC_TIMEZONE} )
+    {
+        local *TZ;
+        open TZ, "</etc/timezone"
+            or die "Cannot read /etc/timezone: $!";
+        my $name = join '', <TZ>;
+        close TZ;
+
+        $name =~ s/^\s+|\s+$//g;
+
+        my $tz;
+        eval { $tz = $class->new( name => $name ) };
+        return $tz if $tz && ! $@;
+    }
+
     die "Cannot determine local time zone\n";
 }
 sub DateTime::TimeZone::readlink { CORE::readlink($_[0]) }
@@ -387,7 +405,11 @@ of making a symlink.  Unfortunately, these files don't contain their
 own name!  This means that there is no way to look at a copy and
 figure out what time zone it represents.
 
-If neither of these methods work, it gives up and dies.
+Finally, it checks for a file called F</etc/timezone>.  If this
+exists, it is read and it tries to create a timezone with the name
+contained in the file.
+
+If none of these methods work, it gives up and dies.
 
 =item * offset_for_datetime( $datetime )
 
