@@ -1,7 +1,7 @@
 0.13
 
 - Fixed DateTime::TimeZone::OffsetOnly constructor so that it only
-accepted valid offsets.  Previously, invalid offsets like "foo" were
+accepts valid offsets.  Previously, invalid offsets like "foo" were
 turned into zero internally.
 
 - Made "local" look for /etc/localtime symlink as part of determining
@@ -14,6 +14,11 @@ includes things like "US/Central".
 
 - Added a few links for names like CST and CDT.  If you want more
 added, let me know.
+
+- When searching for the current offset based on the local time, we
+now prefer the later of the two offsets rather than the earlier.
+Otherwise, offset shifts larger than a day can cause some very strange
+problems when doing date math.
 
 0.12     2003-04-12
 
