@@ -1,3 +1,10 @@
+0.28     2004-07-24
+
+- This release is based on version 2004b of the Olson database.  Note
+that some Argentinian time zones have moved from America to
+America/Argentina, though there are aliases for the old names.
+
+
 0.27     2004-05-27
 
 - This release is based on version 2004a of the Olson database.

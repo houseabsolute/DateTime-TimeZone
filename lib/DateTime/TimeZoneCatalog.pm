@@ -66,6 +66,17 @@ qw(
   America/Anguilla
   America/Antigua
   America/Araguaina
+  America/Argentina/Buenos_Aires
+  America/Argentina/Catamarca
+  America/Argentina/ComodRivadavia
+  America/Argentina/Cordoba
+  America/Argentina/Jujuy
+  America/Argentina/La_Rioja
+  America/Argentina/Mendoza
+  America/Argentina/Rio_Gallegos
+  America/Argentina/San_Juan
+  America/Argentina/Tucuman
+  America/Argentina/Ushuaia
   America/Aruba
   America/Asuncion
   America/Bahia
@@ -75,17 +86,14 @@ qw(
   America/Boa_Vista
   America/Bogota
   America/Boise
-  America/Buenos_Aires
   America/Cambridge_Bay
   America/Campo_Grande
   America/Cancun
   America/Caracas
-  America/Catamarca
   America/Cayenne
   America/Cayman
   America/Chicago
   America/Chihuahua
-  America/Cordoba
   America/Costa_Rica
   America/Cuiaba
   America/Curacao
@@ -118,7 +126,6 @@ qw(
   America/Inuvik
   America/Iqaluit
   America/Jamaica
-  America/Jujuy
   America/Juneau
   America/Kentucky/Monticello
   America/La_Paz
@@ -130,7 +137,6 @@ qw(
   America/Manaus
   America/Martinique
   America/Mazatlan
-  America/Mendoza
   America/Menominee
   America/Merida
   America/Mexico_City
@@ -453,6 +459,17 @@ qw(
   Anguilla
   Antigua
   Araguaina
+  Argentina/Buenos_Aires
+  Argentina/Catamarca
+  Argentina/ComodRivadavia
+  Argentina/Cordoba
+  Argentina/Jujuy
+  Argentina/La_Rioja
+  Argentina/Mendoza
+  Argentina/Rio_Gallegos
+  Argentina/San_Juan
+  Argentina/Tucuman
+  Argentina/Ushuaia
   Aruba
   Asuncion
   Bahia
@@ -462,17 +479,14 @@ qw(
   Boa_Vista
   Bogota
   Boise
-  Buenos_Aires
   Cambridge_Bay
   Campo_Grande
   Cancun
   Caracas
-  Catamarca
   Cayenne
   Cayman
   Chicago
   Chihuahua
-  Cordoba
   Costa_Rica
   Cuiaba
   Curacao
@@ -505,7 +519,6 @@ qw(
   Inuvik
   Iqaluit
   Jamaica
-  Jujuy
   Juneau
   Kentucky/Monticello
   La_Paz
@@ -517,7 +530,6 @@ qw(
   Manaus
   Martinique
   Mazatlan
-  Mendoza
   Menominee
   Merida
   Mexico_City
@@ -784,11 +796,16 @@ qw(
 %DateTime::TimeZone::LINKS =
 (
   'America/Atka' => 'America/Adak',
+  'America/Buenos_Aires' => 'America/Argentina/Buenos_Aires',
+  'America/Catamarca' => 'America/Argentina/Catamarca',
+  'America/Cordoba' => 'America/Argentina/Cordoba',
   'America/Ensenada' => 'America/Tijuana',
   'America/Fort_Wayne' => 'America/Indianapolis',
   'America/Indiana/Indianapolis' => 'America/Indianapolis',
+  'America/Jujuy' => 'America/Argentina/Jujuy',
   'America/Kentucky/Louisville' => 'America/Louisville',
   'America/Knox_IN' => 'America/Indiana/Knox',
+  'America/Mendoza' => 'America/Argentina/Mendoza',
   'America/Porto_Acre' => 'America/Rio_Branco',
   'America/Rosario' => 'America/Cordoba',
   'America/Shiprock' => 'America/Denver',
@@ -842,6 +859,7 @@ qw(
   'Etc/Zulu' => 'UTC',
   'Europe/Bratislava' => 'Europe/Prague',
   'Europe/Ljubljana' => 'Europe/Belgrade',
+  'Europe/Mariehamn' => 'Europe/Helsinki',
   'Europe/Nicosia' => 'Asia/Nicosia',
   'Europe/San_Marino' => 'Europe/Rome',
   'Europe/Sarajevo' => 'Europe/Belgrade',
