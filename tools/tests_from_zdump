@@ -120,6 +120,12 @@ foreach my $tz_name (@names)
                         gmtoff=(-?\d+)
                       /x;
 
+        unless ($1)
+        {
+            warn "Can't parse zump output:\n$line\n";
+            next;
+        }
+
         next if $utc_year == 1901 || $loc_year == 1901;
         next if $utc_year == 2038 || $loc_year == 2038;
 
