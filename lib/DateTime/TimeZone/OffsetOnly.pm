@@ -3,7 +3,7 @@ package DateTime::TimeZone::OffsetOnly;
 use strict;
 
 use vars qw ($VERSION);
-$VERSION = 0.01;
+$VERSION = 0.02;
 
 use DateTime::TimeZone;
 use base 'DateTime::TimeZone';
@@ -24,7 +24,10 @@ sub new
 
     return DateTime::TimeZone::UTC->new unless $offset;
 
-    my $self = { name => $p{offset}, offset => $offset };
+    my $self = {
+        name    => DateTime::TimeZone::offset_as_string( $offset ),
+        offset  => $offset,
+    };
 
     return bless $self, $class;
 }
