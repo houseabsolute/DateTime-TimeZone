@@ -1,3 +1,12 @@
+0.34     2005-03-11
+
+- Some time zone short names were incorrectly being given as something
+like "GMT/BST", when it should have been alternating between GMT and
+BST based on the daylight saving time.  Reported by Tom Yandell.
+
+- This release is based on version 2005e of the Olson database.
+
+
 0.33     2005-02-26
 
 - This release is based on version 2005e of the Olson database.

@@ -933,6 +933,12 @@ sub new
     $p{is_dst} = 1 if $p{rule} && $p{rule}->offset_from_std;
     $p{is_dst} = 1 if $p{observance}->offset_from_std;
 
+
+    if ( $p{short_name} =~ m{(\w+)/(\w+)} )
+    {
+        $p{short_name} = $p{is_dst} ? $2 : $1;
+    }
+
     return bless \%p, $class;
 }
 
