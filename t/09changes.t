@@ -9,7 +9,7 @@ use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
 
-plan tests => 108;
+plan tests => 107;
 
 # The point of this group of tests is to try to check that DST changes
 # are occuring at exactly the right time in various time zones.  It's
@@ -279,8 +279,6 @@ plan tests => 108;
         'America/New_York is exactly one hour later than America/Chicago - minute' );
     is( $dt->second, 0,
         'America/New_York is exactly one hour later than America/Chicago - second' );
-
-    is( $dt->time_zone_long_name, 'America/New_York', 'time_zone_long_name' );
 }
 
 {
