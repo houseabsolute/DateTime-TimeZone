@@ -12,8 +12,8 @@ use DateTime::TimeZone::UTC;
 use Params::Validate qw( validate validate_pos SCALAR ARRAYREF );
 use Time::Local;
 
-$INFINITY = 10 ** 10 ** 10;
-$NEG_INFINITY = -1 * $INFINITY;
+use constant INFINITY     =>       100 ** 100 ** 100 ;
+use constant NEG_INFINITY => -1 * (100 ** 100 ** 100);
 
 sub new
 {
