@@ -299,11 +299,11 @@ sub zone_as_spans
 
     for ( my $x = 1; $x < @changes; $x++ )
     {
-        my $last_offset = $x > 1 ? $changes[ $x - 2 ]->offset : undef;
+        my $last_total_offset = $x > 1 ? $changes[ $x - 2 ]->total_offset : undef;
 
         my $span =
             DateTime::TimeZone::OlsonDB::Change::two_changes_as_span
-                ( @changes[ $x - 1, $x ], $last_offset );
+                ( @changes[ $x - 1, $x ], $last_total_offset );
 
         push @spans, $span;
 
@@ -323,10 +323,10 @@ sub zone_as_spans
 
         push @spans, { utc_start   => $utc_start,
                        utc_end     => $INFINITY,
-                       local_start => $utc_start - $last_observance->offset,
+                       local_start => $utc_start - $last_observance->total_offset,
                        local_end   => $INFINITY,
                        short_name  => sprintf( $last_observance->format, '' ),
-                       offset      => $last_observance->offset,
+                       offset      => $last_observance->total_offset,
                        is_dst      => 0,
                      };
     }
@@ -382,7 +382,7 @@ EOF
     # This assumes that there is only one observance from end of
     # changes til end of time, which should be guaranteed by code in
     # OlsonDB module.
-    my $offset = $last_observance->offset;
+    my $offset = $last_observance->total_offset;
 
     my @rules = $zone->infinite_rules;
 
