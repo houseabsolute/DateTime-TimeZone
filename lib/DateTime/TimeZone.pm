@@ -143,6 +143,7 @@ sub _span_for_datetime
         {
             my $err = 'Invalid local time for date';
             $err .= ' ' . $dt->iso8601 if $type eq 'utc';
+            $err .= " in time zone: " . $self->name;
             $err .= "\n";
 
             die $err;
@@ -171,6 +172,8 @@ sub _spans_binary_search
     my $i = int( $max / 2 );
     # special case for when there are only 2 spans
     $i++ if $max % 2 && $max != 3;
+
+    $i = 0 if @{ $self->{spans} } == 1;
 
     while (1)
     {
