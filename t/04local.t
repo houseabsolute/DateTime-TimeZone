@@ -75,7 +75,7 @@ SKIP:
     $^W = 1;
 
     local $ENV{TZ} = '';
-    local $::D=1;
+
     my $tz;
     eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
     is( $@, '', 'valid time zone name in /etc/sysconfig/clock should not die' );
