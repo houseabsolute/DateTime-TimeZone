@@ -13,7 +13,11 @@ plan tests => 8;
 
 use DateTime::TimeZone;
 
+SKIP:
 {
+    skip "/etc/localtime is not a symlink", 1
+        unless -l '/etc/localtime';
+
     # make sure it doesn't find an /etc/localtime file
     $^W = 0;
     local *DateTime::TimeZone::readlink = sub { undef };
@@ -36,7 +40,11 @@ use DateTime::TimeZone;
     isa_ok( $tz, 'DateTime::TimeZone::America::Chicago' );
 }
 
+SKIP:
 {
+    skip "/etc/localtime is not a symlink", 1
+        unless -l '/etc/localtime';
+
     $^W = 0;
     local *DateTime::TimeZone::readlink = sub { undef };
     $^W = 1;
@@ -49,7 +57,11 @@ use DateTime::TimeZone;
           'invalid time zone name in $ENV{TZ} should die' );
 }
 
+SKIP:
 {
+    skip "/etc/localtime is not a symlink", 2
+        unless -l '/etc/localtime';
+
     $^W = 0;
     local *DateTime::TimeZone::readlink = sub { '/usr/share/zoneinfo/US/Eastern' };
     $^W = 1;
@@ -64,7 +76,7 @@ SKIP:
 {
     use Sys::Hostname;
 
-    skip "Cannot run this test without actually knowing local time zone first", 2
+    skip "Cannot run this test without explicitly knowing local time zone first (only runs on developers' machine)", 2
         unless hostname =~ /houseabsolute/ && -d 'CVS';
 
     local $ENV{TZ} = '';
