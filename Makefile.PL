@@ -1,6 +1,25 @@
 use strict;
 
 use ExtUtils::MakeMaker;
+use File::Spec;
+
+unless ( -e File::Spec->catfile( qw( lib DateTime TimeZone America Chicago.pm ) ) )
+{
+    warn <<'EOF';
+
+It looks like you haven't run tools/parse_olson to generate the time
+zone modules yet.
+
+This script needs the Olson database files to run, which can be found
+at ftp://elsie.nci.nih.gov/pub/ in a file called tzdata*.tar.gz.
+
+Once you've run this script you will be able to test and install this
+distribution.
+
+EOF
+
+    exit;
+}
 
 WriteMakefile( NAME         => 'DateTime::TimeZone',
                VERSION_FROM => 'lib/DateTime/TimeZone.pm',
