@@ -1,10 +1,13 @@
-0.2xxx
+0.2502   2003-09-09
 
 - Lots of fixes and improvements in how offsets are converted from
 strings to numbers.  Also, a DT::TZ::OffsetOnly object now normalizes
 its offset so that two offsets created from different strings, but
 representing the same offset, now return the same value from the
 name() method.  Patched by Joshua Hoblitt.
+
+- More env vars and files are looked at when trying to determine what
+the local time zone is.  Thanks to Date::Manip for this.
 
 
 0.2501   2003-08-10

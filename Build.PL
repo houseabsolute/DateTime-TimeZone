@@ -27,4 +27,5 @@ Module::Build->new( module_name => 'DateTime::TimeZone',
                     requires    => { 'Params::Validate' => 0,
                                      'Class::Singleton' => 1.03,
                                    },
+		    sign        => 1,
                   )->create_build_script;
