@@ -273,7 +273,8 @@ sub _generate_spans_until_match
 
             push @changes,
                 DateTime::TimeZone::OlsonDB::Change->new
-                    ( utc_start_datetime   => $next,
+                    ( type => 'rule',
+                      utc_start_datetime   => $next,
                       local_start_datetime =>
                       $next +
                       DateTime::Duration->new
