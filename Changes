@@ -1,3 +1,11 @@
+0.08     2003-02-22
+
+- Fix handling of "local" time zone so that it passes a string to the
+OffsetOnly constructor instead of a number.
+
+- Fix DateTime::TimeZone::OffsetOnly documentation to specify that
+offset must be specified as string, not a number.
+
 0.07     2003-02-19
 
 - Skip tests unless DateTime.pm 0.06 is installed.  Otherwise we have
