@@ -602,8 +602,6 @@ sub new
     $p{offset}  = $p{observance}->offset;
     $p{offset} += $p{rule}->offset if defined $p{rule};
 
-#    $p{last_offset} = $p{last_observance}->offset;
-
     return bless \%p, $class;
 }
 
