@@ -346,9 +346,19 @@ sub offset_as_seconds
 
     return 0 if $offset eq '0';
 
-    return undef unless $offset =~ /^([\+\-])?(\d\d)(:?)(\d\d)(?:\3(\d\d))?$/;
-
-    my ( $sign, $hours, $minutes, $seconds ) = ( $1, $2, $4, $5 );
+    my ( $sign, $hours, $minutes, $seconds );
+    if ( $offset =~ /^([\+\-])?(\d\d?):(\d\d)(?::(\d\d))?$/ )
+    {
+        ( $sign, $hours, $minutes, $seconds ) = ( $1, $2, $3, $4 );
+    }
+    elsif ( $offset =~ /^([\+\-])?(\d\d)(\d\d)(\d\d)?$/ )
+    {
+        ( $sign, $hours, $minutes, $seconds ) = ( $1, $2, $3, $4 );
+    }
+    else
+    {
+        return undef;
+    }
 
     $sign = '+' unless defined $sign;
     return undef unless $hours >= 0 && $hours <= 99;
@@ -576,9 +586,13 @@ Given an offset as a string, this returns the number of seconds
 represented by the offset as a positive or negative number.  Returns
 C<undef> if $offset is not in the range C<-99:59:59> to C<+99:59:59>.
 
-The offset is expected to match the regex
-C</^([\+\-])?(\d\d)(:?)(\d\d)(?:\3(\d\d))?$/> or C<undef> will be
-returned.
+The offset is expected to match either
+C</^([\+\-])?(\d\d?):(\d\d)(?::(\d\d))?$/> or
+C</^([\+\-])?(\d\d)(\d\d)(\d\d)?$/>.  If it doesn't match either of
+these, C<undef> will be returned.
+
+This means that if you want to specify hours as a single digit, then
+each element of the offset must be separated by a colon (:).
 
 =item * offset_as_string( $offset )
 
