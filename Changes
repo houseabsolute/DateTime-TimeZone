@@ -1,4 +1,4 @@
-0.24     2003-07-19
+0.24     2003-07-20
 
 - Fixed bugs in generated data for many time zones.  Upgrading is
 highly recommended!
@@ -7,7 +7,7 @@ highly recommended!
 script tools/tests_from_zdump can be used to generate fairly
 comprehensive tests for almost every time zone.  The generated tests
 are not shipped with the distribution because they are too huge, and
-take too long to run.
+take too long to run (400,000+ tests in about 25 minutes).
 
 
 0.23     2003-07-03
