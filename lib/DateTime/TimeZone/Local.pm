@@ -2,6 +2,8 @@ package DateTime::TimeZone::Local;
 
 use strict;
 
+use File::Spec;
+
 sub local_time_zone
 {
     my $tz;
