@@ -33,6 +33,10 @@ installed.  If this weren't done, then neither module would be
 installable via CPAN.  But this distribution's functionality only
 works in concert with DateTime.pm.
 
+If you want to run the tests for this module locally, you'll need to
+install it, then install DateTime.pm, and only then run this module's
+tests.
+
 PERL 5.6.0
 
 This module probably won't work with Perl 5.6.0, according to reports
