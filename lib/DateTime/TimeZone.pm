@@ -473,7 +473,7 @@ If none of these methods work, it gives up and dies.
 
 =back
 
-=head3 Object Methods
+=head2 Object Methods
 
 C<DateTime::TimeZone> objects provide the following methods:
 
