@@ -5,6 +5,9 @@ use strict;
 use vars qw ($VERSION);
 $VERSION = 0.01;
 
+use DateTime::TimeZone;
+use base 'DateTime::TimeZone';
+
 sub new
 {
     my $class = shift;
