@@ -13,6 +13,9 @@ local year X + 1, but the offset meant that these were actually the
 same year.  No zones in the previous release were affected, and this
 bug was only uncovered by the new Olson data.
 
+- Handle rule times of 24:00 in the Olson data.  Again, this was not
+present in previous versions of the Olson data.
+
 
 0.2502   2003-09-09
 
