@@ -80,7 +80,7 @@ else
         if $opts{old};
 }
 
-unless ( $opts{name} )
+unless ( $opts{name} || $opts{file} )
 {
     copy( 'MANIFEST.base', 'MANIFEST' );
     open MAN, ">>MANIFEST" or die "Cannot write to MANIFEST: $!";
