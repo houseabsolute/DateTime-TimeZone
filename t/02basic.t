@@ -11,7 +11,10 @@ use DateTime::TimeZone;
 
 my @names = DateTime::TimeZone::all_names;
 
-plan tests => 26 + ( 4 * scalar @names );
+my $is_maintainer = -d './CVS' ? 1 : 0;
+
+my $tests_per_zone = $is_maintainer ? 7 : 4;
+plan tests => 26 + ( $tests_per_zone * scalar @names );
 
 foreach my $name (@names)
 {
@@ -22,6 +25,17 @@ foreach my $name (@names)
 
     is( $tz->is_floating, 0, 'should not be floating' );
     is( $tz->is_utc, 0, 'should not be UTC' );
+
+    if ( $is_maintainer )
+    {
+        my $dt;
+        eval { $dt = DateTime->now( time_zone => $name ) };
+        is( $@, '', "Can call DateTime->now with $name" );
+        eval { $dt->add( years => 50 ) };
+        is( $@, '', "Can add 200 years with $name" );
+        eval { $dt->subtract( years => 400 ) };
+        is( $@, '', "Can subtract 400 years with $name" );
+    }
 }
 
 foreach my $name ( '0', 'Z', 'UTC' )
