@@ -164,18 +164,6 @@ EOF
 # override some links and add others
 %links =
     ( %links,
-      'EST'         => 'America/New_York',
-      'EDT'         => 'America/New_York',
-      'CST'         => 'America/Chicago',
-      'CDT'         => 'America/Chicago',
-      'MST'         => 'America/Denver',
-      'MDT'         => 'America/Denver',
-      'KST'         => 'Asia/Seoul',
-      'KDT'         => 'Asia/Seoul',
-      'JST'         => 'Asia/Tokyo',
-      'JDT'         => 'Asia/Tokyo',
-      'HKST'        => 'Asia/Hong_Kong',
-      'HKDT'        => 'Asia/Hong_Kong',
       'Etc/GMT+0'   => 'UTC',
       'Etc/Universal' => 'UTC',
       'Etc/Zulu'    => 'UTC',
