@@ -241,16 +241,18 @@ sub _spans_binary_search
         }
         else
         {
-            # Special case for overlapping ranges because of DST.
-            # Always prefer earliest span.
-            if ( ! $current->{is_dst} && $type eq 'local' )
+            # Special case for overlapping ranges because of DST and
+            # other weirdness (like Alaska's change when bought from
+            # Russia by the US).  Always prefer latest span.
+            if ( $current->{is_dst} && $type eq 'local' )
             {
-                my $prev = $self->{spans}[$i - 1];
+                my $next = $self->{spans}[$i + 1];
 
-                if ( $prev->{$start} <= $seconds &&
-                     $seconds        <= $prev->{$end} )
+                if ( $next->{$start} <= $seconds &&
+                     $seconds        >= $next->{$end} &&
+                     ! $next->{is_dst} )
                 {
-                    return $prev;
+                    return $next;
                 }
             }
 
