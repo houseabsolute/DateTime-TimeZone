@@ -9,7 +9,7 @@ use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
 
-plan tests => 12;
+plan tests => 14;
 
 use DateTime::TimeZone;
 
@@ -92,7 +92,7 @@ SKIP:
 {
     use Sys::Hostname;
 
-    skip "Cannot run these tests without explicitly knowing local time zone first (only runs on developers' machine)", 4
+    skip "Cannot run these tests without explicitly knowing local time zone first (only runs on developers' machine)", 6
         unless hostname =~ /houseabsolute|quasar/ && -d 'CVS';
 
     local $ENV{TZ} = '';
@@ -109,4 +109,13 @@ SKIP:
     eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
     is( $@, '', 'valid time zone name in /etc/timezone should not die' );
     isa_ok( $tz, 'DateTime::TimeZone::America::Chicago' );
+
+    $^W = 0;
+    local *DateTime::TimeZone::Local::_readlink = sub { undef };
+    local *DateTime::TimeZone::Local::_from_etc_timezone = sub { undef };
+    $^W = 1;
+
+    eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
+    is( $@, '', 'valid time zone name in /etc/timezone should not die' );
+    isa_ok( $tz, 'DateTime::TimeZone::Australia::Melbourne' );
 }
