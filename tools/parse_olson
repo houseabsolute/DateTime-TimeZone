@@ -184,7 +184,7 @@ EOF
         print OUT $body or die "Cannot write to $outfile2: $!";
         close (OUT) or die "Cannot write to $outfile2: $!";
 
-        unless ( $opts{name} )
+        unless ( $opts{name} || $opts{file} )
         {
             print MAN "$outfile2\n" or die "Cannot write to MANIFEST: $!"
         }
