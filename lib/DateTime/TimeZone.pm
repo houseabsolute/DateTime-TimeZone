@@ -7,6 +7,7 @@ $VERSION = '0.16';
 
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
+use DateTime::TimeZone::Local;
 use DateTime::TimeZone::OffsetOnly;
 use DateTime::TimeZone::UTC;
 use File::Spec;
@@ -40,7 +41,7 @@ sub new
 
         if ( $p{name} eq 'local' )
         {
-            return $class->_local_timezone;
+            return DateTime::TimeZone::Local::local_time_zone;
         }
 
         if ( $p{name} eq 'UTC' || $p{name} eq 'Z' )
@@ -61,69 +62,6 @@ sub new
 
     return $real_class->instance( name => $p{name} );
 }
-
-sub _local_timezone
-{
-    my $class = shift;
-
-    if ( defined $ENV{TZ} && $ENV{TZ} ne 'local' &&
-         # don't bother if the variable contains something that
-         # couldn't be a valid time zone name
-         $ENV{TZ} =~ m,^[\w/]+$, )
-    {
-        my $tz;
-        eval { $tz = $class->new( name => $ENV{TZ} ) };
-        return $tz if $tz && ! $@;
-    }
-
-    if ( -l '/etc/localtime' )
-    {
-        # called like this so test suite can test this functionality
-        my $real_name = DateTime::TimeZone::readlink( '/etc/localtime' );
-
-        if ( defined $real_name )
-        {
-            my ($vol, $dirs, $file) = File::Spec->splitpath( $real_name );
-
-            my @parts =
-                grep { defined && length } File::Spec->splitdir( $dirs ), $file;
-
-            foreach my $x ( reverse 0..$#parts )
-            {
-                my $name =
-                    ( $x < $#parts ?
-                      join '/', @parts[$x..$#parts] :
-                      $parts[$x]
-                    );
-
-                my $tz;
-                eval { $tz = $class->new( name => $name ) };
-                return $tz if $tz && ! $@;
-            }
-        }
-    }
-
-    # The env var is a hack so we can test other parts of this
-    # subroutine without always succeeding in finding a local time
-    # zone through this file.
-    if ( -f '/etc/timezone' && -r _ && ! $ENV{NO_ETC_TIMEZONE} )
-    {
-        local *TZ;
-        open TZ, "</etc/timezone"
-            or die "Cannot read /etc/timezone: $!";
-        my $name = join '', <TZ>;
-        close TZ;
-
-        $name =~ s/^\s+|\s+$//g;
-
-        my $tz;
-        eval { $tz = $class->new( name => $name ) };
-        return $tz if $tz && ! $@;
-    }
-
-    die "Cannot determine local time zone\n";
-}
-sub DateTime::TimeZone::readlink { CORE::readlink($_[0]) }
 
 sub _init
 {
@@ -405,9 +343,14 @@ of making a symlink.  Unfortunately, these files don't contain their
 own name!  This means that there is no way to look at a copy and
 figure out what time zone it represents.
 
-Finally, it checks for a file called F</etc/timezone>.  If this
-exists, it is read and it tries to create a timezone with the name
-contained in the file.
+Then it checks for a file called F</etc/timezone>.  If this exists, it
+is read and it tries to create a time zone with the name contained in
+the file.
+
+Finally, it checks for a file called F</etc/sysconfig/clock>.  If this
+file exists, it looks for a line inside the file matching
+C</ZONE="([^"]+)"/>.  If this line exists, it tries the value as a
+time zone name.
 
 If none of these methods work, it gives up and dies.
 
@@ -447,7 +390,7 @@ at both -0500 and +1000/+1100.
 =item * is_floating
 
 Returns a boolean indicating whether or not this object represents a
-floating timezone, as defined by RFC 2445.
+floating time zone, as defined by RFC 2445.
 
 =item * is_utc
 
