@@ -268,12 +268,12 @@ sub _generate_spans_until_match
     my $match;
     for ( my $x = 1; $x < @sorted; $x++ )
     {
-        my $last_offset =
-            $x == 1 ? $self->max_span->[OFFSET] : $sorted[ $x - 2 ]->offset;
+        my $last_total_offset =
+            $x == 1 ? $self->max_span->[OFFSET] : $sorted[ $x - 2 ]->total_offset;
 
         my $span =
             DateTime::TimeZone::OlsonDB::Change::two_changes_as_span
-                ( @sorted[ $x - 1, $x ], $last_offset );
+                ( @sorted[ $x - 1, $x ], $last_total_offset );
 
         $span = _span_as_array($span);
 
