@@ -30,3 +30,13 @@ WriteMakefile( NAME         => 'DateTime::TimeZone',
                  '$(INST_MAN3DIR)/DateTime::TimeZone::UTC.$(MAN3EXT)',
                },
              );
+
+package MY;
+
+sub libscan
+{
+    my $self = shift;
+    my $file = shift;
+
+    return $file =~ /\.cvsignore$/ ? 0 : $self->SUPER::libscan($file);
+}
