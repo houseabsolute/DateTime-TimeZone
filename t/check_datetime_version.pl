@@ -2,7 +2,7 @@ use strict;
 
 BEGIN
 {
-    my $version = '0.11';
+    my $version = '0.1501';
     eval "use DateTime $version";
     if ($@)
     {
