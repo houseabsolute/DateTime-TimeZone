@@ -12,7 +12,8 @@ sub new
 {
     my $class = shift;
 
-    return bless { offset => 0 }, $class;
+    return bless { name => 'floating',
+                   offset => 0 }, $class;
 }
 
 sub is_floating { 1 }
@@ -36,7 +37,7 @@ A floating time has no time zone, and has an effective offset of zero.
 =head1 USAGE
 
 This class has the same methods as a real time zone object, but the
-C<short_name_for_datetime()>, C<name()>, and C<category()> methods all
-return undef.
+C<short_name_for_datetime()>, and C<category()> methods both return
+undef.
 
 =cut
