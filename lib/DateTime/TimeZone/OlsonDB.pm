@@ -238,36 +238,66 @@ sub parse_day_spec
     }
 }
 
-sub parse_time_spec
+sub datetimes_for_time_spec
 {
-    my $time = shift;
-    my $offset_from_utc = shift;
-    my $offset_from_std = shift;
+    my %p = validate( @_, { spec  => { type => SCALAR },
+                            year  => { type => SCALAR },
+                            month => { type => SCALAR },
+                            day   => { type => SCALAR },
+                            offset_from_utc => { type => SCALAR },
+                            offset_from_std => { type => SCALAR },
+                          },
+                    );
+
+    my ( $local, $utc );
 
     # 'w'all - ignore it, because that's the default
-    $time =~ s/w$//;
-
-    my $total_offset = $offset_from_utc;
-
-    my $is_utc = 0;
+    $p{spec} =~ s/w$//;
 
     # 'g'reenwich, 'u'tc, or 'z'ulu
-    if ( $time =~ s/[guz]$// )
-    {
-        $total_offset = 0;
-        $is_utc = 1;
-    }
-    else
-    {
-        # 's'tandard time - ignore DS offset
-        $total_offset += $offset_from_std unless $time =~ s/s$//;
-    }
+    my $is_utc = $p{spec} =~ s/[guz]$//;
 
-    my ($hour, $minute, $second) = split /:/, $time;
+    # 's'tandard time - ignore DS offset
+    my $is_std = $p{spec} =~ s/s$//;
+
+    my ($hour, $minute, $second) = split /:/, $p{spec};
     $minute = 0 unless defined $minute;
     $second = 0 unless defined $second;
 
-    return ( $hour, $minute, $second, $total_offset, $is_utc );
+    if ($is_utc)
+    {
+        $utc = DateTime->new( year   => $p{year},
+                              month  => $p{month},
+                              day    => $p{day},
+                              hour   => $hour,
+                              minute => $minute,
+                              second => $second,
+                              time_zone => 'floating',
+                            );
+
+        $local = $utc + DateTime::Duration->new( seconds => $p{offset_from_utc} );
+    }
+    else
+    {
+        $p{offset_from_std} = 0 if $is_std;
+
+        $local = DateTime->new( year   => $p{year},
+                                month  => $p{month},
+                                day    => $p{day},
+                                hour   => $hour,
+                                minute => $minute,
+                                second => $second,
+                                time_zone => 'floating',
+                              );
+
+        my $dur =
+            DateTime::Duration->new
+                ( seconds => $p{offset_from_utc} + $p{offset_from_std} );
+
+        $utc = $local - $dur;
+    }
+
+    return ( $local, $utc );
 }
 
 
@@ -479,41 +509,31 @@ sub until
 
     return unless defined $self->{until};
 
-    my ( $year, $mon_name, $day, $time ) = split /\s+/, $self->{until};
+    my ( $year, $mon_name, $day_spec, $time_spec ) = split /\s+/, $self->{until};
 
     my $month =
         defined $mon_name ? $DateTime::TimeZone::OlsonDB::MONTHS{$mon_name} : 1;
 
-    $day =
-        ( defined $day ?
-          DateTime::TimeZone::OlsonDB::parse_day_spec( $day, $month, $year ) :
+    my $day =
+        ( defined $day_spec ?
+          DateTime::TimeZone::OlsonDB::parse_day_spec( $day_spec, $month, $year ) :
           1
         );
 
-    my ( $hour, $minute, $second, $total_offset );
+    $time_spec = '00:00:00' unless defined $time_spec;
 
-    if ( defined $time )
-    {
-        ( $hour, $minute, $second, $total_offset ) =
-            DateTime::TimeZone::OlsonDB::parse_time_spec
-                ( $time, $self->offset_from_utc, $offset_from_std );
-    }
-    else
-    {
-        ( $hour, $minute, $second, $total_offset ) = ( 0, 0, 0, $self->offset_from_utc );
-    }
-
-    my $local = DateTime->new( year   => $year,
-                               month  => $month,
-                               day    => $day,
-                               hour   => $hour,
-                               minute => $minute,
-                               second => $second,
-                               time_zone => 'floating',
-                             );
+    my ( $local, $utc ) =
+        DateTime::TimeZone::OlsonDB::datetimes_for_time_spec
+                ( spec  => $time_spec,
+                  year  => $year,
+                  month => $month,
+                  day   => $day,
+                  offset_from_utc => $self->offset_from_utc,
+                  offset_from_std => $offset_from_std,
+                );
 
     return { local => $local,
-             utc   => $local - DateTime::Duration->new( seconds => $total_offset ),
+             utc   => $utc,
            };
 }
 
@@ -574,21 +594,18 @@ sub date_for_year
     my $day =
         DateTime::TimeZone::OlsonDB::parse_day_spec( $self->{on}, $self->month, $year );
 
-    my ( $hour, $minute, $second, $total_offset ) =
-        DateTime::TimeZone::OlsonDB::parse_time_spec
-            ( $self->{at}, $offset_from_utc, $self->offset_from_std );
-
-    my $local = DateTime->new( year   => $year,
-                               month  => $self->month,
-                               day    => $day,
-                               hour   => $hour,
-                               minute => $minute,
-                               second => $second,
-                               time_zone => 'floating',
-                             );
+    my ( $local, $utc ) =
+        DateTime::TimeZone::OlsonDB::datetimes_for_time_spec
+                ( spec  => $self->{at},
+                  year  => $year,
+                  month => $self->month,
+                  day   => $day,
+                  offset_from_utc => $offset_from_utc,
+                  offset_from_std => $self->offset_from_std,
+                );
 
     return { local => $local,
-             utc   => $local - DateTime::Duration->new( seconds => $total_offset ),
+             utc   => $utc,
            };
 }
 
