@@ -3,7 +3,7 @@ package DateTime::TimeZone;
 use strict;
 
 use vars qw( $VERSION );
-$VERSION = '0.31';
+$VERSION = '0.32';
 
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
@@ -234,6 +234,13 @@ sub _spans_binary_search
             if ( $current->[IS_DST] && $type eq 'local' )
             {
                 my $next = $self->{spans}[$i + 1];
+                # Sometimes we will get here and the span we're
+                # looking at is the last that's been generated so far.
+                # We need to try to generate one more or else we run
+                # out.
+                $next ||= $self->_generate_next_span;
+
+                die "No next span $self->{max_year}" unless defined $next;
 
                 if ( ( ! $next->[IS_DST] )
                      && $next->[$start] <= $seconds
@@ -247,6 +254,25 @@ sub _spans_binary_search
             return $current;
         }
     }
+}
+
+sub _generate_next_span
+{
+    my $self = shift;
+
+    my $last_idx = $#{ $self->{spans} };
+
+    my $max_span = $self->max_span;
+
+    # Kind of a hack, but AFAIK there are no zones where it takes
+    # _more_ than a year for a _future_ time zone change to occur, so
+    # by looking one year out we can ensure that we will find at least
+    # one more span.  Of course, I will no doubt be proved wrong and
+    # this will cause errors.
+    $self->_generate_spans_until_match
+        ( $self->{max_year} + 1, $max_span->[UTC_END] + ( 366 * 86400 ), 'utc' );
+
+    return $self->{spans}[ $last_idx + 1 ];
 }
 
 sub _generate_spans_until_match
