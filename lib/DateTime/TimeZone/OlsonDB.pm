@@ -135,6 +135,8 @@ sub _parse_link
     undef $self->{in_zone};
 }
 
+sub links { %{ $_[0]->{links} } }
+
 sub zone_names { keys %{ $_[0]->{zones} } }
 
 sub zone
@@ -579,7 +581,6 @@ sub two_changes_as_span
                                $dt->year, $dt->month, $dt->day,
                                $dt->hour, $dt->minute, $dt->second,
                              );
-
     }
     else
     {
@@ -591,7 +592,6 @@ sub two_changes_as_span
                             $dt->year, $dt->month, $dt->day,
                             $dt->hour, $dt->minute, $dt->second,
                           );
-
 
     return { start_date => $start_date,
              end_date   => $end_date,
