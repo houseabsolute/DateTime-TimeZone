@@ -345,11 +345,18 @@ sub expand_observances
         my %p = %{ $self->{observances}[$x] };
         my $rules_name = delete $p{rules};
 
+        my $last_offset_from_std =
+            $self->last_change ? $self->last_change->offset_from_std : 0;
+        my $last_offset_from_utc =
+            $self->last_change ? $self->last_change->offset_from_utc : 0;
+
         my $obs =
             DateTime::TimeZone::OlsonDB::Observance->new
                 ( %p,
                   utc_start_datetime => $prev_until,
                   rules => [ $odb->rules_by_name($rules_name) ],
+                  last_offset_from_utc => $last_offset_from_utc,
+                  last_offset_from_std => $last_offset_from_std,
                 );
 
         my $rule = $obs->first_rule;
@@ -357,7 +364,8 @@ sub expand_observances
 
         my $change =
             DateTime::TimeZone::OlsonDB::Change->new
-                ( utc_start_datetime   => $obs->utc_start_datetime,
+                ( type => 'observance',
+                  utc_start_datetime   => $obs->utc_start_datetime,
                   local_start_datetime => $obs->local_start_datetime,
                   short_name => sprintf( $obs->format, $letter ),
                   observance => $obs,
@@ -410,6 +418,25 @@ sub add_change
             die "Cannot add two different changes that have the same UTC start datetime!\n";
         }
 
+        my $last_change = $self->last_change;
+
+        if ( $last_change->short_name eq $change->short_name
+             && $last_change->total_offset == $change->total_offset
+             && $last_change->is_dst == $change->is_dst
+             && $last_change->observance eq $change->observance
+           )
+        {
+            my $last_rule = $last_change->rule || '';
+            my $new_rule = $change->rule || '';
+
+            if ( $last_rule eq $new_rule )
+            {
+                warn "Skipping identical change\n" if DateTime::TimeZone::OlsonDB::DEBUG;
+
+                return;
+            }
+        }
+
         push @{ $self->{changes} }, $change;
     }
     else
@@ -459,11 +486,16 @@ sub new
                             until  => { type => SCALAR, default => '' },
                             utc_start_datetime => { type => OBJECT | UNDEF },
                             offset_from_std => { type => SCALAR, default => 0 },
+                            last_offset_from_utc => { type => SCALAR, default => 0 },
+                            last_offset_from_std => { type => SCALAR, default => 0 },
                           }
                     );
 
     my $offset_from_utc = DateTime::TimeZone::offset_as_seconds( $p{gmtoff} );
     my $offset_from_std = DateTime::TimeZone::offset_as_seconds( $p{offset_from_std} );
+
+    my $last_offset_from_utc = delete $p{last_offset_from_utc};
+    my $last_offset_from_std = delete $p{last_offset_from_std};
 
     my $self = bless { %p,
                        offset_from_utc => $offset_from_utc,
@@ -474,8 +506,10 @@ sub new
     my $local_start_datetime;
     if ( $p{utc_start_datetime} )
     {
-        my $first_rule = $self->first_rule;
-        $offset_from_std += $first_rule->offset_from_std if $first_rule;
+        $self->{first_rule} =
+            $self->_first_rule( $last_offset_from_utc, $last_offset_from_std );
+
+        $offset_from_std += $self->{first_rule}->offset_from_std if $self->{first_rule};
 
         $local_start_datetime = $p{utc_start_datetime}->clone;
 
@@ -493,6 +527,7 @@ sub offset_from_std { $_[0]->{offset_from_std} }
 sub total_offset { $_[0]->offset_from_utc + $_[0]->offset_from_std }
 
 sub rules { @{ $_[0]->{rules} } }
+sub first_rule { $_[0]->{first_rule} }
 
 sub format { $_[0]->{format} }
 
@@ -555,7 +590,8 @@ sub expand_from_rules
 
             my $change =
                 DateTime::TimeZone::OlsonDB::Change->new
-                    ( utc_start_datetime   => $dt,
+                    ( type => 'rule',
+                      utc_start_datetime   => $dt,
                       local_start_datetime =>
                       $dt +
                       DateTime::Duration->new
@@ -636,96 +672,98 @@ sub until_time_spec
     defined $_[0]->{until}[3] ? $_[0]->{until}[3] : '00:00:00';
 }
 
-sub first_rule
+sub _first_rule
 {
     my $self = shift;
+    my $last_offset_from_utc = shift;
+    my $last_offset_from_std = shift;
 
     return unless $self->utc_start_datetime;
+    return unless $self->rules;
 
     my $date = $self->utc_start_datetime;
-    my @rule_dates = $self->_rule_date_pairs( $date->year );
-
-    # ... then look through the rules to see if any are still in
-    # effect at the end of the observance
-    for ( my $x = 0; $x < @rule_dates - 1; $x++ )
-    {
-        my ( $dt, $rule ) = @{ $rule_dates[$x] };
-        my $next_dt = $rule_dates[ $x + 1 ]->[0];
-
-        # Unlike with the last rule, if the observance date matches
-        # the first date the rule applies, but if the next rule
-        # matches then we want that one instead.
-        if ( $dt <= $date &&
-             $date < $next_dt )
-        {
-            return $rule;
-        }
-    }
-
-    return;
-}
-
-sub last_rule
-{
-    my $self = shift;
-
-    # if observance doesn't end there is no last rule
-    return unless $self->until;
-
-    my $date = $self->until;
-    my @rule_dates = $self->_rule_date_pairs( $date->year );
-
-    # ... then look through the rules to see if any are still in
-    # effect at the end of the observance
-    for ( my $x = 0; $x < @rule_dates - 1; $x++ )
-    {
-        my ( $dt, $rule ) = @{ $rule_dates[$x] };
-        my $next_dt = $rule_dates[ $x + 1 ]->[0];
-
-        # Unlike with the first rule, if the observance date matches
-        # the earlier date, we don't want that rule
-        if ( $dt < $date &&
-             $date <= $next_dt )
-        {
-            return $rule;
-        }
-    }
-
-    return;
-}
-
-sub _rule_date_pairs
-{
-    my $self = shift;
-    my $year = shift;
-
-    return unless $self->rules;
 
     my @rules = $self->rules;
 
-    # figure out what date each rule would start on _if_ that rule
-    # were applied to this current observance ..
-    my @rule_dates;
-    foreach my $year ( $year .. $year + 1 )
-    {
-        for ( my $x = 0; $x < @rules; $x++ )
-        {
-            my $rule = $rules[$x];
-            my $last_offset_from_std = $x ? $rules[ $x - 1 ]->offset_from_std : 0;
+    my %possible_rules;
 
-            next if $rule->min_year > $year;
-            next if $rule->max_year && $rule->max_year < $year;
+    my $year = $date->year;
+    foreach my $rule (@rules)
+    {
+        next if $rule->min_year > $year;
+        next if $rule->max_year && $rule->max_year < $year - 1;
+
+        $possible_rules{$rule} = $rule;
+    }
+
+    return unless keys %possible_rules;
+
+    # figure out what date each rule would start on _if_ that rule
+    # were applied to this current observance.  this could be a date
+    # in the previous year.
+    my @rule_dates;
+    foreach my $y ( $year - 1, $year )
+    {
+      RULE:
+        foreach my $rule ( values %possible_rules )
+        {
+            # skip rules that can't have applied the year before the
+            # observance started.
+            next RULE if $rule->min_year > $y;
+            next RULE if $rule->max_year && $rule->max_year < $y;
 
             my $rule_start =
                 $rule->utc_start_datetime_for_year
-                    ( $year, $self->offset_from_utc, $last_offset_from_std );
+                    ( $y, $last_offset_from_utc, $last_offset_from_std );
 
             push @rule_dates, [ $rule_start, $rule ];
         }
     }
 
-    return sort { $a->[0] <=> $b->[0] } @rule_dates;
+    return unless @rule_dates;
+
+    @rule_dates = sort { $a->[0] <=> $b->[0] } @rule_dates;
+
+    warn "Looking for first rule ...\n" if DateTime::TimeZone::OlsonDB::DEBUG;
+    warn " Observance starts: ", $date->datetime, "\n\n"
+        if DateTime::TimeZone::OlsonDB::DEBUG;
+
+    # ... look through the rules to see if any are still in
+    # effect at the beginning of the observance
+    for ( my $x = 0; $x < @rule_dates; $x++ )
+    {
+        my ( $dt, $rule ) = @{ $rule_dates[$x] };
+        my ( $next_dt, $next_rule ) =
+            $x < @rule_dates - 1 ? @{ $rule_dates[ $x + 1 ] } : undef;
+
+        next if $next_dt && $next_dt < $date;
+
+        warn " This rule starts:  ", $dt->datetime, "\n"
+            if DateTime::TimeZone::OlsonDB::DEBUG;
+
+        warn " Next rule starts:  ", $next_dt->datetime, "\n"
+            if $next_dt && DateTime::TimeZone::OlsonDB::DEBUG;
+
+        warn " No next rule\n\n"
+            if ! $next_dt && DateTime::TimeZone::OlsonDB::DEBUG;
+
+        if ( $dt <= $date )
+        {
+            if ($next_dt)
+            {
+                return $rule if $date < $next_dt;
+                return $next_rule if $date == $next_dt;
+            }
+            else
+            {
+                return $rule;
+            }
+        }
+    }
+
+    return;
 }
+
 
 package DateTime::TimeZone::OlsonDB::Rule;
 
@@ -818,14 +856,34 @@ sub new
                             short_name => { type => SCALAR },
                             observance => { type => OBJECT },
                             rule       => { type => OBJECT, default => undef },
+                            type       => { type => SCALAR,
+                                            regex => qr/^(?:observance|rule)$/ },
                           }
                     );
 
-    # These are always mutually exclusive
-    $p{offset_from_std} = $p{observance}->offset_from_std;
-    $p{offset_from_std} = $p{rule}->offset_from_std if defined $p{rule};
+    # These are almost always mutually exclusive, except when adding
+    # an observance change and the last rule has no offset, but the
+    # new observance has an anonymous rule.  In that case, prefer the
+    # offset from std defined in the observance to that in the
+    # previous rule (what a mess!).
+    if ( $p{type} eq 'observance' )
+    {
+        $p{offset_from_std} = $p{rule}->offset_from_std if defined $p{rule};
+        $p{offset_from_std} = $p{observance}->offset_from_std
+            if $p{observance}->offset_from_std;
+        $p{offset_from_std} ||= 0;
+    }
+    else
+    {
+        $p{offset_from_std} = $p{observance}->offset_from_std;
+        $p{offset_from_std} = $p{rule}->offset_from_std if defined $p{rule};
+    }
 
-    $p{total_offset}  = $p{observance}->offset_from_utc + $p{offset_from_std};
+    $p{offset_from_utc} = $p{observance}->offset_from_utc;
+
+    $p{is_dst} = 0;
+    $p{is_dst} = 1 if $p{rule} && $p{rule}->offset_from_std;
+    $p{is_dst} = 1 if $p{observance}->offset_from_std;
 
     return bless \%p, $class;
 }
@@ -833,11 +891,12 @@ sub new
 sub utc_start_datetime   { $_[0]->{utc_start_datetime} }
 sub local_start_datetime { $_[0]->{local_start_datetime} }
 sub short_name { $_[0]->{short_name} }
+sub is_dst     { $_[0]->{is_dst} }
 sub observance { $_[0]->{observance} }
 sub rule       { $_[0]->{rule} }
 sub offset_from_utc { $_[0]->{offset_from_utc} }
 sub offset_from_std { $_[0]->{offset_from_std} }
-sub total_offset { $_[0]->{total_offset} }
+sub total_offset { $_[0]->offset_from_utc + $_[0]->offset_from_std }
 
 sub two_changes_as_span
 {
@@ -858,17 +917,13 @@ sub two_changes_as_span
     my $utc_end = $c2->utc_start_datetime->utc_rd_as_seconds;
     my $local_end = $utc_end + $c1->total_offset;
 
-    my $is_dst = 0;
-    $is_dst = 1 if $c1->rule && $c1->rule->offset_from_std;
-    $is_dst = 1 if $c1->observance->offset_from_std;
-
     return { utc_start   => $utc_start,
              utc_end     => $utc_end,
              local_start => $local_start,
              local_end   => $local_end,
              short_name  => $c1->short_name,
              offset      => $c1->total_offset,
-             is_dst      => $is_dst,
+             is_dst      => $c1->is_dst,
            };
 }
 
