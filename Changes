@@ -8,6 +8,9 @@ zone:
 -- Check for /etc/timezone file.
 -- Check for /etc/sysconfig/clock file.  Patch from Rick Measham.
 
+- Added is_olson method so object created from a named Olson database
+time zone can be distinguished from other types of objects.
+
 
 0.16     2003-05-07
 

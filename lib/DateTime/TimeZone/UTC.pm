@@ -52,6 +52,6 @@ The offset for this object will always be zero.
 =head1 USAGE
 
 This class has the same methods as a real time zone object, but the
-C<category()> method returns undef.
+C<category()> method returns undef and C<is_utc()> returns true.
 
 =cut
