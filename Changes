@@ -1,3 +1,12 @@
+0.18     2003-06-06
+
+- Switched the internal data structure for the Olson database to use
+array references instead of hash references.  This seems to save a
+reduce memory usage to about 66% of the hash based version.
+Additionally, the files themselves have gotten much smaller.  This was
+all partially based on a patch by Eugene van der Pijll.
+
+
 0.17     2003-05-25
 
 - Fixed test failures on system where /etc/localtime is not a symlink.
