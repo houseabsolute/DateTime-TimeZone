@@ -249,20 +249,25 @@ sub parse_time_spec
 
     my $total_offset = $offset_from_utc;
 
-    # 'g'reenwich, 'u'tc, or 'z'ulu
-    $total_offset = 0 if $time =~ s/[guz]$//;
+    my $is_utc = 0;
 
-    # 's'tandard time - ignore DS offset
-    unless ( $time =~ s/s$// )
+    # 'g'reenwich, 'u'tc, or 'z'ulu
+    if ( $time =~ s/[guz]$// )
     {
-        $total_offset -= $offset_from_std if defined $offset_from_std;
+        $total_offset = 0;
+        $is_utc = 1;
+    }
+    else
+    {
+        # 's'tandard time - ignore DS offset
+        $total_offset += $offset_from_std unless $time =~ s/s$//;
     }
 
     my ($hour, $minute, $second) = split /:/, $time;
     $minute = 0 unless defined $minute;
     $second = 0 unless defined $second;
 
-    return ( $hour, $minute, $second, $total_offset );
+    return ( $hour, $minute, $second, $total_offset, $is_utc );
 }
 
 
