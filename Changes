@@ -1,3 +1,9 @@
+0.10     2003-03-20
+
+- Fixed a bug in the DateTime::TimeZone::offset_as_seconds bug when
+trying given a negative number that resulted in an offset that
+included minutes (not a whole hour).  Found by Flavio Glock.
+
 0.09     2003-02-26
 
 - Fixed an infinite recursion bug in generating future time zone data

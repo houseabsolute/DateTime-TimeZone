@@ -10,7 +10,7 @@ t/01load.t
 t/02basic.t
 t/03link.t
 t/04local.t
-t/04offset.t
+t/05offset.t
 t/check_datetime_version.pl
 lib/DateTime/TimeZone.pm
 lib/DateTime/TimeZoneCatalog.pm
