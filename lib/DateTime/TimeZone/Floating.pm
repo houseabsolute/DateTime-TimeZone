@@ -12,7 +12,7 @@ sub new
 {
     my $class = shift;
 
-    return $class->SUPER::new( offset => 0 );
+    return bless { offset => 0 }, $class;
 }
 
 sub is_floating { 1 }
