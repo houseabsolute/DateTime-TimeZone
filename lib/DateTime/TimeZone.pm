@@ -105,7 +105,7 @@ sub _local_timezone
 
     die "Cannot determine local time zone\n";
 }
-sub DateTime::TimeZone::readlink { CORE::readlink(@_) }
+sub DateTime::TimeZone::readlink { CORE::readlink($_[0]) }
 
 sub _init
 {
