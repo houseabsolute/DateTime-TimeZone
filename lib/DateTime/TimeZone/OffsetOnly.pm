@@ -34,7 +34,7 @@ sub is_dst_for_datetime { 0 }
 sub offset_for_datetime { $_[0]->{offset} }
 sub offset_for_local_datetime { $_[0]->{offset} }
 
-sub is_utc { $_[0]->{offset} ? 0 : 1 }
+sub is_utc { 0 }
 
 sub name { DateTime::TimeZone::offset_as_string( $_[0]->{offset} ) }
 *short_name_for_datetime = \&name;
