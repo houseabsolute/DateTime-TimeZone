@@ -301,9 +301,17 @@ sub zone_as_spans
     {
         my $last_offset = $x > 1 ? $changes[ $x - 2 ]->offset : undef;
 
-        push @spans,
+        my $span =
             DateTime::TimeZone::OlsonDB::Change::two_changes_as_span
                 ( @changes[ $x - 1, $x ], $last_offset );
+
+        push @spans, $span;
+
+        if (@spans > 2)
+        {
+            die "Gap in UTC end/start datetime for " . $zone->name
+                unless $spans[-2]{utc_end} == $spans[-1]{utc_start};
+        }
     }
 
     unless ( $zone->infinite_rules )
