@@ -247,9 +247,11 @@ sub zone_as_data
 
     for ( my $x = 1; $x < @changes; $x++ )
     {
+        my $prev_change = $changes[ $x - 2 ] if $x > 1;
+
         push @spans,
             DateTime::TimeZone::OlsonDB::Change::two_changes_as_span
-                ( @changes[ $x - 1, $x ] );
+                ( @changes[ $x - 1, $x ], $prev_change );
     }
 
     unless ( $zone->infinite_rules )
@@ -291,22 +293,25 @@ sub _generate_spans_until_match
 
         my $next = $rule->date_for_year( $year, !OFFSET );
 
+        # don't bother with changes we've seen already
+        next if $next->{utc}->utc_rd_as_seconds < $self->{max_span}{utc_end};
+
         push @changes,
             DateTime::TimeZone::OlsonDB::Change->new
-                ( start_date => $next,
+                ( start_date => $next->{local},
                   short_name =>
                   sprintf( $last_observance->format, $rule->letter ),
                   observance => $last_observance,
                   rule       => $rule,
                 );
 
-        next unless $next < $dt;
+        next unless $next->{utc} < $dt;
 
         $next = $rule->date_for_year( $year + 1, !OFFSET );
 
         push @changes,
             DateTime::TimeZone::OlsonDB::Change->new
-                ( start_date => $next,
+                ( start_date => $next->{local},
                   short_name =>
                   sprintf( $last_observance->format, $rule->letter ),
                   observance => $last_observance,
@@ -314,12 +319,16 @@ sub _generate_spans_until_match
                 );
     }
 
-    my @sorted = sort { $a->start_date <=> $b->start_date } @changes;
+    my @sorted = sort { $a->start_date <=> $b->start_date } $self->{max_span}, @changes;
 
     my $seconds = $dt->utc_rd_as_seconds;
     my $match;
-    for ( my $x = 1; $x < @sorted; $x++ )
+
+    # start at 2 so we can use max span as change 0
+    for ( my $x = 2; $x < @sorted; $x++ )
     {
+        my $prev_change = $changes[ $x - 2 ];
+
         my $span =
             DateTime::TimeZone::OlsonDB::Change::two_changes_as_span
                 ( @sorted[ $x - 1, $x ] );
