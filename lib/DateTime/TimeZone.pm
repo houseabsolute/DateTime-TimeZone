@@ -438,6 +438,8 @@ object is returned.
 If the "name" is an offset string, it is converted to a number, and a
 C<DateTime::TimeZone::OffsetOnly> object is returned.
 
+=back
+
 =head3 The "local" time zone
 
 If the "name" parameter is "local", then the module attempts to
@@ -471,8 +473,6 @@ C</ZONE="([^"]+)"/>.  If this line exists, it tries the value as a
 time zone name.
 
 If none of these methods work, it gives up and dies.
-
-=back
 
 =head2 Object Methods
 
