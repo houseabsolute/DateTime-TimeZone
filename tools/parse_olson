@@ -32,7 +32,6 @@ my @files = qw( africa antarctica asia australasia
                 southamerica
               );
 
-# need finer control?
 push @files, qw( backward etcetera factory systemv )
     if $opts{old};
 
@@ -59,14 +58,13 @@ foreach my $f (@files)
         push @zones, $zone_name;
 
         my ($category, $name) = split /\//, $zone_name, 2;
-        warn "WEIRD ZONE: $zone_name" unless defined $name;
         push @{ $categories{$category} }, $name;
 
         (my $dir = $category) =~ tr/-/_/;
-        (my $clean_name = $name) =~ tr/-/_/;
-        $clean_name =~ s/\//::/;
+        (my $file = $name) =~ tr/-/_/;
 
-        my $mod_name = "${dir}::$clean_name";
+        (my $mod_name = $zone_name) =~ s/\//::/g;
+        $mod_name =~ tr/-/_/;
 
         my $zone = $odb->expanded_zone( name => $zone_name,
                                         expand_to_year => (localtime)[5] + 1910,
@@ -118,31 +116,24 @@ __END__
 
 DateTime::TimeZone::$mod_name - Time zone data for $zone_name
 
+=head1 SYNOPSIS
+
+  my \$timezone = DateTime::TimeZone->new( name => '$zone_name' );
+
 =head1 DESCRIPTION
 
 This module is an internal timezone definition data file used by
 DateTime::TimeZone.  You do not need to use this module directly.
 
-=head1 EXAMPLE
-
-  my \$timezone = DateTime::TimeZone->new( name => '$zone_name' );
-
-=begin testing
-
-  use DateTime::TimeZone;
-
-  ok (my \$zone = DateTime::TimeZone->new(name => '$zone_name'), 'Loaded $zone_name');
-
-=end testing
-
 =cut
 
 EOF
 
-        my @name_pieces = split /\//, $name;
+        my @name_pieces = split /\//, $file;
         my $filename = (pop @name_pieces) . '.pm';
 
-        my $outdir = File::Spec->catdir( qw( lib DateTime TimeZone ), $dir, @name_pieces  );
+        my $outdir = File::Spec->catdir( qw( lib DateTime TimeZone ),
+                                         $dir, @name_pieces  );
 
         mkpath( $outdir, 1, 0755 );
 
@@ -202,7 +193,7 @@ $links
 sub all_names { wantarray ? \@DateTime::TimeZone::ALL : \\\@DateTime::TimeZone::ALL }
 sub categories { wantarray ? \@DateTime::TimeZone::CATEGORY_NAMES : \\\@DateTime::TimeZone::CATEGORY_NAMES }
 
-sub category
+sub names_in_category
 {
     return unless exists \$DateTime::TimeZone::CATEGORIES{ \$_[0] };
 
@@ -244,11 +235,11 @@ sub zone_as_data
 
     for ( my $x = 1; $x < @changes; $x++ )
     {
-        my $prev_change = $changes[ $x - 2 ] if $x > 1;
+        my $last_offset = $x > 1 ? $changes[ $x - 2 ]->offset : undef;
 
         push @spans,
             DateTime::TimeZone::OlsonDB::Change::two_changes_as_span
-                ( @changes[ $x - 1, $x ], $prev_change );
+                ( @changes[ $x - 1, $x ], $last_offset );
     }
 
     unless ( $zone->infinite_rules )
@@ -316,19 +307,19 @@ sub _generate_spans_until_match
                 );
     }
 
-    my @sorted = sort { $a->start_date <=> $b->start_date } $self->{max_span}, @changes;
+    my @sorted = sort { $a->start_date <=> $b->start_date } @changes;
 
     my $seconds = $dt->utc_rd_as_seconds;
     my $match;
 
-    # start at 2 so we can use max span as change 0
-    for ( my $x = 2; $x < @sorted; $x++ )
+    for ( my $x = 1; $x < @sorted; $x++ )
     {
-        my $prev_change = $changes[ $x - 2 ];
+        my $last_offset =
+            $x == 1 ? $self->{max_span}{offset} : $changes[ $x - 2 ]->offset;
 
         my $span =
             DateTime::TimeZone::OlsonDB::Change::two_changes_as_span
-                ( @sorted[ $x - 1, $x ] );
+                ( @sorted[ $x - 1, $x ], $last_offset );
 
         $self->{tree}->insert( { utc   => [ $span->{utc_start},   $span->{utc_end} ],
                                  local => [ $span->{local_start}, $span->{local_end} ],
