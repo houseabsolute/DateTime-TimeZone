@@ -174,10 +174,12 @@ sub expanded_zone
     return $zone;
 }
 
-sub rule
+sub rules_by_name
 {
     my $self = shift;
     my $name = shift;
+
+    return unless defined $name;
 
     die "Invalid rule name $name"
         unless exists $self->{rules}{$name};
@@ -323,13 +325,16 @@ sub new
     my $last_until;
     for ( my $x = 0; $x < @{ $p{observances} }; $x++ )
     {
+        my $rules_name = delete $p{observances}[$x]{rules};
+
         my $obs =
             DateTime::TimeZone::OlsonDB::Observance->new
                 ( %{ $p{observances}[$x] },
                   utc_start_datetime => $last_until,
+                  rules => [ $p{olson_db}->rules_by_name($rules_name) ],
                 );
 
-        my $last_rule = $obs->last_rule( $p{olson_db} );
+        my $last_rule = $obs->last_rule;
         my $last_rule_offset = $last_rule ? $last_rule->offset_from_std : 0;
 
         $last_until = $obs->until($last_rule_offset);
@@ -352,17 +357,18 @@ sub expand_observances
     {
         my $change =
             DateTime::TimeZone::OlsonDB::Change->new
-                ( utc_start_datetime => $obs->utc_start_datetime,
+                ( utc_start_datetime   => $obs->utc_start_datetime,
+                  local_start_datetime => $obs->local_start_datetime,
                   short_name => sprintf( $obs->format, '' ),
                   observance => $obs,
                 );
 
         $self->add_change($change);
 
-        if ( defined $obs->rules )
+        if ( $obs->rules )
         {
             my $is_last = $obs eq $self->{observances}[-1] ? 1 : 0;
-            $obs->expand_from_rules( $odb, $self, $max_year, $is_last );
+            $obs->expand_from_rules( $self, $max_year, $is_last );
         }
     }
 }
@@ -405,13 +411,13 @@ package DateTime::TimeZone::OlsonDB::Observance;
 
 use DateTime;
 
-use Params::Validate qw( validate SCALAR UNDEF OBJECT );
+use Params::Validate qw( validate SCALAR ARRAYREF UNDEF OBJECT );
 
 sub new
 {
     my $class = shift;
     my %p = validate( @_, { gmtoff => { type => SCALAR },
-                            rules  => { type => SCALAR, default => undef },
+                            rules  => { type => ARRAYREF },
                             format => { type => SCALAR },
                             until  => { type => SCALAR | UNDEF },
                             utc_start_datetime => { type => OBJECT | UNDEF },
@@ -422,7 +428,13 @@ sub new
     my $offset_from_utc = DateTime::TimeZone::offset_as_seconds( $p{gmtoff} );
     my $offset_from_std = DateTime::TimeZone::offset_as_seconds( $p{offset_from_std} );
 
+    my $local_start_datetime = $p{utc_start_datetime};
+    $local_start_datetime +=
+        DateTime::Duration->new( seconds => $offset_from_utc + $offset_from_std )
+            if $local_start_datetime;
+
     return bless { %p,
+                   local_start_datetime => $local_start_datetime,
                    offset_from_utc => $offset_from_utc,
                    offset_from_std => $offset_from_std,
                  }, $class;
@@ -432,78 +444,102 @@ sub offset_from_utc { $_[0]->{offset_from_utc} }
 sub offset_from_std { $_[0]->{offset_from_std} }
 sub total_offset { $_[0]->offset_from_utc + $_[0]->offset_from_std }
 
-sub rules { $_[0]->{rules} }
+sub rules { @{ $_[0]->{rules} } }
+
+sub format { $_[0]->{format} }
+
+sub utc_start_datetime   { $_[0]->{utc_start_datetime} }
+sub local_start_datetime { $_[0]->{local_start_datetime} }
 
 sub expand_from_rules
 {
     my $self = shift;
-    my $odb  = shift;
-
-    foreach my $rule ( $odb->rule( $self->{rules} ) )
-    {
-        $self->_expand_one_rule( $rule, @_ );
-    }
-}
-
-sub _expand_one_rule
-{
-    my $self = shift;
-    my $rule = shift;
     my $zone = shift;
     # real max is year + 1 so we include max year
     my $max_year = (shift) + 1;
     my $is_last = shift;
 
-    my $min_year = $rule->min_year;
-    $max_year = $rule->max_year if defined $rule->max_year;
+    my $min_year;
 
-    my $min_dt = $self->utc_start_datetime;
-    my $max_dt;
-
-    if ( my $until = $self->until( $rule->offset_from_std ) )
+    if ( $self->utc_start_datetime )
     {
-        $max_dt = $until;
+        $min_year = $self->utc_start_datetime->year;
     }
     else
     {
-        $max_dt = DateTime->new( year   => $max_year,
-                                 month  => 12,
-                                 day    => 31,
-                                 time_zone => 'floating',
-                               );
+        # There is at least one time zone that has an infinite
+        # observance, but that observance has rules that only start at
+        # a certain point - Pacific/Chatham
+
+        # In this case we just find the earliest rule and start there
+
+        $min_year = ( sort { $a <=> $b } map { $_->min_year } $self->rules )[0];
     }
 
-    my $month = $rule->month;
+
+    my $last_offset_from_std = 0;
+
+    my $until = $self->until( $last_offset_from_std );
+    if ($until)
+    {
+        $max_year = $until->year + 1;
+    }
 
     foreach my $year ( $min_year .. $max_year )
     {
-        my $day;
+        my @rules = $self->_sorted_rules_for_year($year);
 
-        my $dt = $rule->utc_start_datetime_for_year( $year, $self->offset_from_utc );
+        foreach my $rule (@rules)
+        {
+            my $dt =
+                $rule->utc_start_datetime_for_year
+                    ( $year, $self->offset_from_utc, $last_offset_from_std );
 
-        next if $min_dt && $dt < $min_dt;
-        last if $dt > $max_dt;
+            my $change =
+                DateTime::TimeZone::OlsonDB::Change->new
+                    ( utc_start_datetime   => $dt,
+                      local_start_datetime =>
+                      $dt +
+                      DateTime::Duration->new
+                          ( seconds => $self->total_offset + $rule->offset_from_std ),
+                      short_name => sprintf( $self->{format}, $rule->letter ),
+                      observance => $self,
+                      rule       => $rule,
+                    );
 
-        my $change =
-            DateTime::TimeZone::OlsonDB::Change->new
-                ( utc_start_datetime => $dt,
-                  short_name => sprintf( $self->{format}, $rule->letter ),
-                  observance => $self,
-                  rule       => $rule,
-                );
+            $zone->add_change($change);
 
-        $zone->add_change($change);
+            $last_offset_from_std = $rule->offset_from_std;
+        }
     }
 
-    if ( $is_last && ! $rule->is_finite )
+    if ($is_last)
     {
-        $zone->add_infinite_rule($rule);
+        foreach my $rule ( $self->rules )
+        {
+            if ( $rule->is_infinite )
+            {
+                $zone->add_infinite_rule($rule);
+            }
+        }
     }
+
 }
 
-sub format { $_[0]->{format} }
+sub _sorted_rules_for_year
+{
+    my $self = shift;
+    my $year = shift;
 
-sub utc_start_datetime { $_[0]->{utc_start_datetime} }
+    return
+        ( map { $_->[0] }
+          sort { $a->[1] <=> $b->[1] }
+          map { my $dt = $_->utc_start_datetime_for_year( $year, $self->offset_from_utc, 0 );
+                [ $_, $dt ] }
+          grep { $_->min_year <= $year && ( ( ! $_->max_year ) || $_->max_year >= $year ) }
+          $self->rules
+        );
+}
 
 sub until
 {
@@ -545,39 +581,39 @@ sub last_rule
     # if observance doesn't end there is no last rule
     return unless $self->until;
 
-    return $self->_rule_for_date( @_, $self->until );
+    return $self->_rule_for_date( $self->until );
 }
 
 sub _rule_for_date
 {
     my $self = shift;
-    my $odb  = shift;
     my $date = shift;
 
     return unless $self->{rules};
 
+    my @rules = $self->rules;
+
     # figure out what date each rule would start on _if_ that rule
     # were applied to this current observance ..
     my @rule_dates;
-    foreach my $rule ( $odb->rule( $self->{rules} ) )
+    foreach my $year ( $date->year .. $date->year + 1 )
     {
-        unless ( $rule->min_year > $date->year ||
-                 ( $rule->max_year && $rule->max_year < $date->year )
-               )
+        for ( my $x = 0; $x < @rules; $x++ )
         {
-            my $rule_start =
-                $rule->utc_start_datetime_for_year( $date->year, $self->offset_from_utc );
+            my $rule = $rules[$x];
+            my $last_offset_from_std = $x ? $rules[ $x - 1 ]->offset_from_std : 0;
 
-            push @rule_dates, [ $rule_start, $rule ];
+            unless ( $rule->min_year > $year ||
+                     ( $rule->max_year && $rule->max_year < $year )
+                   )
+            {
+                my $rule_start =
+                    $rule->utc_start_datetime_for_year
+                        ( $year, $self->offset_from_utc, $last_offset_from_std );
+
+                push @rule_dates, [ $rule_start, $rule ];
+            }
         }
-
-        next if $rule->min_year > $date->year + 1;
-        next if $rule->max_year && $rule->max_year < $date->year + 1;
-
-        my $rule_start_next =
-            $rule->utc_start_datetime_for_year( $date->year + 1, $self->offset_from_utc );
-
-        push @rule_dates, [ $rule_start_next, $rule ];
     }
 
     @rule_dates = sort { $a->[0] <=> $b->[0] } @rule_dates;
@@ -634,7 +670,7 @@ sub new
 
 sub offset_from_std { $_[0]->{offset_from_std} }
 
-sub is_finite { $_[0]->{to} eq 'max' ? 0 : 1 }
+sub is_infinite { $_[0]->{to} eq 'max' ? 1 : 0 }
 
 sub min_year { $_[0]->{from} }
 
@@ -650,6 +686,8 @@ sub utc_start_datetime_for_year
     my $self   = shift;
     my $year   = shift;
     my $offset_from_utc = shift;
+    # should be the offset of the _previous_ rule
+    my $offset_from_std = shift;
 
     my $day =
         DateTime::TimeZone::OlsonDB::parse_day_spec( $self->{on}, $self->month, $year );
@@ -661,7 +699,7 @@ sub utc_start_datetime_for_year
                   month => $self->month,
                   day   => $day,
                   offset_from_utc => $offset_from_utc,
-                  offset_from_std => $self->offset_from_std,
+                  offset_from_std => $offset_from_std,
                 );
 
     return $utc;
@@ -675,7 +713,8 @@ use Params::Validate qw( validate SCALAR UNDEF OBJECT );
 sub new
 {
     my $class = shift;
-    my %p = validate( @_, { utc_start_datetime => { type => UNDEF | OBJECT },
+    my %p = validate( @_, { utc_start_datetime   => { type => UNDEF | OBJECT },
+                            local_start_datetime => { type => UNDEF | OBJECT },
                             short_name => { type => SCALAR },
                             observance => { type => OBJECT },
                             rule       => { type => OBJECT, default => undef },
@@ -689,7 +728,8 @@ sub new
     return bless \%p, $class;
 }
 
-sub utc_start_datetime { $_[0]->{utc_start_datetime} }
+sub utc_start_datetime   { $_[0]->{utc_start_datetime} }
+sub local_start_datetime { $_[0]->{local_start_datetime} }
 sub short_name { $_[0]->{short_name} }
 sub observance { $_[0]->{observance} }
 sub rule       { $_[0]->{rule} }
@@ -704,7 +744,7 @@ sub two_changes_as_span
     if ( defined $c1->utc_start_datetime )
     {
         $utc_start = $c1->utc_start_datetime->utc_rd_as_seconds;
-        $local_start = $utc_start + $c1->total_offset;
+        $local_start = $c1->local_start_datetime->utc_rd_as_seconds;
     }
     else
     {
