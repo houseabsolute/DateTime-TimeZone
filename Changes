@@ -12,16 +12,13 @@ local time zone.
 - Included all the links from Olson db file named backwards, which
 includes things like "US/Central".
 
-- Added a few links for names like CST and CDT.  If you want more
-added, let me know.
-
 - When searching for the current offset based on the local time, we
 now prefer the later of the two offsets rather than the earlier.
 Otherwise, offset shifts larger than a day can cause some very strange
 problems when doing date math.
 
 - DateTime::TimeZone::OffsetOnly objects now return the offset in
-string form when their name() of short_name_for_datetime() methods are
+string form when their name() or short_name_for_datetime() methods are
 called.  Suggested by Rick Measham.
 
 0.12     2003-04-12
