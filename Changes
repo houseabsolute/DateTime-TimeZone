@@ -1,3 +1,9 @@
+0.17
+
+- Fixed test failures on system where /etc/localtime is not a symlink.
+Diagnosed by Iain Truskett.
+
+
 0.16     2003-05-07
 
 - Fixed a bug where a POSIX time zone in $ENV{TZ} could cause the code
