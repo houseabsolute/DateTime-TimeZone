@@ -37,7 +37,7 @@ sub new
             my $local = Time::Local::timelocal(@t);
             my $gm    = Time::Local::timegm(@t);
 
-            return DateTime::TimeZone::OffsetOnly( offset => $gm - $local );
+            return DateTime::TimeZone::OffsetOnly->new( offset => $gm - $local );
         }
 
         if ( $p{name} eq 'UTC' )
@@ -45,12 +45,13 @@ sub new
             return DateTime::TimeZone::UTC->new;
         }
 
-        if ( my $offset = offset_as_seconds( $p{name} ) )
+        my $offset;
+        if ( $offset = offset_as_seconds( $p{name} ) )
         {
             return DateTime::TimeZone::OffsetOnly->new( offset => $offset );
         }
 
-        if ( $p{name} eq '0' )
+        if ( ( defined $offset && $offset == 0 ) || $p{name} eq '0' )
         {
             return DateTime::TimeZone::UTC->new;
         }
