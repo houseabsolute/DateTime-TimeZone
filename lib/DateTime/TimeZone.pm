@@ -9,6 +9,7 @@ use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
 use DateTime::TimeZone::OffsetOnly;
 use DateTime::TimeZone::UTC;
+use File::Spec;
 use Params::Validate qw( validate validate_pos SCALAR ARRAYREF );
 use Time::Local;
 
@@ -22,9 +23,13 @@ sub new
                       { name => { type => SCALAR } },
                     );
 
-    if ( exists $DateTime::TimeZone::Links{ $p{name} } )
+    if ( exists $DateTime::TimeZone::LINKS{ $p{name} } )
     {
-        $p{name} = $DateTime::TimeZone::Links{ $p{name} };
+        $p{name} = $DateTime::TimeZone::LINKS{ $p{name} };
+    }
+    elsif ( exists $DateTime::TimeZone::LINKS{ uc $p{name} } )
+    {
+        $p{name} = $DateTime::TimeZone::LINKS{ uc $p{name} };
     }
 
     unless ( $p{name} =~ m,/, )
@@ -36,21 +41,7 @@ sub new
 
         if ( $p{name} eq 'local' )
         {
-            if ( defined $ENV{TZ} && $ENV{TZ} ne 'local' )
-            {
-                my $tz;
-                eval { $tz = $class->new( name => $ENV{TZ} ) };
-                return $tz if $tz && ! $@;
-            }
-
-            my @t = gmtime;
-
-            my $local = Time::Local::timelocal(@t);
-            my $gm    = Time::Local::timegm(@t);
-
-            return
-                DateTime::TimeZone::OffsetOnly->new
-                    ( offset => offset_as_string( $gm - $local ) );
+            return $class->_local_timezone;
         }
 
         if ( $p{name} eq 'UTC' || $p{name} eq 'Z' )
@@ -71,6 +62,55 @@ sub new
 
     return $real_class->instance( name => $p{name} );
 }
+
+sub _local_timezone
+{
+    my $class = shift;
+
+    if ( defined $ENV{TZ} && $ENV{TZ} ne 'local' )
+    {
+        my $tz;
+        eval { $tz = $class->new( name => $ENV{TZ} ) };
+        return $tz if $tz && ! $@;
+    }
+
+    if ( -l '/etc/localtime' )
+    {
+        # called like this so test suite can test this functionality
+        my $real_name = DateTime::TimeZone::readlink( '/etc/localtime' );
+
+        if ( defined $real_name )
+        {
+            my ($vol, $dirs, $file) = File::Spec->splitpath( $real_name );
+
+            my @parts =
+                grep { defined && length } File::Spec->splitdir( $dirs ), $file;
+
+            foreach my $x ( reverse 0..$#parts )
+            {
+                my $name =
+                    ( $x < $#parts ?
+                      join '/', @parts[$x..$#parts] :
+                      $parts[$x]
+                    );
+
+                my $tz;
+                eval { $tz = $class->new( name => $name ) };
+                return $tz if $tz && ! $@;
+            }
+        }
+    }
+
+    my @t = gmtime;
+
+    my $local = Time::Local::timelocal(@t);
+    my $gm    = Time::Local::timegm(@t);
+
+    return
+        DateTime::TimeZone::OffsetOnly->new
+                ( offset => offset_as_string( $gm - $local ) );
+}
+sub DateTime::TimeZone::readlink { CORE::readlink(@_) }
 
 sub _init
 {
@@ -320,17 +360,25 @@ useful for calendaring applications, which may need to specify that a
 given event happens at the same I<local> time, regardless of where it
 occurs.  See RFC 2445 for more details.
 
-If the "name" parameter is "local", then the local time zone of the
-current system is used.  If C<$ENV{TZ}> is defined, and it is not the
-string 'local', then it is treated as any other valid name (including
+If the "name" parameter is "local", then the module attempts to
+determine the local time zone for the system.
+
+First it checks C<$ENV{TZ}>.  If this is defined, and it is not the
+string "local", then it is treated as any other valid name (including
 "floating"), and the constructor tries to create a time zone based on
 that name.
 
-If C<$ENV{TZ}> is not defined, or it does not contain a valid time
-zone name, then the local offset is calculated by comparing the
-difference between the C<Time::Local> module's C<timegm()> and
-C<timelocal()> functions.  This offset is then used to create a
-C<DateTime::TimeZone::OffsetOnly> object.
+Next, it checks for the existence of a symlink at F</etc/localtime>.
+It follows this link to the real file and figures out what the file's
+name is.  It then tries to turn this name into a valid time zone.  For
+example, if this file is linked to F</usr/share/zoneinfo/US/Central>,
+it will end up trying "US/Central", which will then be converted to
+"America/Chicago" internally.
+
+Finally, if none of these efforts work, the local offset is calculated
+by comparing the difference between the C<Time::Local> module's
+C<timegm()> and C<timelocal()> functions.  This offset is then used to
+create a C<DateTime::TimeZone::OffsetOnly> object.
 
 If the "name" parameter is "UTC", then a C<DateTime::TimeZone::UTC>
 object is returned.
@@ -404,6 +452,13 @@ reference, while in list context it returns an array.
 This returns a list of all time zone categories.  In scalar context,
 it returns an array reference, while in list context it returns an
 array.
+
+=item * links
+
+This returns a hash of all time zone links, where the keys are the
+old, deprecated names, and the values are the new names.  In scalar
+context, it returns a hash reference, while in list context it returns
+a hash.
 
 =item * names_in_category( $category )
 
