@@ -1,16 +1,11 @@
 use strict;
 
+use File::Spec;
 use Test::More;
 
-BEGIN
-{
-    eval { require DateTime };
-    if ($@)
-    {
-        plan skip_all => "Cannot run tests before DateTime.pm is installed.";
-        exit;
-    }
-}
+use lib File::Spec->catdir( File::Spec->curdir, 't' );
+
+BEGIN { require 'check_datetime_version.pl' }
 
 plan tests => 4;
 
