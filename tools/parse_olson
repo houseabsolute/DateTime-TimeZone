@@ -181,6 +181,7 @@ EOF
       'Etc/Zulu'    => 'UTC',
       'Etc/UCT'     => 'UTC',
       'GMT0'        => 'UTC',
+      'GMT'         => 'UTC',
     );
 
 delete $links{UTC};
