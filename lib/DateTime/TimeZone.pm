@@ -32,12 +32,21 @@ sub new
 
         if ( $p{name} eq 'local' )
         {
-            my @t = gmtime;
+            my $offset = offset_as_seconds( $ENV{TZ} );
 
-            my $local = Time::Local::timelocal(@t);
-            my $gm    = Time::Local::timegm(@t);
+            unless ( defined $offset )
+            {
+                my @t = gmtime;
 
-            return DateTime::TimeZone::OffsetOnly->new( offset => $gm - $local );
+                my $local = Time::Local::timelocal(@t);
+                my $gm    = Time::Local::timegm(@t);
+
+                $offset = $gm - $local;
+            }
+
+            return
+                DateTime::TimeZone::OffsetOnly->new
+                    ( offset => $offset );
         }
 
         if ( $p{name} eq 'UTC' )
@@ -207,6 +216,8 @@ sub offset_as_seconds
 {
     my $offset = shift;
 
+    return undef unless defined $offset;
+
     # if it's just a number assume it's seconds
     return $offset if $offset =~ /^-?\d+$/;
 
@@ -225,6 +236,8 @@ sub offset_as_seconds
 sub offset_as_string
 {
     my $offset = shift;
+
+    return undef unless defined $offset;
 
     return $offset if $offset =~ /^[\+\-]\d\d\d\d(?:\d\d)?$/;
 
@@ -280,6 +293,30 @@ DateTime::TimeZone::America::Chicago class.
 If the name given is a "link" name in the Olson database, the object
 created may have a different name.  For example, there is a link from
 the old "EST5EDT" name to "America/New_York".
+
+There are also several special values that can be given as names.
+
+If the "name" parameter is "floating", then a
+C<DateTime::TimeZone::Floating> object is returned.  A floating time
+zone does have I<any> offset, and is always the same time.  This is
+useful for calendaring applications, which may need to specify that a
+given event happens at the same I<local> time, regardless of where it
+occurs.  See RFC 2445 for more details.
+
+If the "name" parameter is "local", then the local time zone of the
+current system is used.  This is determined by first looking at
+C<$ENV{TZ}>.  If this contains a number or an offset string, it is
+treated as the offset.  Otherwise, the local offset is calculated by
+comparing the difference between the C<Time::Local> module's
+C<timegm()> and C<timelocal()> functions.  Either way, the offset is
+used to create a C<DateTime::TimeZone::OffsetOnly> object.
+
+If the "name" parameter is "UTC", then a C<DateTime::TimeZone::UTC>
+object is returned.
+
+Finally, if the "name" is a number or an offset string, that is
+converted to a number and a C<DateTime::TimeZone::OffsetOnly> object
+is returned.
 
 =item * offset_for_datetime( $datetime )
 
