@@ -16,6 +16,7 @@ t/05offset.t
 t/06no-dst.t
 t/07offset-only.t
 t/08name.t
+t/09changes.t
 t/check_datetime_version.pl
 lib/DateTime/TimeZone.pm
 lib/DateTime/TimeZoneCatalog.pm

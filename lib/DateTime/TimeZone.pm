@@ -604,4 +604,9 @@ datetime@perl.org mailing list
 
 http://datetime.perl.org/
 
+The tools directory of the DateTime::TimeZone distribution includes
+two scripts that may be of interest to some people.  They are
+parse_olson and tests_from_zdump.  Please run them with the --help
+flag to see what they can be used for.
+
 =cut
