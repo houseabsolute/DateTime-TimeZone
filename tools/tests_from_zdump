@@ -180,6 +180,11 @@ EOF
     {
         my $utc_new = join ', ', map { "$_ => $t->{utc}{$_}" } @pieces;
 
+        # This makes finding tests that fail much easier.
+        my $local_datetime =
+            sprintf( '%04d-%02d-%02d %02d:%02d:%02d',
+                     @{ $t->{local} }{ qw( year month day hour minute second ) } );
+
         print T <<"EOF";
 {
     my \$dt = DateTime->new( $utc_new,
@@ -192,19 +197,19 @@ EOF
         foreach my $p (@pieces)
         {
             print T <<"EOF";
-    is( \$dt->$p, $t->{local}{$p}, 'local $p should be $t->{local}{$p}' );
+    is( \$dt->$p, $t->{local}{$p}, 'local $p should be $t->{local}{$p} ($local_datetime)' );
 EOF
         }
 
         print T <<"EOF";
 
-    is( \$dt->is_dst, $t->{is_dst}, 'is_dst should be $t->{is_dst}' );
-    is( \$dt->offset, $t->{offset}, 'offset should be $t->{offset}' );
+    is( \$dt->is_dst, $t->{is_dst}, 'is_dst should be $t->{is_dst} ($local_datetime)' );
+    is( \$dt->offset, $t->{offset}, 'offset should be $t->{offset} ($local_datetime)' );
 
   TODO:
     {
         local \$TODO = 'zdump gives bogus short names for many zones';
-        is( \$dt->time_zone_short_name, '$t->{short_name}', 'short name should be $t->{short_name}' );
+        is( \$dt->time_zone_short_name, '$t->{short_name}', 'short name should be $t->{short_name} ($local_datetime)' );
     }
 }
 
