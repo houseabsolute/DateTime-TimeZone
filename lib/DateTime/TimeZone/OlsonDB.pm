@@ -287,7 +287,7 @@ sub new
         my $obs =
             DateTime::TimeZone::OlsonDB::Observance->new
                 ( %{ $p{observances}[$x] },
-                  start => $last_until,
+                  start => $last_until->{local},
                 );
 
         $last_until = $obs->until;
@@ -413,12 +413,20 @@ sub _expand_one_rule
     $max_year = $rule->max_year if defined $rule->max_year;
 
     my $min_dt = $self->start;
-    my $max_dt = $self->until( $rule->offset );
-    $max_dt ||= DateTime->new( year   => $max_year,
-                               month  => 1,
-                               day    => 1,
-                               time_zone => 'UTC',
-                             );
+    my $max_dt;
+
+    if ( my $until = $self->until( $rule->offset ) )
+    {
+        $max_dt = $until->{utc};
+    }
+    else
+    {
+        $max_dt = DateTime->new( year   => $max_year,
+                                 month  => 1,
+                                 day    => 1,
+                                 time_zone => 'UTC',
+                               );
+    }
 
     my $date;
     my $month = $rule->month;
@@ -429,12 +437,12 @@ sub _expand_one_rule
 
         $date = $rule->date_for_year( $year, $self->{offset} );
 
-        next if $min_dt && $date < $min_dt;
-        last if $date >= $max_dt;
+        next if $min_dt && $date->{utc} < $min_dt;
+        last if $date->{utc} >= $max_dt;
 
         my $change =
             DateTime::TimeZone::OlsonDB::Change->new
-                ( start_date => $date,
+                ( start_date => $date->{local},
                   short_name => sprintf( $self->{format}, $rule->letter ),
                   observance => $self,
                   rule       => $rule,
@@ -484,20 +492,18 @@ sub until
         ( $hour, $minute, $second, $offset ) = ( 0, 0, 0, $self->{offset} );
     }
 
-    # subtract offset to get UTC
-    my $dt = ( DateTime->new( year   => $year,
-                              month  => $month,
-                              day    => $day,
-                              hour   => $hour,
-                              minute => $minute,
-                              second => $second,
-                              time_zone => 'UTC',
-                            )
-             -
-             DateTime::Duration->new( seconds => $offset )
-           );
+    my $local = DateTime->new( year   => $year,
+                               month  => $month,
+                               day    => $day,
+                               hour   => $hour,
+                               minute => $minute,
+                               second => $second,
+                               time_zone => 'UTC',
+                             );
 
-    return $dt;
+    return { local => $local,
+             utc   => $local - DateTime::Duration->new( seconds => $offset ),
+           };
 }
 
 package DateTime::TimeZone::OlsonDB::Rule;
@@ -561,18 +567,18 @@ sub date_for_year
         DateTime::TimeZone::OlsonDB::parse_time_spec
             ( $self->{at}, $offset, $self->{offset} );
 
-    return
-        ( DateTime->new( year   => $year,
-                         month  => $self->month,
-                         day    => $day,
-                         hour   => $hour,
-                         minute => $minute,
-                         second => $second,
-                         time_zone => 0,
-                       )
-          -
-          DateTime::Duration->new( seconds => $real_offset )
-        );
+    my $local = DateTime->new( year   => $year,
+                               month  => $self->month,
+                               day    => $day,
+                               hour   => $hour,
+                               minute => $minute,
+                               second => $second,
+                               time_zone => 'UTC',
+                             );
+
+    return { local => $local,
+             utc   => $local - DateTime::Duration->new( seconds => $real_offset ),
+           };
 }
 
 
@@ -593,6 +599,8 @@ sub new
     $p{offset}  = $p{observance}->offset;
     $p{offset} += $p{rule}->offset if defined $p{rule};
 
+#    $p{last_offset} = $p{last_observance}->offset;
+
     return bless \%p, $class;
 }
 
@@ -604,22 +612,30 @@ sub offset     { $_[0]->{offset} }
 
 sub two_changes_as_span
 {
-    my ($c1, $c2) = @_;
+    my ( $c1, $c2, $c0 ) = @_;
 
     my ( $utc_start, $local_start );
 
     if ( defined $c1->start_date )
     {
-        $utc_start = $c1->start_date->utc_rd_as_seconds;
-        $local_start = $utc_start - $c1->offset;
+        $local_start = $c1->start_date->utc_rd_as_seconds;
+
+        # UTC start is local minus the offset when we start, plus the
+        # difference in offset between the current offste and the
+        # previous offset
+        $utc_start = $local_start - $c1->offset;
+
+        $utc_start += $c1->offset - $c0->offset;
     }
     else
     {
         $utc_start = $local_start = '-inf';
     }
 
-    my $utc_end = $c2->start_date->utc_rd_as_seconds;
-    my $local_end = $utc_end - $c2->offset;
+    my $local_end = $c2->start_date->utc_rd_as_seconds;
+
+    my $utc_end = $local_end - $c2->offset;
+    $utc_end -= $c1->offset - $c2->offset;
 
     return { utc_start   => $utc_start,
              utc_end     => $utc_end,
