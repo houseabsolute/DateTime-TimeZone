@@ -277,18 +277,42 @@ blessed into the appropriate subclass.  Subclasses are named for the
 given time zone, so that the time zone "America/Chicago" is the
 DateTime::TimeZone::America::Chicago class.
 
+If the name given is a "link" name in the Olson database, the object
+created may have a different name.  For example, there is a link from
+the old "EST5EDT" name to "America/New_York".
+
 =item * offset_for_datetime( $datetime )
 
 Given an object which implements the DateTime.pm API, this method
 returns the offset in seconds for the given datetime.  This takes into
 account historical time zone information, as well as Daylight Saving
-Time.
+Time.  The offset is determined by looking at the object's UTC Rata
+Die days and seconds.
+
+=item * offset_for_local_datetime( $datetime )
+
+Given an object which implements the DateTime.pm API, this method
+returns the offset in seconds for the given datetime.  Unlike the
+previous method, this method uses the local time's Rata Die days and
+seconds.  This should only be done when the corresponding UTC time is
+not yet known, because local times can be ambiguous due to Daylight
+Saving Time rules.
+
+=item * name
+
+Returns the name of the time zone, as given in the Olson database.
 
 =item * short_name_for_datetime( $datetime )
 
 Given an object which implements the DateTime.pm API, this method
 returns the "short name" for the current observance and rule this
-datetime is in.  These are things like "EST", "GMT", etc.
+datetime is in.  These are names like "EST", "GMT", etc.
+
+It is B<strongly> recommended that you do not rely on these names for
+anything other than display.  These names are not official, and many
+of them are simply the invention of the Olson database maintainers.
+Moreover, these names are not unique.  For example, there is an "EST"
+at both -0500 and +1000/+1100.
 
 =item * is_floating
 
@@ -300,10 +324,6 @@ floating timezone, as defined by RFC 2445.
 Indicates whether or not this object represents the UTC (GMT) time
 zone.
 
-=item * name
-
-Returns the name of the time zone.
-
 =item * category
 
 Returns the part of the time zone name before the first slash.  For
@@ -311,9 +331,30 @@ example, the "America/Chicago" time zone would return "America".
 
 =back
 
-This class also contains two functions, which are not exported.
+This class also contains several functions, none of which are
+exported.
 
 =over 4
+
+=item * all_names
+
+This returns a pre-sorted list of all the time zone names.  This list
+does not include link names.  In scalar context, it returns an array
+reference, while in list context it returns an array.
+
+=item * categories
+
+This returns a list of all time zone categories.  In scalar context,
+it returns an array reference, while in list context it returns an
+array.
+
+=item * category( $category )
+
+Given a valid category, this method returns a list of the names in
+that category, without the category portion.  So the list for the
+"America" category would include the strings "Chicago",
+"Kentucky/Monticello", and "New_York".  In scalar context, it returns
+an array reference, while in list context it returns an array.
 
 =item * offset_as_seconds( $offset )
 
@@ -329,19 +370,27 @@ string.
 
 =head1 SUPPORT
 
-
+Support for this module is provided via the datetime@perl.org email
+list.  See http://lists.perl.org/ for more details.
 
 =head1 AUTHOR
 
-Dave Rolsky <autarch@urth.org>, with inspiration from Jesse Vincent's
-work on Date::ICal::Timezone.
+Dave Rolsky <autarch@urth.org>, inspired by Jesse Vincent's work on
+Date::ICal::Timezone, and with help from the datetime@perl.org list.
 
 =head1 COPYRIGHT
 
-This program is free software; you can redistribute
-it and/or modify it under the same terms as Perl itself.
+Copyright (c) 2003 David Rolsky.  All rights reserved.  This program
+is free software; you can redistribute it and/or modify it under the
+same terms as Perl itself.
 
-The full text of the license can be found in the
-LICENSE file included with this module.
+The full text of the license can be found in the LICENSE file included
+with this module.
+
+=head1 SEE ALSO
+
+datetime@perl.org mailing list
+
+http://datetime.perl.org/
 
 =cut
