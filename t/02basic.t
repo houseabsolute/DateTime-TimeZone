@@ -2,6 +2,16 @@ use strict;
 
 use Test::More;
 
+BEGIN
+{
+    eval { require DateTime };
+    if ($@)
+    {
+        plan skip_all => "Cannot run tests before DateTime.pm is installed.";
+        exit;
+    }
+}
+
 use DateTime::TimeZone;
 
 my @names = DateTime::TimeZone::all_names;
