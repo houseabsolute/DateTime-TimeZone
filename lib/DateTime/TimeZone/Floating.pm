@@ -21,7 +21,7 @@ __END__
 
 =head1 NAME
 
-DateTime::TimeZone::Floating - A DateTime::TimeZone object that just contains an offset
+DateTime::TimeZone::Floating - A time zone that is always local
 
 =head1 SYNOPSIS
 

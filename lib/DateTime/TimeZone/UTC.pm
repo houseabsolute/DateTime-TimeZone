@@ -35,7 +35,7 @@ __END__
 
 =head1 NAME
 
-DateTime::TimeZone::UTC - A DateTime::TimeZone object that just contains an offset
+DateTime::TimeZone::UTC - The UTC time zone
 
 =head1 SYNOPSIS
 
