@@ -10,7 +10,7 @@ use DateTime::TimeZone::Floating;
 use DateTime::TimeZone::Local;
 use DateTime::TimeZone::OffsetOnly;
 use DateTime::TimeZone::UTC;
-use Params::Validate qw( validate validate_pos SCALAR ARRAYREF );
+use Params::Validate qw( validate validate_pos SCALAR ARRAYREF BOOLEAN );
 
 use constant INFINITY     =>       100 ** 100 ** 100 ;
 use constant NEG_INFINITY => -1 * (100 ** 100 ** 100);
@@ -68,20 +68,22 @@ sub new
     eval "require $real_class";
     die "Invalid time zone name: $p{name}" if $@;
 
-    return $real_class->instance( name => $p{name} );
+    return $real_class->instance( name => $p{name}, is_olson => 1 );
 }
 
 sub _init
 {
     my $class = shift;
     my %p = validate( @_,
-                      { name => { type => SCALAR },
-                        spans => { type => ARRAYREF },
+                      { name     => { type => SCALAR },
+                        spans    => { type => ARRAYREF },
+                        is_olson => { type => BOOLEAN, default => 0 },
                       },
                     );
 
-    my $self = bless { name  => $p{name},
-                       spans => $p{spans},
+    my $self = bless { name     => $p{name},
+                       spans    => $p{spans},
+                       is_olson => $p{is_olson},
                      }, $class;
 
     foreach my $k ( qw( last_offset last_observance rules max_year ) )
@@ -93,7 +95,7 @@ sub _init
     return $self;
 }
 
-sub is_olson { exists $_[0]->{name} ? 1 : 0 }
+sub is_olson { $_[0]->{is_olson} }
 
 sub is_dst_for_datetime
 {
