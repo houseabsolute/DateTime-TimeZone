@@ -240,7 +240,7 @@ sub offset_as_string
     my $sign = $offset < 0 ? '-' : '+';
 
     my $hours = $offset / ( 60 * 60 );
-    $hours = abs($hour) % 24;
+    $hours = abs($hours) % 24;
 
     my $mins = ( $offset % ( 60 * 60 ) ) / 60;
 
