@@ -1,3 +1,8 @@
+0.04     2003-02-10
+
+- Be forgiving of bad names in $ENV{TZ} and just calculate local
+offset instead.
+
 0.03     2003-02-09
 
 - Fixed bug in new method that should have caused DateTime::TimeZone
