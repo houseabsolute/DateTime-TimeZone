@@ -14,7 +14,5 @@ BEGIN
 
 plan tests => 1;
 
-BEGIN
-{
-    use_ok('DateTime::TimeZone');
-}
+use_ok('DateTime::TimeZone');
+
