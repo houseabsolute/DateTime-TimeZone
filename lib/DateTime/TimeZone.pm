@@ -323,9 +323,8 @@ C<DateTime::TimeZone::OffsetOnly> object.
 If the "name" parameter is "UTC", then a C<DateTime::TimeZone::UTC>
 object is returned.
 
-Finally, if the "name" is a number or an offset string, that is
-converted to a number and a C<DateTime::TimeZone::OffsetOnly> object
-is returned.
+Finally, if the "name" is an offset string, it is converted to a
+number, and a C<DateTime::TimeZone::OffsetOnly> object is returned.
 
 =item * offset_for_datetime( $datetime )
 
