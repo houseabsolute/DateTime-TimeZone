@@ -5,6 +5,9 @@ message if the failure is due to a syntax error in the module, as
 opposed to the specified time zone not existing.  Based on a patch
 from Alexey Mahotkin.
 
+- Require Pod::Man 1.14+, so that head3/head4 markup doesn't cause
+installation to die.
+
 
 0.2503   2003-10-06
 
