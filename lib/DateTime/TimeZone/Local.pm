@@ -23,10 +23,7 @@ sub _from_env
     # names with '$' are for VMS
     foreach my $k ( qw( TZ SYS$TIMEZONE_RULE SYS$TIMEZONE_NAME UCX$TZ TCPIP$TZ ) )
     {
-	if ( defined $ENV{$k} &&
-	     $ENV{$k} ne 'local' &&
-	     _could_be_valid_time_zone( $ENV{$k} )
-	   )
+	if ( _could_be_valid_time_zone( $ENV{$k} ) )
 	{
 	    return eval { DateTime::TimeZone->new( name => $ENV{$k} ) };
 	}
@@ -144,7 +141,7 @@ sub _from_etc_sysconfig_clock
 
     my $name = _read_etc_sysconfig_clock();
 
-    if ( defined $name && _could_be_valid_time_zone($name) )
+    if ( _could_be_valid_time_zone($name) )
     {
         return eval { DateTime::TimeZone->new( name => $name ) };
     }
