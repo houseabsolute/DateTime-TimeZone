@@ -1,3 +1,8 @@
+0.20     2003-06-20
+
+- Load File::Spec in DT::TZ::Local.
+
+
 0.19     2003-06-13
 
 - The name() method will now always return something that can be used
