@@ -287,34 +287,23 @@ sub _generate_spans_until_match
     my @changes;
     foreach my $rule (@$rules)
     {
-        my $year = $dt->year;
+        my $dt_year = $dt->utc_year;
+        foreach my $year ( $dt_year - 1, $dt_year, $dt_year + 1 )
+        {
+            my $next = $rule->date_for_year( $year, !OFFSET );
 
-        my $next = $rule->date_for_year( $year, !OFFSET );
+            # don't bother with changes we've seen already
+            next if $next->{utc}->utc_rd_as_seconds < $self->{max_span}{utc_end};
 
-        # don't bother with changes we've seen already
-        next if $next->{utc}->utc_rd_as_seconds < $self->{max_span}{utc_end};
-
-        push @changes,
-            DateTime::TimeZone::OlsonDB::Change->new
-                ( start_date => $next->{local},
-                  short_name =>
-                  sprintf( $last_observance->format, $rule->letter ),
-                  observance => $last_observance,
-                  rule       => $rule,
-                );
-
-        next unless $next->{utc} < $dt;
-
-        $next = $rule->date_for_year( $year + 1, !OFFSET );
-
-        push @changes,
-            DateTime::TimeZone::OlsonDB::Change->new
-                ( start_date => $next->{local},
-                  short_name =>
-                  sprintf( $last_observance->format, $rule->letter ),
-                  observance => $last_observance,
-                  rule       => $rule,
-                );
+            push @changes,
+                DateTime::TimeZone::OlsonDB::Change->new
+                    ( start_date => $next->{local},
+                      short_name =>
+                      sprintf( $last_observance->format, $rule->letter ),
+                      observance => $last_observance,
+                      rule       => $rule,
+                    );
+        }
     }
 
     my @sorted = sort { $a->start_date <=> $b->start_date } @changes;
