@@ -808,13 +808,17 @@ sub two_changes_as_span
     my $utc_end = $c2->utc_start_datetime->utc_rd_as_seconds;
     my $local_end = $utc_end + $c1->total_offset;
 
+    my $is_dst = 0;
+    $is_dst = 1 if $c1->rule && $c1->rule->offset_from_std;
+    $is_dst = 1 if $c1->observance->offset_from_std;
+
     return { utc_start   => $utc_start,
              utc_end     => $utc_end,
              local_start => $local_start,
              local_end   => $local_end,
              short_name  => $c1->short_name,
              offset      => $c1->total_offset,
-             is_dst      => ($c1->rule && $c1->rule->offset_from_std != 0 ? 1 : 0),
+             is_dst      => $is_dst,
            };
 }
 
