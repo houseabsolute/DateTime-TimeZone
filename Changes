@@ -1,4 +1,4 @@
-0.06
+0.06     2003-02-16
 
 - Changes to work with DateTime.pm 0.06.
 
@@ -7,6 +7,10 @@
 - Fix a bug in handling future times for time zones with recurring
 rules.  The symptom would be the error "Invalid local time for date
 ..."
+
+- Time zone data is now stored in a simple array, and searched using a
+binary search algorithm.  This eliminates the need to install
+Tree::RedBlack, and makes looking up time zone data quicker.
 
 0.05     2003-02-13
 
