@@ -16,7 +16,7 @@ my @names = DateTime::TimeZone::all_names;
 my $is_maintainer = -d './CVS' ? 1 : 0;
 
 my $tests_per_zone = $is_maintainer ? 7 : 4;
-plan tests => 26 + ( $tests_per_zone * scalar @names );
+plan tests => 28 + ( $tests_per_zone * scalar @names );
 
 foreach my $name (@names)
 {
@@ -132,4 +132,27 @@ my $tz = DateTime::TimeZone->new( name => 'America/Chicago' );
 
     is( $tz->offset_for_datetime($dt), -21036, 'offset should be -21036' );
     is( $tz->short_name_for_datetime($dt), 'LMT', 'name should be LMT' );
+}
+
+{
+    {
+        package TestHack;
+
+        sub new { bless {} }
+        # UTC RD secs == 63518486401
+        sub utc_rd_values { ( 735167, 57601 ) }
+    }
+
+    # This is to check a bug in DT::TZ::_span_for_datetime, where it
+    # was always looking at the LOCAL_END of the current max_span.
+    #
+    # Australia/Sydney's max_span (before generation) has a LOCAL_END
+    # of 63518522400 and UTC_END of 63518486400.  The values above
+    # create a utc_rd_seconds value that is after the UTC_END but
+    # before the LOCAL_END.
+    my $dt = DateTime->from_object( object => TestHack->new );
+
+    eval { $dt->set_time_zone( 'Australia/Sydney' ) };
+    ok( ! $@, 'should be able to set time zone' );
+    ok( $dt->is_dst, 'is_dst should be true' );
 }
