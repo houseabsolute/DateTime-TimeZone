@@ -24,10 +24,9 @@ sub new
 
     return DateTime::TimeZone::UTC->new unless $offset;
 
-    my $self = {
-        name    => DateTime::TimeZone::offset_as_string( $offset ),
-        offset  => $offset,
-    };
+    my $self = { name   => DateTime::TimeZone::offset_as_string( $offset ),
+                 offset => $offset,
+               };
 
     return bless $self, $class;
 }
