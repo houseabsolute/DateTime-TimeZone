@@ -88,7 +88,7 @@ sub _local_from_etc_sysconfig_clock
     return unless -r "/etc/sysconfig/clock" && -f _;
 
     my $name = _read_etc_sysconfig_clock();
-    warn "CLOCK SAYS $name\n";
+
     if ( defined $name && _could_be_valid_time_zone($name) )
     {
         my $tz;
