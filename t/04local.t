@@ -130,7 +130,7 @@ SKIP:
 SKIP:
 {
     skip "These tests are too dangerous to run on someone else's machine ;)", 3
-        unless hostname =~ /houseabsolutes|quasar/ && -d 'CVS';
+        unless hostname =~ /houseabsolute|quasar/ && -d 'CVS';
 
     skip "These tests can only be run if we can overwrite /etc/localtime", 3
         unless -w '/etc/localtime' && -l '/etc/localtime';
