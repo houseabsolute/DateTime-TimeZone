@@ -11,7 +11,6 @@ use DateTime::TimeZone::OffsetOnly;
 use DateTime::TimeZone::UTC;
 use File::Spec;
 use Params::Validate qw( validate validate_pos SCALAR ARRAYREF );
-use Time::Local;
 
 use constant INFINITY     =>       100 ** 100 ** 100 ;
 use constant NEG_INFINITY => -1 * (100 ** 100 ** 100);
@@ -101,14 +100,7 @@ sub _local_timezone
         }
     }
 
-    my @t = gmtime;
-
-    my $local = Time::Local::timelocal(@t);
-    my $gm    = Time::Local::timegm(@t);
-
-    return
-        DateTime::TimeZone::OffsetOnly->new
-                ( offset => offset_as_string( $gm - $local ) );
+    die "Cannot determine local time zone\n";
 }
 sub DateTime::TimeZone::readlink { CORE::readlink(@_) }
 
@@ -377,10 +369,7 @@ example, if this file is linked to F</usr/share/zoneinfo/US/Central>,
 it will end up trying "US/Central", which will then be converted to
 "America/Chicago" internally.
 
-Finally, if none of these efforts work, the local offset is calculated
-by comparing the difference between the C<Time::Local> module's
-C<timegm()> and C<timelocal()> functions.  This offset is then used to
-create a C<DateTime::TimeZone::OffsetOnly> object.
+If neither of these methods work, it gives up and dies.
 
 If the "name" parameter is "UTC", then a C<DateTime::TimeZone::UTC>
 object is returned.

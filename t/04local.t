@@ -7,7 +7,7 @@ use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
 
-plan tests => 6;
+plan tests => 5;
 
 use DateTime::TimeZone;
 
@@ -19,8 +19,8 @@ use DateTime::TimeZone;
 
     my $tz;
     eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
-    is( $@, '', 'invalid time zone name in $ENV{TZ} should not die' );
-    isa_ok( $tz, 'DateTime::TimeZone::OffsetOnly' );
+    like( $@, qr/cannot determine local time zone/i,
+          'invalid time zone name in $ENV{TZ} should die' );
 }
 
 {
