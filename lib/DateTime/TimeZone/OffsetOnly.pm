@@ -17,11 +17,14 @@ sub new
     my %p = validate( @_, { offset => { type => SCALAR },
                           } );
 
-    return DateTime::TimeZone::UTC->new unless $p{offset};
-
-    my $self = {};
-    $self->{offset} =
+    my $offset =
         DateTime::TimeZone::offset_as_seconds( $p{offset} );
+
+    die "Invalid offset: $p{offset}" unless defined $offset;
+
+    return DateTime::TimeZone::UTC->new unless $offset;
+
+    my $self = { offset => $offset };
 
     return bless $self, $class;
 }
