@@ -18,10 +18,10 @@ INSTALLATION
 To install this module type the following in the distribution
 directory:
 
-   perl Makefile.PL
-   make
-   make test
-   make install
+   perl Build.PL
+   ./Build
+   ./Build test
+   ./Build install
 
 This distribution is dependent on DateTime.pm, but it does not list it
 as a prerequisite.  This is because DateTime.pm is in turn dependent
