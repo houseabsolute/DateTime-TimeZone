@@ -15,7 +15,7 @@ use Getopt::Long;
 $Data::Dumper::Indent = 1;
 $Data::Dumper::Terse = 1;
 
-my $VERSION = "0.04";
+my $VERSION = "0.05";
 
 my $INFINITY  = 100 ** 100 ** 100;
 
@@ -338,9 +338,9 @@ my $last_observance = !LAST_OBSERVANCE;
 sub _generate_spans_until_match
 {
     my $self = shift;
-    my $dt = shift;
-
-    my $generate_until_year = $dt->utc_year + 1;
+    my $generate_until_year = shift;
+    my $seconds = shift;
+    my $type = shift;
 
     my @changes;
     foreach my $rule (@$rules)
@@ -366,9 +366,10 @@ sub _generate_spans_until_match
     $max_year = $generate_until_year;
     my @sorted = sort { $a->start_date <=> $b->start_date } @changes;
 
-    my $seconds = $dt->utc_rd_as_seconds;
-    my $match;
+    my $start_key = $type . '_start';
+    my $end_key   = $type . '_end';
 
+    my $match;
     for ( my $x = 1; $x < @sorted; $x++ )
     {
         my $last_offset =
@@ -381,7 +382,7 @@ sub _generate_spans_until_match
         push @{ $self->{spans} }, $span;
 
         $match = $span
-            if $seconds >= $span->{utc_start} && $seconds < $span->{utc_end};
+            if $seconds >= $span->{$start_key} && $seconds < $span->{$end_key};
     }
 
     return $match;
