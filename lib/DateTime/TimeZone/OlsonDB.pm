@@ -2,7 +2,7 @@ package DateTime::TimeZone::OlsonDB;
 
 use strict;
 
-use vars qw( %MONTHS %DAYS );
+use vars qw( %MONTHS %DAYS $PLUS_ONE_DAY_DUR $MINUS_ONE_DAY_DUR );
 
 use Params::Validate qw( validate SCALAR );
 
@@ -14,6 +14,9 @@ my $x = 1;
 $x = 1;
 %DAYS = map { $_ => $x++ }
         qw( Mon Tue Wed Thu Fri Sat Sun );
+
+$PLUS_ONE_DAY_DUR =  DateTime::Duration->new( days => 1 );
+$MINUS_ONE_DAY_DUR = DateTime::Duration->new( days => -1 );
 
 sub new
 {
@@ -95,7 +98,8 @@ sub _parse_zone
     my $zone = shift;
     my $name = shift;
 
-    my @items = grep { defined && length } split /\s+/, $zone, 6;
+    my $expect = $name ? 5 : 6;
+    my @items = grep { defined && length } split /\s+/, $zone, $expect;
 
     my %obs;
     unless ($name)
@@ -179,6 +183,87 @@ sub rule
 
     return @{ $self->{rules}{$name} };
 }
+
+sub parse_day_spec
+{
+    my ( $day, $month, $year ) = @_;
+
+    return $day if $day =~ /^\d+$/;
+
+    if ( $day =~ /^last(\w\w\w)$/ )
+    {
+        my $dow = $DateTime::TimeZone::OlsonDB::DAYS{$1};
+
+        my $dt =
+            DateTime->new( year   => $year,
+                           month  => $month,
+                           day    =>
+                           DateTime->last_day_of_month( year  => $year,
+                                                        month => $month ),
+                           time_zone => 'UTC',
+                         );
+
+        while ( $dt->day_of_week != $dow )
+        {
+            $dt -= $PLUS_ONE_DAY_DUR;
+        }
+
+        return $dt->day;
+    }
+    elsif ( $day =~ /^(\w\w\w)([><])=(\d\d?)$/ )
+    {
+        my $dow = $DateTime::TimeZone::OlsonDB::DAYS{$1};
+
+        my $dt = DateTime->new( year   => $year,
+                                month  => $month,
+                                day    => $3,
+                                time_zone => 'UTC',
+                              );
+
+        my $dur =
+            ( $2 eq '<' ?
+              $DateTime::TimeZone::OlsonDB::MINUS_ONE_DAY_DUR :
+              $DateTime::TimeZone::OlsonDB::PLUS_ONE_DAY_DUR
+            );
+
+        while ( $dt->day_of_week != $dow )
+        {
+            $dt += $dur;
+        }
+
+        return $dt->day;
+    }
+    else
+    {
+        die "Invalid on spec for rule: $day\n";
+    }
+}
+
+sub parse_time_spec
+{
+    my $time = shift;
+    my $base_offset = shift;
+    my $extra_offset = shift;
+
+    # 'w'all - ignore
+    $time =~ s/w$//;
+
+    # 'g'reenwich, 'u'tc, or 'z'ulu
+    $base_offset = 0 if $time =~ s/[guz]$//;
+
+    # 's'tandard time - ignore DS offset
+    unless ( $time =~ s/s$// )
+    {
+        $base_offset -= $extra_offset if defined $extra_offset;
+    }
+
+    my ($hour, $minute, $second) = split /:/, $time;
+    $minute = 0 unless defined $minute;
+    $second = 0 unless defined $second;
+
+    return ( $hour, $minute, $second, $base_offset );
+}
+
 
 package DateTime::TimeZone::OlsonDB::Zone;
 
@@ -274,6 +359,7 @@ sub sorted_changes { ( ( defined $_[0]->{earliest} ? $_[0]->{earliest} : () ),
 
 sub infinite_rules { values %{ $_[0]->{infinite_rules} } }
 
+
 package DateTime::TimeZone::OlsonDB::Observance;
 
 use DateTime;
@@ -331,7 +417,7 @@ sub _expand_one_rule
     $max_year = $rule->max_year if defined $rule->max_year;
 
     my $min_dt = $self->start;
-    my $max_dt = $self->until;
+    my $max_dt = $self->until( $rule->offset );
     $max_dt ||= DateTime->new( year   => $max_year,
                                month  => 1,
                                day    => 1,
@@ -374,41 +460,44 @@ sub start { $_[0]->{start} }
 sub until
 {
     my $self = shift;
+    my $extra_offset = shift;
 
     return unless defined $self->{until};
 
     my ( $year, $mon_name, $day, $time ) = split /\s+/, $self->{until};
 
-    my $month = defined $mon_name ? $DateTime::TimeZone::OlsonDB::MONTHS{$mon_name} : 0;
-    $day = 1 unless defined $day;
+    my $month =
+        defined $mon_name ? $DateTime::TimeZone::OlsonDB::MONTHS{$mon_name} : 1;
 
-    my ( $hour, $minute, $second );
+    $day =
+        ( defined $day ?
+          DateTime::TimeZone::OlsonDB::parse_day_spec( $day, $month, $year ) :
+          1
+        );
+
+    my ( $hour, $minute, $second, $offset );
+
     if ( defined $time )
     {
-        ( $hour, $minute, $second ) = split /:/, $time;
-        $second = 0 unless defined $second;
+        ( $hour, $minute, $second, $offset ) =
+            DateTime::TimeZone::OlsonDB::parse_time_spec
+                ( $time, $self->{offset}, $extra_offset );
     }
     else
     {
-        ( $hour, $minute, $second ) = ( 0, 0, 0 );
+        ( $hour, $minute, $second, $offset ) = ( 0, 0, 0, $self->{offset} );
     }
 
-    my $offset = $self->{offset};
-    # 'u'tc time
-    if ( $minute =~ s/u$// || $second =~ s/u$// )
-    {
-        $offset = 0;
-    }
-
+    # subtract offset to get UTC
     my $dt = ( DateTime->new( year   => $year,
                               month  => $month,
                               day    => $day,
                               hour   => $hour,
                               minute => $minute,
                               second => $second,
-                              time_zone => 0,
+                              time_zone => 'UTC',
                             )
-             +
+             -
              DateTime::Duration->new( seconds => $offset )
            );
 
@@ -463,80 +552,18 @@ sub letter { $_[0]->{letter} }
 
 sub month { $DateTime::TimeZone::OlsonDB::MONTHS{ $_[0]->{in} } }
 
-my $plus_one_day_dur =  DateTime::Duration->new( days => 1 );
-my $minus_one_day_dur = DateTime::Duration->new( days => -1 );
-
 sub date_for_year
 {
     my $self   = shift;
     my $year   = shift;
     my $offset = shift;
 
-    my $day;
-    if ( $self->{on} =~ /^\d+$/ )
-    {
-        $day = $self->{on};
-    }
-    elsif ( $self->{on} =~ /^last(\w\w\w)$/ )
-    {
-        my $dow = $DateTime::TimeZone::OlsonDB::DAYS{$1};
+    my $day =
+        DateTime::TimeZone::OlsonDB::parse_day_spec( $self->{on}, $self->month, $year );
 
-        my $dt =
-            DateTime->new( year   => $year,
-                           month  => $self->month,
-                           day    =>
-                           DateTime->last_day_of_month( year  => $year,
-                                                        month => $self->month ),
-                           time_zone => 0,
-                         );
-
-        while ( $dt->day_of_week != $dow )
-        {
-            $dt -= $plus_one_day_dur;
-        }
-
-        $day = $dt->day;
-    }
-    elsif ( $self->{on} =~ /^(\w\w\w)([><])=(\d\d?)$/ )
-    {
-        my $dow = $DateTime::TimeZone::OlsonDB::DAYS{$1};
-
-        my $dt = DateTime->new( year   => $year,
-                                month  => $self->month,
-                                day    => $3,
-                                time_zone => 0,
-                              );
-
-        my $dur = $2 eq '<' ? $minus_one_day_dur : $plus_one_day_dur;
-
-        while ( $dt->day_of_week != $dow )
-        {
-            $dt += $dur;
-        }
-
-        $day = $dt->day;
-    }
-    else
-    {
-        die "Invalid on spec for rule: $self->{on}\n";
-    }
-
-    my $time = $self->{at};
-
-    # 'w'all - ignore
-    $time =~ s/w$//;
-
-    # 'g'reenwich, 'u'tc, or 'z'ulu
-    $offset = 0 if $time =~ s/[guz]$//;
-
-    # 's'tandard time - ignore DS offset
-    unless ( $time =~ s/s$// )
-    {
-        $offset -= $self->{offset};
-    }
-
-    my ($hour, $minute, $second) = split /:/, $time;
-    $second = 0 unless defined $second;
+    my ( $hour, $minute, $second, $real_offset ) =
+        DateTime::TimeZone::OlsonDB::parse_time_spec
+            ( $self->{at}, $offset, $self->{offset} );
 
     return
         ( DateTime->new( year   => $year,
@@ -547,8 +574,8 @@ sub date_for_year
                          second => $second,
                          time_zone => 0,
                        )
-          +
-          DateTime::Duration->new( seconds => $offset )
+          -
+          DateTime::Duration->new( seconds => $real_offset )
         );
 }
 
@@ -583,30 +610,27 @@ sub two_changes_as_span
 {
     my ($c1, $c2) = @_;
 
-    my $start_date;
+    my ( $utc_start, $local_start );
+
     if ( defined $c1->start_date )
     {
-        my $dt = $c1->start_date;
-        $start_date = sprintf( '%04d%02d%02d%02d%02d%02d',
-                               $dt->year, $dt->month, $dt->day,
-                               $dt->hour, $dt->minute, $dt->second,
-                             );
+        $utc_start = $c1->start_date->utc_rd_as_seconds;
+        $local_start = $utc_start - $c1->offset;
     }
     else
     {
-        $start_date = '-inf';
+        $utc_start = $local_start = '-inf';
     }
 
-    my $dt = $c2->start_date;
-    my $end_date = sprintf( '%04d%02d%02d%02d%02d%02d',
-                            $dt->year, $dt->month, $dt->day,
-                            $dt->hour, $dt->minute, $dt->second,
-                          );
+    my $utc_end = $c2->start_date->utc_rd_as_seconds;
+    my $local_end = $utc_end - $c2->offset;
 
-    return { start_date => $start_date,
-             end_date   => $end_date,
-             short_name => $c1->short_name,
-             offset     => $c1->offset,
+    return { utc_start   => $utc_start,
+             utc_end     => $utc_end,
+             local_start => $local_start,
+             local_end   => $local_end,
+             short_name  => $c1->short_name,
+             offset      => $c1->offset,
            };
 }
 
