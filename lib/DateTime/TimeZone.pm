@@ -169,7 +169,7 @@ sub _span_for_datetime
 
 sub _numeric_dt
 {
-    my $utc_dt = $_[1]->utc_datetime;
+    my $utc_dt = $_[1]->as_utc;
 
     # add 0 to force numification
     sprintf( '%04d%02d%02d%02d%02d%02d',
