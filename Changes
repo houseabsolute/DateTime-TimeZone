@@ -1,3 +1,9 @@
+0.06
+
+- Changes to work with DateTime.pm 0.06.
+
+- DateTime::TimeZone::offset_as_seconds handles '0' properly.
+
 0.05     2003-02-13
 
 - The offset_as_string function did not handle negative offsets
