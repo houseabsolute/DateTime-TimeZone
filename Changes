@@ -1,3 +1,8 @@
+0.01_01
+
+- Fix a buglet that caused test 01load.t to fail with some versions of
+Test::More.  Reported by John Peacock.
+
 0.01_00
 
 - Initial alpha release
