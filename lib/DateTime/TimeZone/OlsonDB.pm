@@ -335,7 +335,7 @@ sub _expand_one_rule
     $max_dt ||= DateTime->new( year   => $max_year,
                                month  => 1,
                                day    => 1,
-                               offset => 0,
+                               time_zone => 'UTC',
                              );
 
     my $date;
@@ -401,13 +401,13 @@ sub until
     }
 
     my $dt = ( DateTime->new( year   => $year,
-                            month  => $month,
-                            day    => $day,
-                            hour   => $hour,
-                            minute => $minute,
-                            second => $second,
-                            offset => 0,
-                          )
+                              month  => $month,
+                              day    => $day,
+                              hour   => $hour,
+                              minute => $minute,
+                              second => $second,
+                              time_zone => 0,
+                            )
              +
              DateTime::Duration->new( seconds => $offset )
            );
@@ -487,7 +487,7 @@ sub date_for_year
                            day    =>
                            DateTime->last_day_of_month( year  => $year,
                                                         month => $self->month ),
-                           offset => 0,
+                           time_zone => 0,
                          );
 
         while ( $dt->day_of_week != $dow )
@@ -504,7 +504,7 @@ sub date_for_year
         my $dt = DateTime->new( year   => $year,
                                 month  => $self->month,
                                 day    => $3,
-                                offset => 0,
+                                time_zone => 0,
                               );
 
         my $dur = $2 eq '<' ? $minus_one_day_dur : $plus_one_day_dur;
@@ -545,7 +545,7 @@ sub date_for_year
                          hour   => $hour,
                          minute => $minute,
                          second => $second,
-                         offset => 0,
+                         time_zone => 0,
                        )
           +
           DateTime::Duration->new( seconds => $offset )
