@@ -32,9 +32,11 @@ sub new
 
         if ( $p{name} eq 'local' )
         {
-            my $offset = offset_as_seconds( $ENV{TZ} );
-
-            unless ( defined $offset )
+            if ( defined $ENV{TZ} && $ENV{TZ} ne 'local' )
+            {
+                return $class->new( name => $ENV{TZ} );
+            }
+            else
             {
                 my @t = gmtime;
 
@@ -284,7 +286,7 @@ This class has the following methods:
 
 =over 4
 
-=item * new ( name => $tz_name )
+=item * new( name => $tz_name )
 
 Given a valid time zone name, this method returns a new time zone
 blessed into the appropriate subclass.  Subclasses are named for the
@@ -305,12 +307,12 @@ given event happens at the same I<local> time, regardless of where it
 occurs.  See RFC 2445 for more details.
 
 If the "name" parameter is "local", then the local time zone of the
-current system is used.  This is determined by first looking at
-C<$ENV{TZ}>.  If this contains a number or an offset string, it is
-treated as the offset.  Otherwise, the local offset is calculated by
-comparing the difference between the C<Time::Local> module's
-C<timegm()> and C<timelocal()> functions.  Either way, the offset is
-used to create a C<DateTime::TimeZone::OffsetOnly> object.
+current system is used.  If C<$ENV{TZ}> is defined, and it is not the
+string 'local', then it is treated as any other valid name (including
+"floating").  Otherwise, the local offset is calculated by comparing
+the difference between the C<Time::Local> module's C<timegm()> and
+C<timelocal()> functions.  This offset is then used to create a
+C<DateTime::TimeZone::OffsetOnly> object.
 
 If the "name" parameter is "UTC", then a C<DateTime::TimeZone::UTC>
 object is returned.
