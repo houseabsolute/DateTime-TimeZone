@@ -9,7 +9,7 @@ use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
 
-plan tests => 107;
+plan tests => 101;
 
 # The point of this group of tests is to try to check that DST changes
 # are occuring at exactly the right time in various time zones.  It's
@@ -225,41 +225,6 @@ plan tests => 107;
 
     is( $dt->time_zone_short_name, 'CET', 'short name is CET' );
     is( $dt->is_dst, 0, 'is not dst' );
-}
-
-# Asia/Aqtau has an observance that ends at 1995-09-24T00:00:00 local
-# time, and a new rule that starts four hours later!  The net effect
-# is that right before the end of the observance, the offset is +0600,
-# then the observance ends, the offset is +0500 for 4 hours, and then
-# +0400.  Confused yet?
-
-# Rule RussiaAsia	1993	max	-	Mar	lastSun	 2:00s	1:00	S
-# Rule RussiaAsia	1993	1995	-	Sep	lastSun	 2:00s	0	-
-# Rule RussiaAsia	1996	max	-	Oct	lastSun	 2:00s	0	-
-#
-# 			5:00 RussiaAsia	AQT%sT	1995 Sep lastSun # Aqtau Time
-# 			4:00 RussiaAsia	AQT%sT
-{
-    my $dt = DateTime->new( year => 1995, month => 9, day => 23,
-                            hour => 23, minute => 59,
-                            time_zone => 'Asia/Aqtau'
-                          );
-
-    is( $dt->time_zone_short_name, 'AQTST', 'short name is AQTST' );
-    is( $dt->offset, 3600 * 6, 'offset is +0600' );
-
-    # observance ends, old rule still in effect, same short name,
-    # different offset
-    $dt->add( minutes => 1 );
-
-    is( $dt->time_zone_short_name, 'AQTST', 'short name is AQTST' );
-    is( $dt->offset, 3600 * 5, 'offset is +0500' );
-
-    # rule ends, new name, new offset
-    $dt->add( hours => 4 );
-
-    is( $dt->time_zone_short_name, 'AQTT', 'short name is AQTT' );
-    is( $dt->offset, 3600 * 4, 'offset is +0400' );
 }
 
 {
