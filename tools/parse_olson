@@ -223,12 +223,13 @@ $cat_names
 $cat
 );
 
-\%DateTime::TimeZone::Links =
+\%DateTime::TimeZone::LINKS =
 $links
 ;
 
 sub all_names { wantarray ? \@DateTime::TimeZone::ALL : \\\@DateTime::TimeZone::ALL }
 sub categories { wantarray ? \@DateTime::TimeZone::CATEGORY_NAMES : \\\@DateTime::TimeZone::CATEGORY_NAMES }
+sub links { wantarray ? %DateTime::TimeZone::LINKS : \\%DateTime::TimeZone::LINKS }
 
 sub names_in_category
 {
