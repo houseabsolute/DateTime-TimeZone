@@ -1,6 +1,6 @@
 use strict;
 
-use Test::More tests => 18;
+use Test::More tests => 20;
 
 use DateTime::TimeZone;
 
@@ -37,13 +37,25 @@ is( $tz->is_utc, 0, 'should not be UTC' );
 }
 
 {
-    my $dt = DateTime->new( year => 2002,
+    # check that generation works properly
+    my $dt = DateTime->new( year => 2200,
                             month => 10,
-                            day => 29,
+                            day => 26,
                             offset => 0,
                           );
-    is( $tz->offset_for_datetime($dt), -18000, 'offset should be -18000' );
+    is( $tz->offset_for_datetime($dt), -18000, 'offset should be -1800' );
     is( $tz->short_name_for_datetime($dt), 'CDT', 'name should be CDT' );
+}
+
+{
+    # check that generation works properly
+    my $dt = DateTime->new( year => 2200,
+                            month => 10,
+                            day => 27,
+                            offset => 0,
+                          );
+    is( $tz->offset_for_datetime($dt), -21600, 'offset should be -21600' );
+    is( $tz->short_name_for_datetime($dt), 'CST', 'name should be CST' );
 }
 
 {
