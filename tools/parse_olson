@@ -15,7 +15,7 @@ use Getopt::Long;
 $Data::Dumper::Indent = 1;
 $Data::Dumper::Terse = 1;
 
-my $VERSION = "0.01";
+my $VERSION = "0.02";
 
 my $INFINITY  = 10 ** 10 ** 10;
 
@@ -100,8 +100,8 @@ foreach my $f (@files)
 
         my $spans = Dumper zone_as_data($zone);
 
-        $spans =~ s/'inf'/DateTime::TimeZone::INFINITY/;
-        $spans =~ s/'-inf'/DateTime::TimeZone::NEG_INFINITY/;
+        $spans =~ s/'inf'/DateTime::TimeZone::INFINITY/g;
+        $spans =~ s/'-inf'/DateTime::TimeZone::NEG_INFINITY/g;
 
         $spans =~ s/('(?:start|end)_date'\s+=>\s+)'(\d+)'/$1$2/g;
 
@@ -259,13 +259,15 @@ sub zone_as_data
     {
         my $last_observance = $changes[-1]->observance;
 
-        my $utc_end =
+        my $utc_start =
             @spans ? $spans[-1]{utc_end} : -1 * $INFINITY;
 
-        push @spans, { utc_start  => $utc_end,
-                       utc_end    => $INFINITY,
-                       short_name => sprintf( $last_observance->format, '' ),
-                       offset     => $last_observance->offset,
+        push @spans, { utc_start   => $utc_start,
+                       utc_end     => $INFINITY,
+                       local_start => $utc_start - $last_observance->offset,
+                       local_end   => $INFINITY,
+                       short_name  => sprintf( $last_observance->format, '' ),
+                       offset      => $last_observance->offset,
                      };
     }
 
