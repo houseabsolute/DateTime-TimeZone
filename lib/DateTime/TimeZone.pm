@@ -3,7 +3,7 @@ package DateTime::TimeZone;
 use strict;
 
 use vars qw( $VERSION );
-$VERSION = '0.34';
+$VERSION = '0.35';
 
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
@@ -415,6 +415,8 @@ sub STORABLE_thaw
     # structures by reference here, so span generation in one object
     # will be visible in another also in memory.
     %$self = %$obj;
+
+    return $self;
 }
 
 #
