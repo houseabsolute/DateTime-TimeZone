@@ -9,7 +9,7 @@ use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
 
-plan tests => 16;
+plan tests => 24;
 
 # The point of this group of tests is to try to check that DST changes
 # are occuring at exactly the right time in various time zones.  It's
@@ -32,11 +32,11 @@ plan tests => 16;
 
     $dt->set_time_zone('Australia/Sydney');
 
-    is( $dt->hour, 1, 'hour should be 2' );
+    is( $dt->hour, 1, 'A/S 1997: hour should be 2' );
 
     $dt->set_time_zone('UTC')->add( minutes => 1 )->set_time_zone('Australia/Sydney');
 
-    is( $dt->hour, 1, 'hour should still be 2' );
+    is( $dt->hour, 1, 'A/S 1997: hour should still be 2' );
 }
 
 # same tests without using UTC as intermediate
@@ -48,13 +48,12 @@ plan tests => 16;
 
     $dt->add( hours => 1 );
 
-    is( $dt->hour, 1, 'hour should be 2' );
+    is( $dt->hour, 1, 'A/S 1997: hour should be 2' );
 
     $dt->add( minutes => 1 );
 
-    is( $dt->hour, 1, 'hour should still be 2' );
+    is( $dt->hour, 1, 'A/S 1997: hour should still be 2' );
 }
-
 
 {
     # one minute before change to standard time
@@ -64,11 +63,11 @@ plan tests => 16;
 
     $dt->set_time_zone('Australia/Sydney');
 
-    is( $dt->hour, 1, 'hour should be 1' );
+    is( $dt->hour, 1, 'A/S 2002: hour should be 1' );
 
     $dt->set_time_zone('UTC')->add( minutes => 1 )->set_time_zone('Australia/Sydney');
 
-    is( $dt->hour, 3, 'hour should be 3' );
+    is( $dt->hour, 3, 'A/S 2002: hour should be 3' );
 
 }
 
@@ -78,13 +77,40 @@ plan tests => 16;
                             hour => 1, minute => 59,
                             time_zone => 'Australia/Sydney' );
 
-    is( $dt->hour, 1, 'hour should be 1' );
+    is( $dt->hour, 1, 'A/S 2002: hour should be 1' );
 
     $dt->add( minutes => 1 );
 
-    is( $dt->hour, 3, 'hour should be 3' );
+    is( $dt->hour, 3, 'A/S 2002: hour should be 3' );
 }
 
+# do same tests with future dates so more data is generated
+{
+    # Can't start at 1:59 or we get the _2nd_ 1:59 of that day (post-DST change)
+    my $dt = DateTime->new( year => 2040, month => 3, day => 25,
+                            hour => 0, minute => 59,
+                            time_zone => 'Australia/Sydney' );
+
+    $dt->add( hours => 1 );
+
+    is( $dt->hour, 1, 'A/S 2040: hour should be 2' );
+
+    $dt->add( minutes => 1 );
+
+    is( $dt->hour, 1, 'A/S 2040: hour should still be 2' );
+}
+
+{
+    my $dt = DateTime->new( year => 2040, month => 10, day => 28,
+                            hour => 1, minute => 59,
+                            time_zone => 'Australia/Sydney' );
+
+    is( $dt->hour, 1, 'A/S 2040: hour should be 1' );
+
+    $dt->add( minutes => 1 );
+
+    is( $dt->hour, 3, 'A/S 2040: hour should be 3' );
+}
 
 # Rule	EU	1981	max	-	Mar	lastSun	 1:00u	1:00	S
 # Rule	EU	1996	max	-	Oct	lastSun	 1:00u	0	-
@@ -96,11 +122,11 @@ plan tests => 16;
 
     $dt->set_time_zone('Europe/Vienna');
 
-    is( $dt->hour, 1, 'hour should be 1' );
+    is( $dt->hour, 1, 'E/V 1982: hour should be 1' );
 
     $dt->set_time_zone('UTC')->add( minutes => 1 )->set_time_zone('Europe/Vienna');
 
-    is( $dt->hour, 3, 'hour should be 3' );
+    is( $dt->hour, 3, 'E/V 1982: hour should be 3' );
 }
 
 # same tests without using UTC as intermediate
@@ -117,11 +143,11 @@ plan tests => 16;
     }
     else
     {
-        is( $dt->hour, 1, 'hour should be 1' );
+        is( $dt->hour, 1, 'E/V 1982: hour should be 1' );
 
         $dt->add( minutes => 1 );
 
-        is( $dt->hour, 3, 'hour should be 3' );
+        is( $dt->hour, 3, 'E/V 1982: hour should be 3' );
     }
 }
 
@@ -133,11 +159,11 @@ plan tests => 16;
 
     $dt->set_time_zone('Europe/Vienna');
 
-    is( $dt->hour, 2, 'hour should be 2' );
+    is( $dt->hour, 2, 'E/V 1997: hour should be 2' );
 
     $dt->set_time_zone('UTC')->add( minutes => 1 )->set_time_zone('Europe/Vienna');
 
-    is( $dt->hour, 2, 'hour should still be 2' );
+    is( $dt->hour, 2, 'E/V 1997: hour should still be 2' );
 
 }
 
@@ -147,9 +173,42 @@ plan tests => 16;
                             hour => 2, minute => 59,
                             time_zone => 'Europe/Vienna' );
 
-    is( $dt->hour, 2, 'hour should be 2' );
+    is( $dt->hour, 2, 'E/V 1997: hour should be 2' );
 
     $dt->add( minutes => 1 );
 
-    is( $dt->hour, 2, 'hour should still be 2' );
+    is( $dt->hour, 2, 'E/V 1997: hour should still be 2' );
+}
+
+# future
+{
+    my $dt =
+        eval { DateTime->new( year => 2040, month => 3, day => 25,
+                              hour => 1, minute => 59,
+                              time_zone => 'Europe/Vienna' ) };
+
+    if ($@)
+    {
+        ok( 0, "2040-03-25T01:59:00: $@" ) for 1..2;
+    }
+    else
+    {
+        is( $dt->hour, 1, 'E/V 2040: hour should be 1' );
+
+        $dt->add( minutes => 1 );
+
+        is( $dt->hour, 3, 'E/V 2040: hour should be 3' );
+    }
+}
+
+{
+    my $dt = DateTime->new( year => 2040, month => 10, day => 28,
+                            hour => 2, minute => 59,
+                            time_zone => 'Europe/Vienna' );
+
+    is( $dt->hour, 2, 'E/V 2040: hour should be 2' );
+
+    $dt->add( minutes => 1 );
+
+    is( $dt->hour, 2, 'E/V 2040: hour should still be 2' );
 }
