@@ -145,6 +145,4 @@ This package is used to try to figure out what the local time zone is,
 in a variety of ways.  See the
 L<DateTime::TimeZone|DateTime::TimeZone> docs for more details.
 
-=back
-
 =cut
