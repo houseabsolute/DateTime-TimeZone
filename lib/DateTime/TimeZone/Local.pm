@@ -6,40 +6,38 @@ sub local_time_zone
 {
     my $tz;
 
-    $tz = _local_from_env();
+    $tz = _from_env();
     return $tz if $tz;
 
-    $tz = _local_from_etc_localtime();
+    $tz = _from_etc_localtime();
     return $tz if $tz;
 
-    $tz = _local_from_etc_timezone();
+    $tz = _from_etc_timezone();
     return $tz if $tz;
 
-    $tz = _local_from_etc_sysconfig_clock();
+    $tz = _from_etc_sysconfig_clock();
     return $tz if $tz;
 
     die "Cannot determine local time zone\n";
 }
 
-sub _local_from_env
+sub _from_env
 {
     if ( defined $ENV{TZ} &&
          $ENV{TZ} ne 'local' &&
          _could_be_valid_time_zone( $ENV{TZ} )
        )
     {
-        my $tz;
-        return eval { $tz = DateTime::TimeZone->new( name => $ENV{TZ} ) };
+        return eval { DateTime::TimeZone->new( name => $ENV{TZ} ) };
     }
 }
 
-sub _local_from_etc_localtime
+sub _from_etc_localtime
 {
     return unless -l '/etc/localtime';
 
     # called like this so test suite can test this functionality
-    my $real_name =
-        DateTime::TimeZone::Local::readlink( '/etc/localtime' );
+    my $real_name = _readlink( '/etc/localtime' );
 
     if ( defined $real_name )
     {
@@ -57,12 +55,13 @@ sub _local_from_etc_localtime
                 );
 
             my $tz;
-            return eval { $tz = DateTime::TimeZone->new( name => $name ) };
+            $tz = eval { DateTime::TimeZone->new( name => $name ) };
+            return $tz if $tz;
         }
     }
 }
 
-sub _local_from_etc_timezone
+sub _from_etc_timezone
 {
     return unless -f '/etc/timezone' && -r _;
 
@@ -74,13 +73,13 @@ sub _local_from_etc_timezone
 
     $name =~ s/^\s+|\s+$//g;
 
-    my $tz;
-    return eval { $tz = DateTime::TimeZone->new( name => $name ) };
+    return eval { DateTime::TimeZone->new( name => $name ) };
 }
-sub DateTime::TimeZone::Local::readlink { CORE::readlink($_[0]) }
+
+sub _readlink { readlink($_[0]) }
 
 # RedHat uses this
-sub _local_from_etc_sysconfig_clock
+sub _from_etc_sysconfig_clock
 {
     return unless -r "/etc/sysconfig/clock" && -f _;
 
@@ -88,8 +87,7 @@ sub _local_from_etc_sysconfig_clock
 
     if ( defined $name && _could_be_valid_time_zone($name) )
     {
-        my $tz;
-        return eval { $tz = DateTime::TimeZone->new( name => $name ) };
+        return eval { DateTime::TimeZone->new( name => $name ) };
     }
 }
 
