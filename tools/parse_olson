@@ -15,7 +15,7 @@ use Getopt::Long;
 $Data::Dumper::Indent = 1;
 $Data::Dumper::Terse = 1;
 
-my $VERSION = "0.05";
+my $VERSION = "0.06";
 
 my $INFINITY  = 100 ** 100 ** 100;
 
@@ -126,10 +126,10 @@ foreach my $f (@files)
                                         expand_to_year => $max_year,
                                       );
 
-        my $spans = Dumper zone_as_data($zone);
+        my $spans = serialize_spans(zone_as_spans($zone));
 
-        $spans =~ s/'inf'/DateTime::TimeZone::INFINITY/g;
-        $spans =~ s/'-inf'/DateTime::TimeZone::NEG_INFINITY/g;
+        $spans =~ s/-inf/DateTime::TimeZone::NEG_INFINITY/g;
+        $spans =~ s/inf/DateTime::TimeZone::INFINITY/g;
 
         $spans =~ s/('(?:start|end)_date'\s+=>\s+)'(\d+)'/$1$2/g;
 
@@ -158,6 +158,7 @@ my \$spans =
 $spans;
 
 my \$max_year = $max_year;
+sub _max_year { $max_year }
 
 sub _new_instance
 {
@@ -289,7 +290,7 @@ open OUT2, ">lib/DateTime/TimeZoneCatalog.pm" or die $!;
 print OUT2 $zonecatalog or die $!;
 close OUT2 or die $!;
 
-sub zone_as_data
+sub zone_as_spans
 {
     my $zone = shift;
 
@@ -319,10 +320,35 @@ sub zone_as_data
                        local_end   => $INFINITY,
                        short_name  => sprintf( $last_observance->format, '' ),
                        offset      => $last_observance->offset,
+                       is_dst      => 0,
                      };
     }
 
     return \@spans;
+}
+
+sub serialize_spans
+{
+    my $spans = shift;
+
+    my $string = "[\n";
+    $string .= join "\n", map { serialize_span($_) } @$spans;
+    $string .= "\n]";
+
+    return $string;
+}
+
+sub serialize_span
+{
+    my $span = shift;
+    # must correspond to constants in DT::TZ, and short_name is always last
+    my @keys = qw( utc_start utc_end local_start local_end offset is_dst );
+    my $string = "    [\n";
+    $string .= join ",\n", @$span{@keys};
+    $string .= ",\n'$span->{short_name}'";
+    $string .= "\n    ],";
+
+    return $string;
 }
 
 sub zone_generator
@@ -332,64 +358,19 @@ sub zone_generator
     return '' unless $zone->infinite_rules;
 
     my $generator = <<'EOF';
-my $rules = !RULES;
+sub _last_offset { !OFFSET }
+
 my $last_observance = !LAST_OBSERVANCE;
+sub _last_observance { $last_observance }
 
-sub _generate_spans_until_match
-{
-    my $self = shift;
-    my $generate_until_year = shift;
-    my $seconds = shift;
-    my $type = shift;
-
-    my @changes;
-    foreach my $rule (@$rules)
-    {
-        foreach my $year ( $max_year .. $generate_until_year )
-        {
-            my $next = $rule->date_for_year( $year, !OFFSET );
-
-            # don't bother with changes we've seen already
-            next if $next->{utc}->utc_rd_as_seconds < $self->max_span->{utc_end};
-
-            push @changes,
-                DateTime::TimeZone::OlsonDB::Change->new
-                    ( start_date => $next->{local},
-                      short_name =>
-                      sprintf( $last_observance->format, $rule->letter ),
-                      observance => $last_observance,
-                      rule       => $rule,
-                    );
-        }
-    }
-
-    $max_year = $generate_until_year;
-    my @sorted = sort { $a->start_date <=> $b->start_date } @changes;
-
-    my $start_key = $type . '_start';
-    my $end_key   = $type . '_end';
-
-    my $match;
-    for ( my $x = 1; $x < @sorted; $x++ )
-    {
-        my $last_offset =
-            $x == 1 ? $self->max_span->{offset} : $sorted[ $x - 2 ]->offset;
-
-        my $span =
-            DateTime::TimeZone::OlsonDB::Change::two_changes_as_span
-                ( @sorted[ $x - 1, $x ], $last_offset );
-
-        push @{ $self->{spans} }, $span;
-
-        $match = $span
-            if $seconds >= $span->{$start_key} && $seconds < $span->{$end_key};
-    }
-
-    return $match;
-}
+my $rules = !RULES;
+sub _rules { $rules }
 EOF
 
     my $last_observance = ($zone->sorted_changes)[-1]->observance;
+
+    # hack to trim size of dumped object
+    delete $last_observance->{start}{language};
 
     # This assumes that there is only one observance from end of
     # changes til end of time, which should be guaranteed by code in
