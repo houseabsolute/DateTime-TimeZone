@@ -29,8 +29,7 @@ sub _local_from_env
        )
     {
         my $tz;
-        eval { $tz = DateTime::TimeZone->new( name => $ENV{TZ} ) };
-        return $tz if $tz;
+        return eval { $tz = DateTime::TimeZone->new( name => $ENV{TZ} ) };
     }
 }
 
@@ -58,8 +57,7 @@ sub _local_from_etc_localtime
                 );
 
             my $tz;
-            eval { $tz = DateTime::TimeZone->new( name => $name ) };
-            return $tz if $tz && ! $@;
+            return eval { $tz = DateTime::TimeZone->new( name => $name ) };
         }
     }
 }
@@ -77,8 +75,7 @@ sub _local_from_etc_timezone
     $name =~ s/^\s+|\s+$//g;
 
     my $tz;
-    eval { $tz = DateTime::TimeZone->new( name => $name ) };
-    return $tz if $tz && ! $@;
+    return eval { $tz = DateTime::TimeZone->new( name => $name ) };
 }
 sub DateTime::TimeZone::Local::readlink { CORE::readlink($_[0]) }
 
@@ -92,8 +89,7 @@ sub _local_from_etc_sysconfig_clock
     if ( defined $name && _could_be_valid_time_zone($name) )
     {
         my $tz;
-        eval { $tz = DateTime::TimeZone->new( name => $name ) };
-        return $tz if $tz and not $@;
+        return eval { $tz = DateTime::TimeZone->new( name => $name ) };
     }
 }
 
