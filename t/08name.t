@@ -9,7 +9,7 @@ use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
 
-plan tests => 3;
+plan tests => 4;
 
 {
     my $tz = DateTime::TimeZone->new( name => '-0300' );

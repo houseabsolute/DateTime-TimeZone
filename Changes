@@ -1,3 +1,12 @@
+0.19     2003-06-13
+
+- The name() method will now always return something that can be used
+to recreate the original object by calling DateTime::TimeZone->new().
+The only class which changed was DT::TZ::Floating, but the fact that
+name() is guaranteed to work in recreating the object is an API
+change.
+
+
 0.18     2003-06-06
 
 - Switched the internal data structure for the Olson database to use
