@@ -383,3 +383,4 @@ lib/DateTime/TimeZone/Pacific/Galapagos.pm
 lib/DateTime/TimeZone/America/Sao_Paulo.pm
 lib/DateTime/TimeZone/America/Maceio.pm
 lib/DateTime/TimeZone/America/Noronha.pm
+META.yml                                Module meta-data in YAML
