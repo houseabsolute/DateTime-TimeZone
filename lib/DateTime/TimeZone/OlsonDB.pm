@@ -430,8 +430,10 @@ sub add_infinite_rule
     $_[0]->{infinite_rules}{ $_[1] } = $_[1];
 }
 
-sub last_change { return unless @{ $_[0]->{changes} };
-                  $_[0]->{changes}[-1] }
+sub last_change { return unless @{ $_[0]->{changes} } || $_[0]->{earliest};
+                  return ( @{ $_[0]->{changes} } ?
+                           $_[0]->{changes}[-1] :
+                           $_[0]->{earliest} ); }
 
 sub sorted_changes { ( ( defined $_[0]->{earliest} ? $_[0]->{earliest} : () ),
                        sort { $a->utc_start_datetime <=> $b->utc_start_datetime }
