@@ -333,7 +333,7 @@ sub _generate_spans_until_match
             if $seconds >= $span->{utc_start} && $seconds < $span->{utc_end};
     }
 
-    $self->{max_span} = $self->{tree}->max;
+    $self->{max_span} = $self->{tree}->max->val;
 
     return $match;
 }
