@@ -3,13 +3,14 @@
 use strict;
 
 use File::Spec;
+use Sys::Hostname;
 use Test::More;
 
 use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
 
-plan tests => 14;
+plan tests => 17;
 
 use DateTime::TimeZone;
 
@@ -90,32 +91,73 @@ SKIP:
 
 SKIP:
 {
-    use Sys::Hostname;
-
     skip "Cannot run these tests without explicitly knowing local time zone first (only runs on developers' machine)", 6
         unless hostname =~ /houseabsolute|quasar/ && -d 'CVS';
 
-    local $ENV{TZ} = '';
+    {
+        local $ENV{TZ} = '';
 
-    my $tz;
-    eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
-    is( $@, '', 'valid time zone name in /etc/localtime should not die' );
-    isa_ok( $tz, 'DateTime::TimeZone::America::Chicago' );
+        my $tz;
+        eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
+        is( $@, '', 'valid time zone name in /etc/localtime should not die' );
+        isa_ok( $tz, 'DateTime::TimeZone::America::Chicago' );
+    }
 
-    $^W = 0;
-    local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
-    $^W = 1;
+    {
+        $^W = 0;
+        local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
+        $^W = 1;
 
-    eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
-    is( $@, '', 'valid time zone name in /etc/timezone should not die' );
-    isa_ok( $tz, 'DateTime::TimeZone::America::Chicago' );
+        my $tz;
+        eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
+        is( $@, '', 'valid time zone name in /etc/timezone should not die' );
+        isa_ok( $tz, 'DateTime::TimeZone::America::Chicago' );
+    }
 
-    $^W = 0;
-    local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
-    local *DateTime::TimeZone::Local::_from_etc_timezone = sub { undef };
-    $^W = 1;
+    {
+        $^W = 0;
+        local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
+        local *DateTime::TimeZone::Local::_from_etc_timezone = sub { undef };
+        $^W = 1;
 
-    eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
-    is( $@, '', 'valid time zone name in /etc/timezone should not die' );
-    isa_ok( $tz, 'DateTime::TimeZone::Australia::Melbourne' );
+        my $tz;
+        eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
+        is( $@, '', 'valid time zone name in /etc/timezone should not die' );
+        isa_ok( $tz, 'DateTime::TimeZone::Australia::Melbourne' );
+    }
+}
+
+SKIP:
+{
+    skip "These tests are too dangerous to run on someone else's machine ;)", 3
+        unless hostname =~ /houseabsolutes|quasar/ && -d 'CVS';
+
+    skip "These tests can only be run if we can overwrite /etc/localtime", 3
+        unless -w '/etc/localtime' && -l '/etc/localtime';
+
+    my $tz_file = readlink '/etc/localtime';
+
+    unlink '/etc/localtime' or die "Cannot unlink /etc/localtime: $!";
+
+    require File::Copy;
+    File::Copy::copy( '/usr/share/zoneinfo/US/Eastern', '/etc/localtime' )
+        or die "Cannot copy $tz_file to '/etc/localtime': $!";
+
+    {
+        local $ENV{TZ} = '';
+
+        require Cwd;
+        my $cwd = Cwd::cwd();
+
+        my $tz;
+        eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
+        is( $@, '', 'copy of zoneinfo file at /etc/localtime' );
+        isa_ok( $tz, 'DateTime::TimeZone::America::New_York' );
+
+        is( Cwd::cwd(), $cwd, 'cwd should not change after finding local time zone' );
+    }
+
+    unlink '/etc/localtime' or die "Cannot unlink /etc/localtime: $!";
+    symlink $tz_file, '/etc/localtime'
+        or die "Cannot symlink $tz_file to '/etc/localtime': $!";
 }
