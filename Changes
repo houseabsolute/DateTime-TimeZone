@@ -1,9 +1,12 @@
-0.xx
+0.2506   2003-12-15
 
 - On systems where /etc/localtime is a copy of a zone info file (like
 FreeBSD), we now look for a matching file in /usr/share/zoneinfo in
 order to determine the local time zone.  Based on a patch from Slaven
 Rezic.
+
+- This release is based on the 2003e Olson database, which contains
+updates for various zones.
 
 
 0.2505   2003-10-27
