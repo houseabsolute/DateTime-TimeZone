@@ -9,7 +9,7 @@ use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
 
-plan tests => 26;
+plan tests => 32;
 
 # The point of this group of tests is to try to check that DST changes
 # are occuring at exactly the right time in various time zones.  It's
@@ -27,32 +27,32 @@ plan tests => 26;
 {
     # one minute before change to standard time
     my $dt = DateTime->new( year => 1997, month => 3, day => 29,
-                            hour => 14, minute => 59,
+                            hour => 15, minute => 59,
                             time_zone => 'UTC' );
 
     $dt->set_time_zone('Australia/Sydney');
 
-    is( $dt->hour, 1, 'A/S 1997: hour should be 2' );
+    is( $dt->hour, 2, 'A/S 1997: hour should be 2' );
 
     $dt->set_time_zone('UTC')->add( minutes => 1 )->set_time_zone('Australia/Sydney');
 
-    is( $dt->hour, 1, 'A/S 1997: hour should still be 2' );
+    is( $dt->hour, 2, 'A/S 1997: hour should still be 2' );
 }
 
 # same tests without using UTC as intermediate
 {
     # Can't start at 1:59 or we get the _2nd_ 1:59 of that day (post-DST change)
     my $dt = DateTime->new( year => 1997, month => 3, day => 30,
-                            hour => 0, minute => 59,
+                            hour => 1, minute => 59,
                             time_zone => 'Australia/Sydney' );
 
     $dt->add( hours => 1 );
 
-    is( $dt->hour, 1, 'A/S 1997: hour should be 2' );
+    is( $dt->hour, 2, 'A/S 1997: hour should be 2' );
 
     $dt->add( minutes => 1 );
 
-    is( $dt->hour, 1, 'A/S 1997: hour should still be 2' );
+    is( $dt->hour, 2, 'A/S 1997: hour should still be 2' );
 }
 
 {
@@ -88,16 +88,16 @@ plan tests => 26;
 {
     # Can't start at 1:59 or we get the _2nd_ 1:59 of that day (post-DST change)
     my $dt = DateTime->new( year => 2040, month => 3, day => 25,
-                            hour => 0, minute => 59,
+                            hour => 1, minute => 59,
                             time_zone => 'Australia/Sydney' );
 
     $dt->add( hours => 1 );
 
-    is( $dt->hour, 1, 'A/S 2040: hour should be 2' );
+    is( $dt->hour, 2, 'A/S 2040: hour should be 2' );
 
     $dt->add( minutes => 1 );
 
-    is( $dt->hour, 1, 'A/S 2040: hour should still be 2' );
+    is( $dt->hour, 2, 'A/S 2040: hour should still be 2' );
 }
 
 {
@@ -213,8 +213,8 @@ plan tests => 26;
     is( $dt->hour, 2, 'E/V 2040: hour should still be 2' );
 }
 
-# Africa/Algiers has an observance that ends at 1997-10-21T00:00:00,
-# and a rule that starts at exactly the same time
+# Africa/Algiers has an observance that ends at 1977-10-21T00:00:00
+# local time and a rule that starts at exactly the same time
 
 # Rule	Algeria	1977	only	-	May	 6	 0:00	1:00	S
 # Rule	Algeria	1977	only	-	Oct	21	 0:00	0	-
@@ -226,6 +226,7 @@ plan tests => 26;
                             hour => 23, minute => 59,
                             time_zone => 'Africa/Algiers'
                           );
+
     is( $dt->time_zone_short_name, 'WEST', 'short name is WEST' );
 
     # observance ends, new rule starts, net effect is same offset,
@@ -233,4 +234,39 @@ plan tests => 26;
     $dt->add( minutes => 1 );
 
     is( $dt->time_zone_short_name, 'CET', 'short name is CET' );
+}
+
+# Asia/Aqtau has an observance  that ends at 1995-09-24T00:00:00 local
+# time, and a new rule that  starts one hour later!  The net effect is
+# that right  before the end of  the observance, the  offset if +0600,
+# then the observance  ends, the offset if +0500 for  1 hour, and then
+# +0400.  Confused yet?
+
+# Rule RussiaAsia	1993	max	-	Mar	lastSun	 2:00s	1:00	S
+# Rule RussiaAsia	1993	1995	-	Sep	lastSun	 2:00s	0	-
+# Rule RussiaAsia	1996	max	-	Oct	lastSun	 2:00s	0	-
+#
+# 			5:00 RussiaAsia	AQT%sT	1995 Sep lastSun # Aqtau Time
+# 			4:00 RussiaAsia	AQT%sT
+{
+    my $dt = DateTime->new( year => 1995, month => 9, day => 23,
+                            hour => 23, minute => 59,
+                            time_zone => 'Asia/Aqtau'
+                          );
+
+    is( $dt->time_zone_short_name, 'AQTST', 'short name is AQTST' );
+    is( $dt->offset, 3600 * 6, 'offset if +0600' );
+
+    # observance ends, old rule still in effect, same short name,
+    # different offset
+    $dt->add( minutes => 1 );
+
+    is( $dt->time_zone_short_name, 'AQTST', 'short name is AQTST' );
+    is( $dt->offset, 3600 * 5, 'offset if +0500' );
+
+    # rule ends, new name, new offset
+    $dt->add( hours => 1 );
+
+    is( $dt->time_zone_short_name, 'AQTT', 'short name is AQTT' );
+    is( $dt->offset, 3600 * 4, 'offset if +0400' );
 }
