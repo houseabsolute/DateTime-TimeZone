@@ -1,21 +1,29 @@
 use strict;
 
-use Test::More tests => 20;
+use Test::More;
 
 use DateTime::TimeZone;
 
+my @names = DateTime::TimeZone::all_names;
+
+plan tests => 14 + ( 4 * scalar @names );
+
+foreach my $name (@names)
+{
+    my $tz = DateTime::TimeZone->new( name => $name );
+    isa_ok( $tz, 'DateTime::TimeZone' );
+
+    is( $tz->name, $name, 'check ->name' );
+
+    is( $tz->is_floating, 0, 'should not be floating' );
+    is( $tz->is_utc, 0, 'should not be UTC' );
+}
+
 my $tz = DateTime::TimeZone->new( name => 'America/Chicago' );
-ok( $tz, 'get America/Chicago time zone object' );
-isa_ok( $tz, 'DateTime::TimeZone' );
-
-is( $tz->name, 'America/Chicago', 'check ->name' );
-is( $tz->category, 'America', 'check ->category' );
-
-is( $tz->is_floating, 0, 'should not be floating' );
-is( $tz->is_utc, 0, 'should not be UTC' );
 
 # These tests are odd since we're feeding UTC times into the time zone
-# object, which isn't what will happen in real usage (I think).
+# object, which isn't what happens in real usage.  But doing this
+# minimizes how much of DateTime.pm needs to work for these tests.
 {
     my $dt = DateTime->new( year => 2001,
                             month => 9,
