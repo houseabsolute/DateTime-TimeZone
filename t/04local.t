@@ -143,6 +143,8 @@ SKIP:
     }
 
     {
+        # requires that /etc/default/init contain
+        # TZ=Australia/Melbourne to work.
         $^W = 0;
         local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
         local *DateTime::TimeZone::Local::_from_etc_timezone = sub { undef };
@@ -169,8 +171,8 @@ SKIP:
     unlink '/etc/localtime' or die "Cannot unlink /etc/localtime: $!";
 
     require File::Copy;
-    File::Copy::copy( '/usr/share/zoneinfo/US/Eastern', '/etc/localtime' )
-        or die "Cannot copy $tz_file to '/etc/localtime': $!";
+    File::Copy::copy( '/usr/share/zoneinfo/Asia/Calcutta', '/etc/localtime' )
+        or die "Cannot copy /usr/share/zoneinfo/Asia/Calcutta to '/etc/localtime': $!";
 
     {
         local $ENV{TZ} = '';
@@ -181,7 +183,7 @@ SKIP:
         my $tz;
         eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
         is( $@, '', 'copy of zoneinfo file at /etc/localtime' );
-        isa_ok( $tz, 'DateTime::TimeZone::America::New_York' );
+        isa_ok( $tz, 'DateTime::TimeZone::Asia::Calcutta' );
 
         is( Cwd::cwd(), $cwd, 'cwd should not change after finding local time zone' );
     }

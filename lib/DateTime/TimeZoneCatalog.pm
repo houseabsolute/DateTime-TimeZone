@@ -807,7 +807,7 @@ qw(
   'America/Knox_IN' => 'America/Indiana/Knox',
   'America/Mendoza' => 'America/Argentina/Mendoza',
   'America/Porto_Acre' => 'America/Rio_Branco',
-  'America/Rosario' => 'America/Cordoba',
+  'America/Rosario' => 'America/Argentina/Cordoba',
   'America/Shiprock' => 'America/Denver',
   'America/Virgin' => 'America/St_Thomas',
   'Antarctica/South_Pole' => 'Antarctica/McMurdo',
@@ -833,7 +833,7 @@ qw(
   'Australia/Victoria' => 'Australia/Melbourne',
   'Australia/West' => 'Australia/Perth',
   'Australia/Yancowinna' => 'Australia/Broken_Hill',
-  'Brazil/Acre' => 'America/Porto_Acre',
+  'Brazil/Acre' => 'America/Rio_Branco',
   'Brazil/DeNoronha' => 'America/Noronha',
   'Brazil/East' => 'America/Sao_Paulo',
   'Brazil/West' => 'America/Manaus',
@@ -870,10 +870,10 @@ qw(
   'GB' => 'Europe/London',
   'GB-Eire' => 'Europe/London',
   'GMT' => 'UTC',
-  'GMT+0' => 'Etc/GMT+0',
-  'GMT-0' => 'Etc/GMT-0',
+  'GMT+0' => 'Etc/GMT',
+  'GMT-0' => 'Etc/GMT',
   'GMT0' => 'UTC',
-  'Greenwich' => 'Etc/Greenwich',
+  'Greenwich' => 'Etc/GMT',
   'HST' => 'Pacific/Honolulu',
   'Hongkong' => 'Asia/Hong_Kong',
   'Iceland' => 'Atlantic/Reykjavik',
@@ -889,7 +889,7 @@ qw(
   'Mexico/General' => 'America/Mexico_City',
   'NZ' => 'Pacific/Auckland',
   'NZ-CHAT' => 'Pacific/Chatham',
-  'Navajo' => 'America/Shiprock',
+  'Navajo' => 'America/Denver',
   'PRC' => 'Asia/Shanghai',
   'PST8PDT' => 'America/Los_Angeles',
   'Pacific/Samoa' => 'Pacific/Pago_Pago',
@@ -913,9 +913,9 @@ qw(
   'US/Pacific' => 'America/Los_Angeles',
   'US/Pacific-New' => 'America/Los_Angeles',
   'US/Samoa' => 'Pacific/Pago_Pago',
-  'Universal' => 'Etc/Universal',
+  'Universal' => 'Etc/UTC',
   'W-SU' => 'Europe/Moscow',
-  'Zulu' => 'Etc/Zulu'
+  'Zulu' => 'Etc/UTC'
 )
 
 ;

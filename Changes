@@ -1,3 +1,12 @@
+0.33     2005-02-26
+
+- This release is based on version 2005e of the Olson database.
+
+- When trying to determine the local time zone, if /etc/localtime is a
+file, make sure that matching file in /usr/share/zoneinfo is not a
+symlink.
+
+
 0.32     2004-01-05
 
 - Fix for bug revealed by DateTime 0.23, which could cause an

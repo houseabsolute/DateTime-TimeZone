@@ -143,6 +143,7 @@ sub _find_matching_zoneinfo_file
                 {
                     if ( ! defined $real_name
                          && -f $_
+                         && ! -l $_
                          && $size == -s $_
                          && File::Compare::compare( $_, $file_to_match ) == 0
                        )
