@@ -16,6 +16,7 @@ sub new
 }
 
 sub offset_for_datetime { 0 }
+sub offset_for_local_datetime { 0 }
 
 sub short_name_for_datetime { 'UTC' }
 
