@@ -105,6 +105,8 @@ sub _build_span_tree
     }
 
     $self->{tree} = $tree;
+
+    $self->{max_span} = $self->{tree}->max->val;
 }
 
 sub _is_in_span
@@ -121,6 +123,7 @@ sub _is_in_span
     }
     elsif ( ref $i1 eq 'HASH' )
     {
+
         return -1 if $i2->[1] <  $i1->{ $i2->[0] }[0];
         return  1 if $i2->[1] >= $i1->{ $i2->[0] }[1];
 
@@ -172,8 +175,15 @@ sub _span_for_datetime
 
     my $seconds = $dt->$method();
 
-    if ( my $span = $self->{tree}->find( [ $type, $seconds ] ) )
+    if ( $seconds < $self->{max_span}{"${type}_end"} )
     {
+        my $span = $self->{tree}->find( [ $type, $seconds ] );
+
+        # This means someone gave a local time that doesn't exist
+        # (like during a transition into savings time)
+        die "Invalid local time for date " . $dt->iso8601
+            unless defined $span;
+
         return $span;
     }
     else
