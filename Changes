@@ -1,3 +1,11 @@
+0.11     2003-03-26
+
+- Fixed two bugs, both of which made some time zones unusable..  One
+affected time zones that do not have any DST changes, and the other
+affected time zones that have exactly two historical offsets (one of
+which would be the current offset), such as Pacific/Tarawa.  Reported
+by Eric Cholet.
+
 0.10     2003-03-20
 
 - Fixed a bug in the DateTime::TimeZone::offset_as_seconds bug when
