@@ -91,7 +91,8 @@ sub _init
                       },
                     );
 
-    my $self = bless { name => $p{name} }, $class;
+    my $self = bless { name => $p{name},
+                     }, $class;
 
     $self->_build_span_tree( $p{spans} );
 
@@ -385,7 +386,7 @@ This returns a list of all time zone categories.  In scalar context,
 it returns an array reference, while in list context it returns an
 array.
 
-=item * category( $category )
+=item * names_in_category( $category )
 
 Given a valid category, this method returns a list of the names in
 that category, without the category portion.  So the list for the
