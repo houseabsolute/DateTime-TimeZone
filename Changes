@@ -1,3 +1,9 @@
+0.22     2003-06-28
+
+- The is_olson method was returning true for all objects.  Reported by
+Flavio Glock.
+
+
 0.21     2003-06-25
 
 - Switched to Module::Build, which should fix the installation
