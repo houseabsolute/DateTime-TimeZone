@@ -1,0 +1,10 @@
+MANIFEST
+LICENSE
+README
+Changes
+Makefile.PL
+tools/parse_zones
+t/01basic.t
+lib/DateTime/TimeZone.pm
+lib/DateTime/TimeZoneObservance.pm
+lib/DateTime/TimeZoneCatalog.pm
