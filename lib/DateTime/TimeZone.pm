@@ -65,8 +65,25 @@ sub new
     $subclass =~ s/\//::/g;
     my $real_class = "DateTime::TimeZone::$subclass";
 
-    eval "require $real_class";
-    die "Invalid time zone name: $p{name}" if $@;
+    unless ( $real_class->can('instance') )
+    {
+        eval "require $real_class";
+
+        if ($@)
+        {
+            my $regex = join '.', split /::/, $real_class;
+            $regex .= '\\.pm';
+
+            if ( $@ =~ /^Can't locate $regex/i )
+            {
+                die "The timezone '$p{name}' could not be loaded, or is an invalid name.\n";
+            }
+            else
+            {
+                die $@;
+            }
+        }
+    }
 
     return $real_class->instance( name => $p{name}, is_olson => 1 );
 }
@@ -406,15 +423,24 @@ DateTime::TimeZone - Time zone object base class and factory
 
 =head1 SYNOPSIS
 
+  use DateTime;
   use DateTime::TimeZone
 
   my $tz = DateTime::TimeZone->new( name => 'America/Chicago' );
+
+  my $dt = DateTime->now();
+  my $offset = $tz->offset_for_datetime($dt);
 
 =head1 DESCRIPTION
 
 This class is the base class for all time zone objects.  A time zone
 is represented internally as a set of observances, each of which
 describes the offset from GMT for a given time period.
+
+Note that without the C<DateTime.pm> module, this module does not do
+much.  It's primary interface is through a C<DateTime> object, and
+most users will not need to directly use C<DateTime::TimeZone>
+methods.
 
 =head1 USAGE
 
@@ -490,33 +516,31 @@ C<DateTime::TimeZone> objects provide the following methods:
 
 =over 4
 
-=item * offset_for_datetime( $datetime )
+=item * offset_for_datetime( $dt )
 
-Given an object which implements the DateTime.pm API, this method
-returns the offset in seconds for the given datetime.  This takes into
-account historical time zone information, as well as Daylight Saving
-Time.  The offset is determined by looking at the object's UTC Rata
-Die days and seconds.
+Given a C<DateTime> object, this method returns the offset in seconds
+for the given datetime.  This takes into account historical time zone
+information, as well as Daylight Saving Time.  The offset is
+determined by looking at the object's UTC Rata Die days and seconds.
 
-=item * offset_for_local_datetime( $datetime )
+=item * offset_for_local_datetime( $dt )
 
-Given an object which implements the DateTime.pm API, this method
-returns the offset in seconds for the given datetime.  Unlike the
-previous method, this method uses the local time's Rata Die days and
-seconds.  This should only be done when the corresponding UTC time is
-not yet known, because local times can be ambiguous due to Daylight
-Saving Time rules.
+Given a C<DateTime> object, this method returns the offset in seconds
+for the given datetime.  Unlike the previous method, this method uses
+the local time's Rata Die days and seconds.  This should only be done
+when the corresponding UTC time is not yet known, because local times
+can be ambiguous due to Daylight Saving Time rules.
 
 =item * name
 
 Returns the name of the time zone.  If this value is passed to the
 C<new()> method, it is guaranteed to create the same object.
 
-=item * short_name_for_datetime( $datetime )
+=item * short_name_for_datetime( $dt )
 
-Given an object which implements the DateTime.pm API, this method
-returns the "short name" for the current observance and rule this
-datetime is in.  These are names like "EST", "GMT", etc.
+Given a C<DateTime> object, this method returns the "short name" for
+the current observance and rule this datetime is in.  These are names
+like "EST", "GMT", etc.
 
 It is B<strongly> recommended that you do not rely on these names for
 anything other than display.  These names are not official, and many
