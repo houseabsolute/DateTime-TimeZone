@@ -8,6 +8,7 @@ $VERSION = 0.01;
 use DateTime::TimeZone;
 use base 'DateTime::TimeZone';
 
+use DateTime::TimeZone::UTC;
 use Params::Validate qw( validate SCALAR );
 
 sub new
@@ -15,6 +16,8 @@ sub new
     my $class = shift;
     my %p = validate( @_, { offset => { type => SCALAR },
                           } );
+
+    return DateTime::TimeZone::UTC->new unless $p{offset};
 
     my $self = {};
     $self->{offset} =
