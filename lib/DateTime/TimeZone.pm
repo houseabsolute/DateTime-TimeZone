@@ -49,7 +49,7 @@ sub new
                     ( offset => $gm - $local );
         }
 
-        if ( $p{name} eq 'UTC' || $p{name} eq '0' )
+        if ( $p{name} eq 'UTC' || $p{name} eq 'Z' )
         {
             return DateTime::TimeZone::UTC->new;
         }
