@@ -284,12 +284,14 @@ plan tests => 108;
 }
 
 {
+    # this is the second of the two 01:59:59 times for that date
     my $dt = DateTime->new( year => 2003, month => 10, day => 26,
                             hour => 1, minute => 59, second => 59,
                             time_zone => 'America/Chicago',
                           );
+
     is( $dt->offset, -21600, 'offset should be -21600' );
-    is( $dt->is_dst, 0, 'is dst' );
+    is( $dt->is_dst, 0, 'is not dst' );
 
     $dt->subtract( hours => 1 );
 
