@@ -20,6 +20,10 @@ now prefer the later of the two offsets rather than the earlier.
 Otherwise, offset shifts larger than a day can cause some very strange
 problems when doing date math.
 
+- DateTime::TimeZone::OffsetOnly objects now return the offset in
+string form when their name() of short_name_for_datetime() methods are
+called.  Suggested by Rick Measham.
+
 0.12     2003-04-12
 
 - Updated to latest Olson database (2003a).
