@@ -1,4 +1,6 @@
-0.xx
+0.27
+
+- This release is based on version 2004a of the Olson database.
 
 - /etc/timezone and /etc/TIMEZONE are not the same thing.  Code for
 getting the local time zone name from the latter was supplied by

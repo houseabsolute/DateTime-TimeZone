@@ -871,7 +871,7 @@ qw(
   'Mexico/General' => 'America/Mexico_City',
   'NZ' => 'Pacific/Auckland',
   'NZ-CHAT' => 'Pacific/Chatham',
-  'Navajo' => 'America/Denver',
+  'Navajo' => 'America/Shiprock',
   'PRC' => 'Asia/Shanghai',
   'PST8PDT' => 'America/Los_Angeles',
   'Pacific/Samoa' => 'Pacific/Pago_Pago',
