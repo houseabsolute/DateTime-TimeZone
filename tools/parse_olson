@@ -15,7 +15,7 @@ use Getopt::Long;
 $Data::Dumper::Indent = 1;
 $Data::Dumper::Terse = 1;
 
-my $VERSION = "0.02";
+my $VERSION = "0.03";
 
 my $INFINITY  = 10 ** 10 ** 10;
 
@@ -173,6 +173,11 @@ EOF
     );
 
 delete $links{UTC};
+
+# This links to America/Indiana in the "backward" file
+delete $links{EST};
+# And this one is for America/Phoenix
+delete $links{MST};
 
 my $links = Dumper \%links;
 $links =~ s/{/(/;
