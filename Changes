@@ -1,3 +1,10 @@
+0.03     2003-02-09
+
+- Fixed bug in new method that should have caused DateTime::TimeZone
+to not be loadable.
+
+- Added is_dst_for_datetime method.
+
 0.02     2003-02-09
 
 - Updated version number to non-dev-release so that it's visible when
