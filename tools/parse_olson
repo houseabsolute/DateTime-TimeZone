@@ -93,8 +93,9 @@ foreach my $f (@files)
         (my $mod_name = $zone_name) =~ s/\//::/g;
         $mod_name =~ tr/-/_/;
 
+        my $max_year = (localtime)[5] + 1910;
         my $zone = $odb->expanded_zone( name => $zone_name,
-                                        expand_to_year => (localtime)[5] + 1910,
+                                        expand_to_year => $max_year,
                                       );
 
         my $spans = Dumper zone_as_data($zone);
@@ -127,6 +128,8 @@ use DateTime::TimeZone::OlsonDB;
 
 my \$spans =
 $spans;
+
+my \$max_year = $max_year;
 
 sub _new_instance
 {
@@ -284,11 +287,12 @@ sub _generate_spans_until_match
     my $self = shift;
     my $dt = shift;
 
+    my $generate_until_year = $dt->utc_year + 1;
+
     my @changes;
     foreach my $rule (@$rules)
     {
-        my $dt_year = $dt->utc_year;
-        foreach my $year ( $dt_year - 1, $dt_year, $dt_year + 1 )
+        foreach my $year ( $max_year .. $generate_until_year )
         {
             my $next = $rule->date_for_year( $year, !OFFSET );
 
@@ -306,6 +310,7 @@ sub _generate_spans_until_match
         }
     }
 
+    $max_year = $generate_until_year;
     my @sorted = sort { $a->start_date <=> $b->start_date } @changes;
 
     my $seconds = $dt->utc_rd_as_seconds;
@@ -347,6 +352,7 @@ EOF
     # This is cleaner than making the above a double-quoted string
     $generator =~ s/!RULES/Dumper \@rules/eg;
     $generator =~ s/!LAST_OBSERVANCE/Dumper $last_observance/eg;
+    $generator =~ s/!OFFSET/$offset/g;
     $generator =~ s/!OFFSET/$offset/g;
 
     return $generator;
