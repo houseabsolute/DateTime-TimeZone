@@ -243,27 +243,25 @@ sub parse_time_spec
 {
     my $time = shift;
     my $base_offset = shift;
-    my $extra_offset = shift || 0;
+    my $extra_offset = shift;
 
     # 'w'all - ignore
     $time =~ s/w$//;
 
-    my $returning_utc = 0;
-
     # 'g'reenwich, 'u'tc, or 'z'ulu
-    if ( $time =~ s/[guz]$// )
-    {
-        $returning_utc = 1;
-    }
+    $base_offset = 0 if $time =~ s/[guz]$//;
 
     # 's'tandard time - ignore DS offset
-    $base_offset += $extra_offset unless $time =~ s/s$//;
+    unless ( $time =~ s/s$// )
+    {
+        $base_offset -= $extra_offset if defined $extra_offset;
+    }
 
     my ($hour, $minute, $second) = split /:/, $time;
     $minute = 0 unless defined $minute;
     $second = 0 unless defined $second;
 
-    return ( $hour, $minute, $second, $base_offset, $returning_utc );
+    return ( $hour, $minute, $second, $base_offset );
 }
 
 
@@ -487,11 +485,11 @@ sub until
           1
         );
 
-    my ( $hour, $minute, $second, $offset, $is_utc );
+    my ( $hour, $minute, $second, $offset );
 
     if ( defined $time )
     {
-        ( $hour, $minute, $second, $offset, $is_utc ) =
+        ( $hour, $minute, $second, $offset ) =
             DateTime::TimeZone::OlsonDB::parse_time_spec
                 ( $time, $self->{offset}, $extra_offset );
     }
@@ -500,37 +498,17 @@ sub until
         ( $hour, $minute, $second, $offset ) = ( 0, 0, 0, $self->{offset} );
     }
 
-    my ( $local, $utc );
-
-    if ($is_utc)
-    {
-        $utc = DateTime->new( year   => $year,
-                              month  => $month,
-                              day    => $day,
-                              hour   => $hour,
-                              minute => $minute,
-                              second => $second,
-                              time_zone => 'floating',
-                            );
-
-        $local = $utc + DateTime::Duration->new( seconds => $offset );
-    }
-    else
-    {
-        $local = DateTime->new( year   => $year,
-                                month  => $month,
-                                day    => $day,
-                                hour   => $hour,
-                                minute => $minute,
-                                second => $second,
-                                time_zone => 'floating',
-                              );
-
-        $utc = $local - DateTime::Duration->new( seconds => $offset );
-    }
+    my $local = DateTime->new( year   => $year,
+                               month  => $month,
+                               day    => $day,
+                               hour   => $hour,
+                               minute => $minute,
+                               second => $second,
+                               time_zone => 'floating',
+                             );
 
     return { local => $local,
-             utc   => $utc,
+             utc   => $local - DateTime::Duration->new( seconds => $offset ),
            };
 }
 
@@ -591,40 +569,21 @@ sub date_for_year
     my $day =
         DateTime::TimeZone::OlsonDB::parse_day_spec( $self->{on}, $self->month, $year );
 
-    my ( $hour, $minute, $second, $real_offset, $is_utc ) =
+    my ( $hour, $minute, $second, $real_offset ) =
         DateTime::TimeZone::OlsonDB::parse_time_spec
             ( $self->{at}, $offset, $self->{offset} );
 
-    my ( $local, $utc );
-
-    if ($is_utc)
-    {
-        $utc = DateTime->new( year   => $year,
-                              month  => $self->month,
-                              day    => $day,
-                              hour   => $hour,
-                              minute => $minute,
-                              second => $second,
-                              time_zone => 'floating',
-                            );
-        $local = $utc + DateTime::Duration->new( seconds => $real_offset );
-    }
-    else
-    {
-        $local = DateTime->new( year   => $year,
-                                month  => $self->month,
-                                day    => $day,
-                                hour   => $hour,
-                                minute => $minute,
-                                second => $second,
-                                time_zone => 'floating',
-                              );
-
-        $utc = $local - DateTime::Duration->new( seconds => $real_offset );
-    }
+    my $local = DateTime->new( year   => $year,
+                               month  => $self->month,
+                               day    => $day,
+                               hour   => $hour,
+                               minute => $minute,
+                               second => $second,
+                               time_zone => 'floating',
+                             );
 
     return { local => $local,
-             utc   => $utc,
+             utc   => $local - DateTime::Duration->new( seconds => $real_offset ),
            };
 }
 
@@ -659,26 +618,17 @@ sub two_changes_as_span
 {
     my ( $c1, $c2, $last_offset ) = @_;
 
-    $last_offset ||= 0;
-
     my ( $utc_start, $local_start );
 
     if ( defined $c1->start_date )
     {
         $local_start = $c1->start_date->utc_rd_as_seconds;
+        $local_start += $c1->offset - $last_offset;
 
-        if ( $c1->offset < 0 || $last_offset < 0 )
-        {
-            $local_start += $c1->offset - $last_offset;
-
-            $utc_start = $local_start;
-            $utc_start -= $c1->offset;
-        }
-        else
-        {
-            $utc_start = $local_start;
-            $local_start += $c1->offset - $last_offset;
-        }
+        # UTC start is local minus the offset when we start, plus the
+        # difference in offset between the current offste and the
+        # previous offset
+        $utc_start = $local_start - $c1->offset;
     }
     else
     {
@@ -688,11 +638,7 @@ sub two_changes_as_span
     my $local_end = $c2->start_date->utc_rd_as_seconds;
 
     my $utc_end = $local_end - $c2->offset;
-
-    if ( $c1->offset < 0 || $last_offset < 0 )
-    {
-        $utc_end -= $c1->offset - $c2->offset;
-    }
+    $utc_end -= $c1->offset - $c2->offset;
 
     return { utc_start   => $utc_start,
              utc_end     => $utc_end,
@@ -703,7 +649,6 @@ sub two_changes_as_span
              is_dst      => ($c1->rule && $c1->rule->offset != 0 ? 1 : 0),
            };
 }
-
 
 1;
 
