@@ -4,6 +4,10 @@
 
 - DateTime::TimeZone::offset_as_seconds handles '0' properly.
 
+- Fix a bug in handling future times for time zones with recurring
+rules.  The symptom would be the error "Invalid local time for date
+..."
+
 0.05     2003-02-13
 
 - The offset_as_string function did not handle negative offsets
