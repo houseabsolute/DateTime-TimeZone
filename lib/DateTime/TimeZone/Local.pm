@@ -112,9 +112,7 @@ sub _read_etc_sysconfig_clock
 
     while (<CLOCK>)
     {
-        next unless /^(?:TIME)ZONE/;
-
-        return $1 if /(?:TIME)ZONE="([^"]+)"/;
+        return $1 if /^(?:TIME)?ZONE="([^"]+)"/;
     }
 }
 
