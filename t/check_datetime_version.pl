@@ -1,5 +1,7 @@
 use strict;
 
+use DateTime::TimeZone;
+
 BEGIN
 {
     my $version = '0.1501';
