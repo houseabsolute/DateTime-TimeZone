@@ -93,6 +93,8 @@ sub _local_from_etc_sysconfig_clock
     }
 }
 
+# this is a sparate function so that it can be overridden in the test
+# suite
 sub _read_etc_sysconfig_clock
 {
     local *CLOCK;
