@@ -1,6 +1,6 @@
 MANIFEST
 MANIFEST.base
-MANIFEST.SKIP
+META.yml
 LICENSE
 README
 Changes
@@ -12,6 +12,7 @@ t/03link.t
 t/04local.t
 t/05offset.t
 t/06no-dst.t
+t/07offset-only.t
 t/check_datetime_version.pl
 lib/DateTime/TimeZone.pm
 lib/DateTime/TimeZoneCatalog.pm
@@ -383,4 +384,3 @@ lib/DateTime/TimeZone/Pacific/Galapagos.pm
 lib/DateTime/TimeZone/America/Sao_Paulo.pm
 lib/DateTime/TimeZone/America/Maceio.pm
 lib/DateTime/TimeZone/America/Noronha.pm
-META.yml                                Module meta-data in YAML
