@@ -228,9 +228,6 @@ sub offset_as_seconds
 
     return undef unless defined $offset;
 
-    # if it's just a number assume it's seconds
-    return $offset if $offset =~ /^-?\d+$/;
-
     return undef unless $offset =~ /^([\+\-])?(\d\d?):?(\d\d)(?::?(\d\d))?$/;
 
     my ( $sign, $hours, $minutes, $seconds ) = ( $1, $2, $3, $4 );
@@ -248,8 +245,6 @@ sub offset_as_string
     my $offset = shift;
 
     return undef unless defined $offset;
-
-    return $offset if $offset =~ /^[\+\-]\d\d\d\d(?:\d\d)?$/;
 
     my $sign = $offset < 0 ? '-' : '+';
 
@@ -409,13 +404,12 @@ an array reference, while in list context it returns an array.
 
 =item * offset_as_seconds( $offset )
 
-Given an offset as a string or number, this returns the number of
-seconds represented by the offset as a positive or negative number.
+Given an offset as a string, this returns the number of seconds
+represented by the offset as a positive or negative number.
 
 =item * offset_as_string( $offset )
 
-Given an offset as a string or number, this returns the offset as
-string.
+Given an offset as a number, this returns the offset as a string.
 
 =back
 
