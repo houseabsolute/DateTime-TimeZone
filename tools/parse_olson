@@ -325,16 +325,11 @@ sub _generate_spans_until_match
             DateTime::TimeZone::OlsonDB::Change::two_changes_as_span
                 ( @sorted[ $x - 1, $x ], $last_offset );
 
-        $self->{tree}->insert( { utc   => [ $span->{utc_start},   $span->{utc_end} ],
-                                 local => [ $span->{local_start}, $span->{local_end} ],
-                               },
-                               $span );
+        push @{ $self->{spans} }, $span;
 
         $match = $span
             if $seconds >= $span->{utc_start} && $seconds < $span->{utc_end};
     }
-
-    $self->{max_span} = $self->{tree}->max->val;
 
     return $match;
 }
