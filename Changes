@@ -1,4 +1,4 @@
-0.16
+0.16     2003-05-07
 
 - Fixed a bug where a POSIX time zone in $ENV{TZ} could cause the code
 to try to load a module named something like
