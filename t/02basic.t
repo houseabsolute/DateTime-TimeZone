@@ -20,7 +20,7 @@ is( $tz->is_utc, 0, 'should not be UTC' );
     my $dt = DateTime->new( year => 2001,
                             month => 9,
                             day => 10,
-                            offset => 0,
+                            time_zone => 'UTC',
                           );
     is( $tz->offset_for_datetime($dt), -18000, 'offset should be -18000' );
     is( $tz->short_name_for_datetime($dt), 'CDT', 'name should be CDT' );
@@ -30,7 +30,7 @@ is( $tz->is_utc, 0, 'should not be UTC' );
     my $dt = DateTime->new( year => 2001,
                             month => 10,
                             day => 29,
-                            offset => 0,
+                            time_zone => 'UTC',
                           );
     is( $tz->offset_for_datetime($dt), -21600, 'offset should be -21600' );
     is( $tz->short_name_for_datetime($dt), 'CST', 'name should be CST' );
@@ -41,10 +41,10 @@ is( $tz->is_utc, 0, 'should not be UTC' );
     my $dt = DateTime->new( year => 2200,
                             month => 10,
                             day => 26,
-                            offset => 0,
+                            time_zone => 'UTC',
                           );
-    is( $tz->offset_for_datetime($dt), -18000, 'offset should be -1800' );
-    is( $tz->short_name_for_datetime($dt), 'CDT', 'name should be CDT' );
+    is( $tz->offset_for_datetime($dt), -18000, 'generated offset should be -1800' );
+    is( $tz->short_name_for_datetime($dt), 'CDT', 'generated name should be CDT' );
 }
 
 {
@@ -52,17 +52,17 @@ is( $tz->is_utc, 0, 'should not be UTC' );
     my $dt = DateTime->new( year => 2200,
                             month => 10,
                             day => 27,
-                            offset => 0,
+                            time_zone => 'UTC',
                           );
-    is( $tz->offset_for_datetime($dt), -21600, 'offset should be -21600' );
-    is( $tz->short_name_for_datetime($dt), 'CST', 'name should be CST' );
+    is( $tz->offset_for_datetime($dt), -21600, 'generated offset should be -21600' );
+    is( $tz->short_name_for_datetime($dt), 'CST', 'generated name should be CST' );
 }
 
 {
     my $dt = DateTime->new( year => 1944,
                             month => 10,
                             day => 29,
-                            offset => 0,
+                            time_zone => 'UTC',
                           );
     is( $tz->offset_for_datetime($dt), -18000, 'offset should be -18000' );
     is( $tz->short_name_for_datetime($dt), 'CWT', 'name should be CWT' );
@@ -71,10 +71,11 @@ is( $tz->is_utc, 0, 'should not be UTC' );
 
 {
     my $dt = DateTime->new( year => 1936,
-                            month => 1,
-                            day => 29,
-                            offset => 0,
+                            month => 3,
+                            day => 2,
+                            time_zone => 'UTC',
                           );
+
     is( $tz->offset_for_datetime($dt), -18000, 'offset should be -18000' );
     is( $tz->short_name_for_datetime($dt), 'EST', 'name should be EST' );
 }
@@ -83,8 +84,9 @@ is( $tz->is_utc, 0, 'should not be UTC' );
     my $dt = DateTime->new( year => 1883,
                             month => 1,
                             day => 29,
-                            offset => 0,
+                            time_zone => 'UTC',
                           );
+
     is( $tz->offset_for_datetime($dt), -21036, 'offset should be -21036' );
     is( $tz->short_name_for_datetime($dt), 'LMT', 'name should be LMT' );
 }
