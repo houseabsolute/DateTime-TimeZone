@@ -9,7 +9,7 @@ use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
 
-plan tests => 24;
+plan tests => 26;
 
 # The point of this group of tests is to try to check that DST changes
 # are occuring at exactly the right time in various time zones.  It's
@@ -211,4 +211,26 @@ plan tests => 24;
     $dt->add( minutes => 1 );
 
     is( $dt->hour, 2, 'E/V 2040: hour should still be 2' );
+}
+
+# Africa/Algiers has an observance that ends at 1997-10-21T00:00:00,
+# and a rule that starts at exactly the same time
+
+# Rule	Algeria	1977	only	-	May	 6	 0:00	1:00	S
+# Rule	Algeria	1977	only	-	Oct	21	 0:00	0	-
+#
+# 			0:00	Algeria	WE%sT	1977 Oct 21
+# 			1:00	Algeria	CE%sT	1979 Oct 26
+{
+    my $dt = DateTime->new( year => 1977, month => 10, day => 20,
+                            hour => 23, minute => 59,
+                            time_zone => 'Africa/Algiers'
+                          );
+    is( $dt->time_zone_short_name, 'WEST', 'short name is WEST' );
+
+    # observance ends, new rule starts, net effect is same offset,
+    # different short name
+    $dt->add( minutes => 1 );
+
+    is( $dt->time_zone_short_name, 'CET', 'short name is CET' );
 }
