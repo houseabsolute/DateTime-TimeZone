@@ -155,6 +155,7 @@ sub zone
         DateTime::TimeZone::OlsonDB::Zone->new
             ( name => $name,
               observances => $self->{zones}{$name},
+              olson_db => $self,
             );
 }
 
@@ -238,7 +239,7 @@ sub parse_day_spec
     }
 }
 
-sub datetimes_for_time_spec
+sub utc_datetime_for_time_spec
 {
     my %p = validate( @_, { spec  => { type => SCALAR },
                             year  => { type => SCALAR },
@@ -248,8 +249,6 @@ sub datetimes_for_time_spec
                             offset_from_std => { type => SCALAR },
                           },
                     );
-
-    my ( $local, $utc );
 
     # 'w'all - ignore it, because that's the default
     $p{spec} =~ s/w$//;
@@ -264,6 +263,7 @@ sub datetimes_for_time_spec
     $minute = 0 unless defined $minute;
     $second = 0 unless defined $second;
 
+    my $utc;
     if ($is_utc)
     {
         $utc = DateTime->new( year   => $p{year},
@@ -274,21 +274,19 @@ sub datetimes_for_time_spec
                               second => $second,
                               time_zone => 'floating',
                             );
-
-        $local = $utc + DateTime::Duration->new( seconds => $p{offset_from_utc} );
     }
     else
     {
-        $local = DateTime->new( year   => $p{year},
-                                month  => $p{month},
-                                day    => $p{day},
-                                hour   => $hour,
-                                minute => $minute,
-                                second => $second,
-                                time_zone => 'floating',
-                              );
+        my $local = DateTime->new( year   => $p{year},
+                                   month  => $p{month},
+                                   day    => $p{day},
+                                   hour   => $hour,
+                                   minute => $minute,
+                                   second => $second,
+                                   time_zone => 'floating',
+                                 );
 
-        $p{offset_from_std} = 0;
+        $p{offset_from_std} = 0 if $is_std;
 
         my $dur =
             DateTime::Duration->new
@@ -297,7 +295,7 @@ sub datetimes_for_time_spec
         $utc = $local - $dur;
     }
 
-    return ( $local, $utc );
+    return $utc;
 }
 
 
@@ -312,6 +310,7 @@ sub new
     my $class = shift;
     my %p = validate( @_, { name => { type => SCALAR },
                             observances => { type => ARRAYREF },
+                            olson_db => 1,
                           }
                     );
 
@@ -327,10 +326,13 @@ sub new
         my $obs =
             DateTime::TimeZone::OlsonDB::Observance->new
                 ( %{ $p{observances}[$x] },
-                  utc_start_date => $last_until->{utc},
+                  utc_start_date => $last_until,
                 );
 
-        $last_until = $obs->until;
+        my $last_rule = $obs->last_rule( $p{olson_db} );
+        my $last_rule_offset = $last_rule ? $last_rule->offset_from_std : 0;
+
+        $last_until = $obs->until($last_rule_offset);
 
         push @{ $self->{observances} }, $obs;
     }
@@ -460,7 +462,7 @@ sub _expand_one_rule
 
     if ( my $until = $self->until( $rule->offset_from_std ) )
     {
-        $max_dt = $until->{utc};
+        $max_dt = $until;
     }
     else
     {
@@ -471,21 +473,20 @@ sub _expand_one_rule
                                );
     }
 
-    my $date;
     my $month = $rule->month;
 
     foreach my $year ( $min_year .. $max_year )
     {
         my $day;
 
-        $date = $rule->date_for_year( $year, $self->offset_from_utc );
+        my $dt = $rule->date_for_year( $year, $self->offset_from_utc );
 
-        next if $min_dt && $date->{utc} < $min_dt;
-        last if $date->{utc} >= $max_dt;
+        next if $min_dt && $dt < $min_dt;
+        last if $dt >= $max_dt;
 
         my $change =
             DateTime::TimeZone::OlsonDB::Change->new
-                ( utc_start_date => $date->{utc},
+                ( utc_start_date => $dt,
                   short_name => sprintf( $self->{format}, $rule->letter ),
                   observance => $self,
                   rule       => $rule,
@@ -524,8 +525,8 @@ sub until
 
     $time_spec = '00:00:00' unless defined $time_spec;
 
-    my ( $local, $utc ) =
-        DateTime::TimeZone::OlsonDB::datetimes_for_time_spec
+    my $utc =
+        DateTime::TimeZone::OlsonDB::utc_datetime_for_time_spec
                 ( spec  => $time_spec,
                   year  => $year,
                   month => $month,
@@ -534,11 +535,65 @@ sub until
                   offset_from_std => $offset_from_std,
                 );
 
-    return { local => $local,
-             utc   => $utc,
-           };
+    return $utc;
 }
 
+sub last_rule
+{
+    my $self = shift;
+
+    # if observance doesn't end there is no last rule
+    return unless $self->until;
+
+    return $self->_rule_for_date( @_, $self->until );
+}
+
+sub _rule_for_date
+{
+    my $self = shift;
+    my $odb  = shift;
+    my $date = shift;
+
+    return unless $self->{rules};
+
+    # figure out what date each rule would start on _if_ that rule
+    # were applied to this current observance ..
+    my @rule_dates;
+    foreach my $rule ( $odb->rule( $self->{rules} ) )
+    {
+        unless ( $rule->min_year > $date->year ||
+                 ( $rule->max_year && $rule->max_year < $date->year )
+               )
+        {
+            my $rule_start = $rule->date_for_year( $date->year, $self->offset_from_utc );
+
+            push @rule_dates, [ $rule_start, $rule ];
+        }
+
+        next if $rule->min_year > $date->year + 1;
+        next if $rule->max_year && $rule->max_year < $date->year + 1;
+
+        my $rule_start_next = $rule->date_for_year( $date->year + 1, $self->offset_from_utc );
+
+        push @rule_dates, [ $rule_start_next, $rule ];
+    }
+
+    @rule_dates = sort { $a->[0] <=> $b->[0] } @rule_dates;
+
+    # ... then look through the rules to see if any are still in
+    # effect at the end of the observance
+    for ( my $x = 0; $x < @rule_dates - 1; $x++ )
+    {
+        my ( $dt, $rule ) = @{ $rule_dates[$x] };
+        my $next_dt = $rule_dates[ $x + 1 ]->[0];
+
+        if ( $dt <= $date &&
+             $date <= $next_dt )
+        {
+            return $rule;
+        }
+    }
+}
 
 package DateTime::TimeZone::OlsonDB::Rule;
 
@@ -597,8 +652,8 @@ sub date_for_year
     my $day =
         DateTime::TimeZone::OlsonDB::parse_day_spec( $self->{on}, $self->month, $year );
 
-    my ( $local, $utc ) =
-        DateTime::TimeZone::OlsonDB::datetimes_for_time_spec
+    my $utc =
+        DateTime::TimeZone::OlsonDB::utc_datetime_for_time_spec
                 ( spec  => $self->{at},
                   year  => $year,
                   month => $self->month,
@@ -607,9 +662,7 @@ sub date_for_year
                   offset_from_std => $self->offset_from_std,
                 );
 
-    return { local => $local,
-             utc   => $utc,
-           };
+    return $utc;
 }
 
 
