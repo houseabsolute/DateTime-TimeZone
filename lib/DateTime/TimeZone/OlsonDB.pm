@@ -84,6 +84,7 @@ sub _parse_rule
     @rule{ qw( from to type in on at save letter ) } = @items;
     delete $rule{letter} if $rule{letter} eq '-';
 
+    # As of the 2003a data, there are no rules with a type set
     delete $rule{type} if $rule{type} eq '-';
 
     push @{ $self->{rules}{$name} },
