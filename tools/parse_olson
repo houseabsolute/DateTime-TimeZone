@@ -100,8 +100,8 @@ foreach my $f (@files)
 
         my $spans = Dumper zone_as_data($zone);
 
-        $spans =~ s/'inf'/\$DateTime::TimeZone::INFINITY/;
-        $spans =~ s/'-inf'/\$DateTime::TimeZone::NEG_INFINITY/;
+        $spans =~ s/'inf'/DateTime::TimeZone::INFINITY/;
+        $spans =~ s/'-inf'/DateTime::TimeZone::NEG_INFINITY/;
 
         $spans =~ s/('(?:start|end)_date'\s+=>\s+)'(\d+)'/$1$2/g;
 
