@@ -3,7 +3,7 @@ package DateTime::TimeZone;
 use strict;
 
 use vars qw( $VERSION $INFINITY $NEG_INFINITY );
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
