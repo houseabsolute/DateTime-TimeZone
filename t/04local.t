@@ -37,7 +37,7 @@ use DateTime::TimeZone;
 
 {
     $^W = 0;
-    local *DateTime::TimeZone::Local::readlink = sub { undef };
+    local *DateTime::TimeZone::Local::_readlink = sub { undef };
     local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { undef };
     local *DateTime::TimeZone::Local::_local_from_etc_timezone = sub { undef };
     $^W = 1;
