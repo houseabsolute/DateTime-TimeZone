@@ -1,3 +1,9 @@
+0.2501   2003-08-10
+
+- Fixed a test that failed because of a change in the DateTime.pm
+from_object() API.
+
+
 0.25     2003-07-20
 
 - Removed a test that only passed with DateTime CVS HEAD installed.
