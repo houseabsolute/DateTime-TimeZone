@@ -139,7 +139,7 @@ sub _span_for_datetime
 
     my $method = $type . '_rd_as_seconds';
 
-    my $end = $type eq 'UTC' ? UTC_END : LOCAL_END;
+    my $end = $type eq 'utc' ? UTC_END : LOCAL_END;
 
     my $span;
     my $seconds = $dt->$method();
@@ -436,6 +436,14 @@ time zone name.
 
 If none of these methods work, it gives up and dies.
 
+=back
+
+=head3 Object Methods
+
+C<DateTime::TimeZone> objects provide the following methods:
+
+=over 4
+
 =item * offset_for_datetime( $datetime )
 
 Given an object which implements the DateTime.pm API, this method
@@ -491,6 +499,8 @@ Returns the part of the time zone name before the first slash.  For
 example, the "America/Chicago" time zone would return "America".
 
 =back
+
+=head2 Functions
 
 This class also contains several functions, none of which are
 exported.
