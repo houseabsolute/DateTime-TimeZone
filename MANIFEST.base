@@ -3,9 +3,12 @@ LICENSE
 README
 Changes
 Makefile.PL
-tools/parse_zones
+tools/parse_olson
 t/01load.t
 t/02basic.t
+t/03link.t
 lib/DateTime/TimeZone.pm
-lib/DateTime/TimeZoneObservance.pm
 lib/DateTime/TimeZoneCatalog.pm
+lib/DateTime/TimeZone/Floating.pm
+lib/DateTime/TimeZone/OffsetOnly.pm
+lib/DateTime/TimeZone/OlsonDB.pm
