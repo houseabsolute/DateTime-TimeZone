@@ -1,4 +1,4 @@
-0.17
+0.17     2003-05-25
 
 - Fixed test failures on system where /etc/localtime is not a symlink.
 Diagnosed by Iain Truskett.
@@ -7,6 +7,7 @@ Diagnosed by Iain Truskett.
 zone:
 -- Check for /etc/timezone file.
 -- Check for /etc/sysconfig/clock file.  Patch from Rick Measham.
+Testing help from Ben Bennett.
 
 - Added is_olson method so object created from a named Olson database
 time zone can be distinguished from other types of objects.
