@@ -113,10 +113,9 @@ sub _parse_zone
 
     @obs{ qw( gmtoff rules format until ) } = @items;
 
-    # an anonymous add offset rule
     if ( $obs{rules} =~ /\d\d?:\d\d/ )
     {
-        $obs{extra_offset} = delete $obs{rules};
+        $obs{offset_from_std} = delete $obs{rules};
     }
     else
     {
@@ -242,26 +241,28 @@ sub parse_day_spec
 sub parse_time_spec
 {
     my $time = shift;
-    my $base_offset = shift;
-    my $extra_offset = shift;
+    my $offset_from_utc = shift;
+    my $offset_from_std = shift;
 
-    # 'w'all - ignore
+    # 'w'all - ignore it, because that's the default
     $time =~ s/w$//;
 
+    my $total_offset = $offset_from_utc;
+
     # 'g'reenwich, 'u'tc, or 'z'ulu
-    $base_offset = 0 if $time =~ s/[guz]$//;
+    $total_offset = 0 if $time =~ s/[guz]$//;
 
     # 's'tandard time - ignore DS offset
     unless ( $time =~ s/s$// )
     {
-        $base_offset -= $extra_offset if defined $extra_offset;
+        $total_offset -= $offset_from_std if defined $offset_from_std;
     }
 
     my ($hour, $minute, $second) = split /:/, $time;
     $minute = 0 unless defined $minute;
     $second = 0 unless defined $second;
 
-    return ( $hour, $minute, $second, $base_offset );
+    return ( $hour, $minute, $second, $total_offset );
 }
 
 
@@ -375,23 +376,22 @@ sub new
                             format => { type => SCALAR },
                             until  => { type => SCALAR | UNDEF },
                             start  => { type => OBJECT | UNDEF },
-                            extra_offset => { type => SCALAR, optional => 1 },
+                            offset_from_std => { type => SCALAR, default => 0 },
                           }
                     );
 
-    my $offset = DateTime::TimeZone::offset_as_seconds( $p{gmtoff} );
-
-    if ( $p{extra_offset} )
-    {
-        $offset += DateTime::TimeZone::offset_as_seconds( $p{extra_offset} );
-    }
+    my $offset_from_utc = DateTime::TimeZone::offset_as_seconds( $p{gmtoff} );
+    my $offset_from_std = DateTime::TimeZone::offset_as_seconds( $p{offset_from_std} );
 
     return bless { %p,
-                   offset => $offset,
+                   offset_from_utc => $offset_from_utc,
+                   offset_from_std => $offset_from_std,
                  }, $class;
 }
 
-sub offset{ $_[0]->{offset} }
+sub offset_from_utc { $_[0]->{offset_from_utc} }
+sub offset_from_std { $_[0]->{offset_from_std} }
+sub total_offset { $_[0]->offset_from_utc + $_[0]->offset_from_std }
 
 sub rules { $_[0]->{rules} }
 
@@ -421,7 +421,7 @@ sub _expand_one_rule
     my $min_dt = $self->start;
     my $max_dt;
 
-    if ( my $until = $self->until( $rule->offset ) )
+    if ( my $until = $self->until( $rule->offset_from_std ) )
     {
         $max_dt = $until->{utc};
     }
@@ -441,7 +441,7 @@ sub _expand_one_rule
     {
         my $day;
 
-        $date = $rule->date_for_year( $year, $self->{offset} );
+        $date = $rule->date_for_year( $year, $self->offset_from_utc );
 
         next if $min_dt && $date->{utc} < $min_dt;
         last if $date->{utc} >= $max_dt;
@@ -470,7 +470,7 @@ sub start { $_[0]->{start} }
 sub until
 {
     my $self = shift;
-    my $extra_offset = shift;
+    my $offset_from_std = shift || $self->offset_from_std;
 
     return unless defined $self->{until};
 
@@ -485,17 +485,17 @@ sub until
           1
         );
 
-    my ( $hour, $minute, $second, $offset );
+    my ( $hour, $minute, $second, $total_offset );
 
     if ( defined $time )
     {
-        ( $hour, $minute, $second, $offset ) =
+        ( $hour, $minute, $second, $total_offset ) =
             DateTime::TimeZone::OlsonDB::parse_time_spec
-                ( $time, $self->{offset}, $extra_offset );
+                ( $time, $self->offset_from_utc, $offset_from_std );
     }
     else
     {
-        ( $hour, $minute, $second, $offset ) = ( 0, 0, 0, $self->{offset} );
+        ( $hour, $minute, $second, $total_offset ) = ( 0, 0, 0, $self->offset_from_utc );
     }
 
     my $local = DateTime->new( year   => $year,
@@ -508,7 +508,7 @@ sub until
                              );
 
     return { local => $local,
-             utc   => $local - DateTime::Duration->new( seconds => $offset ),
+             utc   => $local - DateTime::Duration->new( seconds => $total_offset ),
            };
 }
 
@@ -537,17 +537,17 @@ sub new
 
     if ($save)
     {
-        $p{offset} = DateTime::TimeZone::offset_as_seconds($save);
+        $p{offset_from_std} = DateTime::TimeZone::offset_as_seconds($save);
     }
     else
     {
-        $p{offset} = 0;
+        $p{offset_from_std} = 0;
     }
 
     return bless \%p, $class;
 }
 
-sub offset { $_[0]->{offset} }
+sub offset_from_std { $_[0]->{offset_from_std} }
 
 sub is_finite { $_[0]->{to} eq 'max' ? 0 : 1 }
 
@@ -564,14 +564,14 @@ sub date_for_year
 {
     my $self   = shift;
     my $year   = shift;
-    my $offset = shift;
+    my $offset_from_utc = shift;
 
     my $day =
         DateTime::TimeZone::OlsonDB::parse_day_spec( $self->{on}, $self->month, $year );
 
-    my ( $hour, $minute, $second, $real_offset ) =
+    my ( $hour, $minute, $second, $total_offset ) =
         DateTime::TimeZone::OlsonDB::parse_time_spec
-            ( $self->{at}, $offset, $self->{offset} );
+            ( $self->{at}, $offset_from_utc, $self->offset_from_std );
 
     my $local = DateTime->new( year   => $year,
                                month  => $self->month,
@@ -583,7 +583,7 @@ sub date_for_year
                              );
 
     return { local => $local,
-             utc   => $local - DateTime::Duration->new( seconds => $real_offset ),
+             utc   => $local - DateTime::Duration->new( seconds => $total_offset ),
            };
 }
 
@@ -602,8 +602,9 @@ sub new
                           }
                     );
 
-    $p{offset}  = $p{observance}->offset;
-    $p{offset} += $p{rule}->offset if defined $p{rule};
+    $p{total_offset}  = $p{observance}->offset_from_utc;
+    $p{total_offset} += $p{observance}->offset_from_std;
+    $p{total_offset} += $p{rule}->offset_from_std if defined $p{rule};
 
     return bless \%p, $class;
 }
@@ -612,23 +613,23 @@ sub start_date { $_[0]->{start_date} }
 sub short_name { $_[0]->{short_name} }
 sub observance { $_[0]->{observance} }
 sub rule       { $_[0]->{rule} }
-sub offset     { $_[0]->{offset} }
+sub total_offset { $_[0]->{total_offset} }
 
 sub two_changes_as_span
 {
-    my ( $c1, $c2, $last_offset ) = @_;
+    my ( $c1, $c2, $last_total_offset ) = @_;
 
     my ( $utc_start, $local_start );
 
     if ( defined $c1->start_date )
     {
         $local_start = $c1->start_date->utc_rd_as_seconds;
-        $local_start += $c1->offset - $last_offset;
+        $local_start += $c1->total_offset - $last_total_offset;
 
         # UTC start is local minus the offset when we start, plus the
         # difference in offset between the current offste and the
         # previous offset
-        $utc_start = $local_start - $c1->offset;
+        $utc_start = $local_start - $c1->total_offset;
     }
     else
     {
@@ -637,16 +638,16 @@ sub two_changes_as_span
 
     my $local_end = $c2->start_date->utc_rd_as_seconds;
 
-    my $utc_end = $local_end - $c2->offset;
-    $utc_end -= $c1->offset - $c2->offset;
+    my $utc_end = $local_end - $c2->total_offset;
+    $utc_end -= $c1->total_offset - $c2->total_offset;
 
     return { utc_start   => $utc_start,
              utc_end     => $utc_end,
              local_start => $local_start,
              local_end   => $local_end,
              short_name  => $c1->short_name,
-             offset      => $c1->offset,
-             is_dst      => ($c1->rule && $c1->rule->offset != 0 ? 1 : 0),
+             offset      => $c1->total_offset,
+             is_dst      => ($c1->rule && $c1->rule->offset_from_std != 0 ? 1 : 0),
            };
 }
 
