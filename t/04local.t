@@ -13,11 +13,7 @@ plan tests => 12;
 
 use DateTime::TimeZone;
 
-SKIP:
 {
-    skip "/etc/localtime is not a symlink", 1
-        unless -l '/etc/localtime';
-
     # make sure it doesn't find an /etc/localtime file
     $^W = 0;
     local *DateTime::TimeZone::Local::readlink = sub { undef };
