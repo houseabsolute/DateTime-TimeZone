@@ -1,10 +1,10 @@
 0.05     2003-02-13
 
 - The offset_as_string function did not handle negative offsets
-properly.  Patch from Kellan.
+properly.  Patch from Kellan Elliott-McCrea.
 
 - Allow 'Z' as an offset name, equivalent to 'UTC'.  Patch from
-Kellan.
+Kellan Elliott-McCrea.
 
 - Make sure DT::TZ subclasses which need to override
 is_dst_for_datetime do so.
