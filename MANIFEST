@@ -87,6 +87,7 @@ lib/DateTime/TimeZone/Antarctica/Syowa.pm
 lib/DateTime/TimeZone/Antarctica/Vostok.pm
 lib/DateTime/TimeZone/Indian/Kerguelen.pm
 lib/DateTime/TimeZone/Antarctica/Casey.pm
+lib/DateTime/TimeZone/Antarctica/Rothera.pm
 lib/DateTime/TimeZone/Asia/Riyadh.pm
 lib/DateTime/TimeZone/Asia/Qyzylorda.pm
 lib/DateTime/TimeZone/Asia/Gaza.pm
