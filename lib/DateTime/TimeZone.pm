@@ -154,7 +154,7 @@ sub offset_as_seconds
     # if it's just numbers assume it's seconds
     return $offset if $offset =~ /^\d+$/;
 
-    return undef unless $offset =~ /^([\+\-])(\d\d?):?(\d\d)(:?\d\d)?$/;
+    return undef unless $offset =~ /^([\+\-])(\d\d?):?(\d\d)(?::?(\d\d))?$/;
 
     my ( $sign, $hours, $minutes, $seconds ) = ( $1, $2, $3, $4 );
 
