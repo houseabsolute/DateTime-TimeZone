@@ -653,9 +653,10 @@ sub first_rule
         my $next_dt = $rule_dates[ $x + 1 ]->[0];
 
         # Unlike with the last rule, if the observance date matches
-        # either date then it's the one we want
+        # the first date the rule applies, but if the next rule
+        # matches then we want that one instead.
         if ( $dt <= $date &&
-             $date <= $next_dt )
+             $date < $next_dt )
         {
             return $rule;
         }
