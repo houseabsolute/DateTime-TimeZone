@@ -456,7 +456,8 @@ Saving Time rules.
 
 =item * name
 
-Returns the name of the time zone, as given in the Olson database.
+Returns the name of the time zone.  If this value is passed to the
+C<new()> method, it is guaranteed to create the same object.
 
 =item * short_name_for_datetime( $datetime )
 
