@@ -4,7 +4,8 @@ README
 Changes
 Makefile.PL
 tools/parse_zones
-t/01basic.t
+t/01load.t
+t/02basic.t
 lib/DateTime/TimeZone.pm
 lib/DateTime/TimeZoneObservance.pm
 lib/DateTime/TimeZoneCatalog.pm
