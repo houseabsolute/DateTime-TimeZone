@@ -11,7 +11,9 @@ sub local_time_zone
     foreach ( qw( env
                   etc_localtime
                   etc_timezone
+                  etc_TIMEZONE
                   etc_sysconfig_clock
+                  etc_default_init
                 ) )
     {
         my $meth = "_from_$_";
@@ -78,16 +80,9 @@ sub _readlink { readlink $_[0] }
 
 sub _from_etc_timezone
 {
-    my $tz_file;
-    foreach ( qw( /etc/timezone /etc/TIMEZONE ) )
-    {
-	if ( -f && -r _ )
-	{
-	    $tz_file = $_;
-	    last
-	}
-    }
-    return unless $tz_file;
+    my $tz_file = '/etc/timezone';
+
+    return unless -f $tz_file && -r _;
 
     local *TZ;
     open TZ, "<$tz_file"
@@ -98,6 +93,31 @@ sub _from_etc_timezone
     $name =~ s/^\s+|\s+$//g;
 
     return eval { DateTime::TimeZone->new( name => $name ) };
+}
+
+sub _from_etc_TIMEZONE
+{
+    my $tz_file = '/etc/TIMEZONE';
+
+    return unless -f $tz_file && -r _;
+
+    local *TZ;
+    open TZ, "<$tz_file"
+        or die "Cannot read $tz_file: $!";
+
+    my $name;
+    while ($name = <TZ>)
+    {
+       if ($name =~ /\A\s*TZ=\s*(\S+)/)
+       {
+          $name = $1;
+          last;
+       }
+    }
+
+    close TZ;
+
+    return $name && eval { DateTime::TimeZone->new( name => $name ) };
 }
 
 # for systems where /etc/localtime is a copy of a zoneinfo file
@@ -172,6 +192,33 @@ sub _read_etc_sysconfig_clock
     while (<CLOCK>)
     {
         return $1 if /^(?:TIME)?ZONE="([^"]+)"/;
+    }
+}
+
+sub _from_etc_default_init
+{
+    return unless -r "/etc/default/init" && -f _;
+
+    my $name = _read_etc_default_init();
+
+    if ( _could_be_valid_time_zone($name) )
+    {
+        return eval { DateTime::TimeZone->new( name => $name ) };
+    }
+}
+
+# this is a sparate function so that it can be overridden in the test
+# suite
+sub _read_etc_default_init
+{
+    local *INIT;
+    local $_;
+    open INIT, '</etc/default/init'
+        or die "Cannot read /etc/default/init: $!";
+
+    while (<INIT>)
+    {
+        return $1 if /^TZ=(.+)/;
     }
 }
 

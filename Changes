@@ -1,7 +1,17 @@
+0.xx
+
+- /etc/timezone and /etc/TIMEZONE are not the same thing.  Code for
+getting the local time zone name from the latter was supplied by
+Daniel Boorstein.
+
+- Added support for getting the local time zone from
+/etc/default/init.  Suggested by Daniel Boorstein.
+
+
 0.2601   2004-03-16
 
 - Fix test failure which could happen if tests were run before
-DateTime.pm is installed.
+DateTime.pm is installed.  Reported by Slaven Rezic.
 
 
 0.26     2004-03-09

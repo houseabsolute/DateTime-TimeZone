@@ -10,7 +10,7 @@ use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
 
-plan tests => 17;
+plan tests => 19;
 
 use DateTime::TimeZone;
 
@@ -18,8 +18,10 @@ use DateTime::TimeZone;
     # make sure it doesn't find an /etc/localtime file
     $^W = 0;
     local *DateTime::TimeZone::Local::_from_etc_timezone = sub { undef };
+    local *DateTime::TimeZone::Local::_from_etc_TIMEZONE = sub { undef };
     local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
     local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { undef };
+    local *DateTime::TimeZone::Local::_read_etc_default_init = sub { undef };
     $^W = 1;
 
     local $ENV{TZ} = 'this will not work';
@@ -40,6 +42,7 @@ use DateTime::TimeZone;
     $^W = 0;
     local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
     local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { undef };
+    local *DateTime::TimeZone::Local::_read_etc_default_init = sub { undef };
     local *DateTime::TimeZone::Local::_local_from_etc_timezone = sub { undef };
     $^W = 1;
 
@@ -59,7 +62,9 @@ SKIP:
     $^W = 0;
     local *DateTime::TimeZone::Local::_readlink = sub { '/usr/share/zoneinfo/US/Eastern' };
     local *DateTime::TimeZone::Local::_from_etc_timezone = sub { undef };
+    local *DateTime::TimeZone::Local::_from_etc_TIMEZONE = sub { undef };
     local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { undef };
+    local *DateTime::TimeZone::Local::_read_etc_default_init = sub { undef };
     $^W = 1;
 
     local $ENV{TZ} = '';
@@ -78,7 +83,9 @@ SKIP:
     $^W = 0;
     local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
     local *DateTime::TimeZone::Local::_from_etc_timezone = sub { undef };
+    local *DateTime::TimeZone::Local::_from_etc_TIMEZONE = sub { undef };
     local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { 'US/Eastern' };
+    local *DateTime::TimeZone::Local::_read_etc_default_init = sub { undef };
     $^W = 1;
 
     local $ENV{TZ} = '';
@@ -86,6 +93,27 @@ SKIP:
     my $tz;
     eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
     is( $@, '', 'valid time zone name in /etc/sysconfig/clock should not die' );
+    isa_ok( $tz, 'DateTime::TimeZone::America::New_York' );
+}
+
+SKIP:
+{
+    skip "cannot read /etc/default/init", 2
+        unless -r '/etc/default/init' && -f _;
+
+    $^W = 0;
+    local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
+    local *DateTime::TimeZone::Local::_from_etc_timezone = sub { undef };
+    local *DateTime::TimeZone::Local::_from_etc_TIMEZONE = sub { undef };
+    local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { undef };
+    local *DateTime::TimeZone::Local::_read_etc_default_init = sub { 'US/Eastern' };
+    $^W = 1;
+
+    local $ENV{TZ} = '';
+
+    my $tz;
+    eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
+    is( $@, '', 'valid time zone name in /etc/default/init should not die' );
     isa_ok( $tz, 'DateTime::TimeZone::America::New_York' );
 }
 
@@ -118,6 +146,7 @@ SKIP:
         $^W = 0;
         local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
         local *DateTime::TimeZone::Local::_from_etc_timezone = sub { undef };
+        local *DateTime::TimeZone::Local::_from_etc_TIMEZONE = sub { undef };
         $^W = 1;
 
         my $tz;
