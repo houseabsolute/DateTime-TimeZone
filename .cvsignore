@@ -1,11 +1,1 @@
 MANIFEST
-lib/DateTime/TimeZoneCatalog.pm
-lib/DateTime/TimeZone/Africa
-lib/DateTime/TimeZone/America
-lib/DateTime/TimeZone/Antarctica
-lib/DateTime/TimeZone/Asia
-lib/DateTime/TimeZone/Atlantic
-lib/DateTime/TimeZone/Australia
-lib/DateTime/TimeZone/Europe
-lib/DateTime/TimeZone/Indian
-lib/DateTime/TimeZone/Pacific
