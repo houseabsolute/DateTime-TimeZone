@@ -350,7 +350,7 @@ plan tests => 101;
     $dt->set_time_zone( 'America/Chicago' );
 
     is( $dt->hour, 3, 'hour should be 3 after switching from floating TZ' );
-    is( $dt->local_rd_as_seconds - $dt->utc_rd_as_seconds, -18000,
+    is( $dt->offset, -18000,
         'tz offset should be -18000' );
 }
 
