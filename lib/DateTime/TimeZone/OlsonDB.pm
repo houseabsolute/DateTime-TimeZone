@@ -194,12 +194,13 @@ sub parse_day_spec
     {
         my $dow = $DateTime::TimeZone::OlsonDB::DAYS{$1};
 
+        my $last_day = DateTime->last_day_of_month( year  => $year,
+                                                    month => $month );
+
         my $dt =
             DateTime->new( year   => $year,
                            month  => $month,
-                           day    =>
-                           DateTime->last_day_of_month( year  => $year,
-                                                        month => $month ),
+                           day    => $last_day->day,
                            time_zone => 'UTC',
                          );
 
