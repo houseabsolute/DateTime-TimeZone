@@ -76,7 +76,7 @@ sub new
     $subclass =~ s/\//::/g;
     my $real_class = "DateTime::TimeZone::$subclass";
 
-    eval "require $real_class";warn $@ if $@;
+    eval "require $real_class";
     die "Invalid time zone name: $p{name}" if $@;
 
     return $real_class->instance( name => $p{name} );
