@@ -346,7 +346,7 @@ sub offset_as_seconds
 
     return 0 if $offset eq '0';
 
-    return undef unless $offset =~ /^([\+\-])?(\d\d?)(:?)(\d\d)(?:\3(\d\d))?$/;
+    return undef unless $offset =~ /^([\+\-])?(\d\d)(:?)(\d\d)(?:\3(\d\d))?$/;
 
     my ( $sign, $hours, $minutes, $seconds ) = ( $1, $2, $4, $5 );
 
@@ -577,7 +577,7 @@ represented by the offset as a positive or negative number.  Returns
 C<undef> if $offset is not in the range C<-99:59:59> to C<+99:59:59>.
 
 The offset is expected to match the regex
-C</^([\+\-])?(\d\d?)(:?)(\d\d)(?:\3(\d\d))?$/> or C<undef> will be
+C</^([\+\-])?(\d\d)(:?)(\d\d)(?:\3(\d\d))?$/> or C<undef> will be
 returned.
 
 =item * offset_as_string( $offset )
