@@ -443,10 +443,11 @@ C<DateTime::TimeZone::OffsetOnly> object is returned.
 If the "name" parameter is "local", then the module attempts to
 determine the local time zone for the system.
 
-First it checks C<$ENV{TZ}>.  If this is defined, and it is not the
-string "local", then it is treated as any other valid name (including
-"floating"), and the constructor tries to create a time zone based on
-that name.
+First it checks C<$ENV> for keys named "TZ", "SYS$TIMEZONE_RULE",
+"SYS$TIMEZONE_NAME", "UCX$TZ", or "TCPIP$TZC" (the last 4 are for
+VMS).  If this is defined, and it is not the string "local", then it
+is treated as any other valid name (including "floating"), and the
+constructor tries to create a time zone based on that name.
 
 Next, it checks for the existence of a symlink at F</etc/localtime>.
 It follows this link to the real file and figures out what the file's
@@ -460,9 +461,9 @@ of making a symlink.  Unfortunately, these files don't contain their
 own name!  This means that there is no way to look at a copy and
 figure out what time zone it represents.
 
-Then it checks for a file called F</etc/timezone>.  If this exists, it
-is read and it tries to create a time zone with the name contained in
-the file.
+Then it checks for a file called F</etc/timezone> or F</etc/TIMEZONE>.
+If one of these exists, it is read and it tries to create a time zone
+with the name contained in the file.
 
 Finally, it checks for a file called F</etc/sysconfig/clock>.  If this
 file exists, it looks for a line inside the file matching
