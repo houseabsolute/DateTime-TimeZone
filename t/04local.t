@@ -26,19 +26,10 @@ use DateTime::TimeZone;
     my $tz;
     eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
     like( $@, qr/cannot determine local time zone/i,
-          'invalid time zone name in $ENV{TZ} should die' );
-}
-
-{
-    $^W = 0;
-    local *DateTime::TimeZone::Local::readlink = sub { undef };
-    local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { undef };
-    local *DateTime::TimeZone::Local::_local_from_etc_timezone = sub { undef };
-    $^W = 1;
+          'invalid time zone name in $ENV{TZ} and no other info available should die' );
 
     local $ENV{TZ} = '123/456';
 
-    my $tz;
     eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
     like( $@, qr/cannot determine local time zone/i,
           'invalid time zone name in $ENV{TZ} and no other info available should die' );
@@ -95,7 +86,7 @@ SKIP:
     use Sys::Hostname;
 
     skip "Cannot run these tests without explicitly knowing local time zone first (only runs on developers' machine)", 4
-        unless hostname =~ /houseabsolute/ && -d 'CVS';
+        unless hostname =~ /houseabsolute|quasar/ && -d 'CVS';
 
     local $ENV{TZ} = '';
 
