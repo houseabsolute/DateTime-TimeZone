@@ -18,9 +18,6 @@ sub new
     $self->{offset} =
         DateTime::TimeZone::offset_as_seconds( $p{offset} );
 
-    $self->{offset_string} =
-        DateTime::TimeZone::offset_as_string( $p{offset} );
-
     return bless $self, $class;
 }
 
