@@ -20,6 +20,9 @@ sub name { 'UTC' }
 
 sub category { undef }
 
+sub is_utc { 1 }
+
+
 1;
 
 __END__
