@@ -18,3 +18,7 @@ _uu$
 \.cvsignore
 MANIFEST\.SKIP
 ^t/zd_
+^Build$
+^_build
+secs_to_dt
+OlsonDB\.pm\.new
