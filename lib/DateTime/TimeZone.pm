@@ -76,6 +76,7 @@ sub _is_in_span
 {
     my ($i1, $i2) = @_;
 
+    # We have to compare two spans when adding nodes to the tree.
     if ( ref $i1 && ref $i2 )
     {
         return -1 if $i1->[0] < $i2->[0];
