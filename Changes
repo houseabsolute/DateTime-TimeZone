@@ -1,3 +1,19 @@
+0.2503   2003-10-06
+
+- Made the offset string -> number conversion slightly less strict, so
+that 1:00:00 is accepted, as opposed to required 01:00:00.  Without
+colons, it still must be four or six digits, however.
+
+- This release is based on the 2003d Olson database, which contains
+updates for various zones.
+
+- Fixed a bug in DateTime::TimeZone::OlsonDB for zones where an
+observance change occurred at UTC year X, and a new rule started at
+local year X + 1, but the offset meant that these were actually the
+same year.  No zones in the previous release were affected, and this
+bug was only uncovered by the new Olson data.
+
+
 0.2502   2003-09-09
 
 - Lots of fixes and improvements in how offsets are converted from
