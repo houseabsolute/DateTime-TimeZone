@@ -9,6 +9,8 @@ name() method.  Patched by Joshua Hoblitt.
 - More env vars and files are looked at when trying to determine what
 the local time zone is.  Thanks to Date::Manip for this.
 
+- Added SIGNATURE file to distribution.
+
 
 0.2501   2003-08-10
 
