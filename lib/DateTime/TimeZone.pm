@@ -24,12 +24,12 @@ sub new
 
     $p{name} =~ s/-/_/g;
     $p{name} =~ s/\//::/g;
-    my $class = "DateTime::TimeZone::" . $p{name};
+    my $real_class = "DateTime::TimeZone::" . $p{name};
 
-    eval "require $class";
+    eval "require $real_class";
     die "Invalid time zone name: $p{name}" if $@;
 
-    return $class->new;
+    return $real_class->new;
 }
 
 sub _init
@@ -154,7 +154,7 @@ sub offset_as_seconds
     # if it's just numbers assume it's seconds
     return $offset if $offset =~ /^\d+$/;
 
-    return undef unless $offset =~ /^([\+\-])(\d\d)(\d\d)(\d\d)?$/;
+    return undef unless $offset =~ /^([\+\-])(\d\d?):?(\d\d)(:?\d\d)?$/;
 
     my ( $sign, $hours, $minutes, $seconds ) = ( $1, $2, $3, $4 );
 
