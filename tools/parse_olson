@@ -199,10 +199,10 @@ $cat
 $links
 ;
 
-sub All { wantarray ? \@DateTime::TimeZone::ALL : \\\@DateTime::TimeZone::ALL }
-sub Categories { wantarray ? \@DateTime::TimeZone::CATEGORY_NAMES : \\\@DateTime::TimeZone::CATEGORY_NAMES }
+sub all_names { wantarray ? \@DateTime::TimeZone::ALL : \\\@DateTime::TimeZone::ALL }
+sub categories { wantarray ? \@DateTime::TimeZone::CATEGORY_NAMES : \\\@DateTime::TimeZone::CATEGORY_NAMES }
 
-sub Category
+sub category
 {
     return unless exists \$DateTime::TimeZone::CATEGORIES{ \$_[0] };
 
@@ -219,10 +219,7 @@ DateTime::TimeZoneCatalog - Provides a list of all valid time zone names
 
 =head1 SYNOPSIS
 
-  use DateTime::TimeZoneCatalog;
-  # now \@DateTime::TimeZone::CATALOG is populated
-
-  foreach my \$zone ( DateTime::TimeZone->Catalog ) { ... }
+See DateTime::TimeZone for usage details.
 
 =head1 DESCRIPTION
 
