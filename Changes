@@ -1,3 +1,11 @@
+0.35
+
+- This release is based on version 2005e of the Olson database.
+
+- STORABLE_thaw() now returns $self in preparation for proposed
+changes to Storable.
+
+
 0.34     2005-03-11
 
 - Some time zone short names were incorrectly being given as something
