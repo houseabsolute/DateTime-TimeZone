@@ -11,8 +11,6 @@ BEGIN { require 'check_datetime_version.pl' }
 
 plan tests => 2;
 
-use DateTime::TimeZone;
-
 use Storable;
 
 my $tz1 = DateTime::TimeZone->new( name => 'America/Chicago' );
