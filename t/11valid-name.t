@@ -2,9 +2,14 @@
 
 use strict;
 
-use DateTime::TimeZone;
+use File::Spec;
+use Test::More;
 
-use Test::More tests => 11;
+use lib File::Spec->catdir( File::Spec->curdir, 't' );
+
+BEGIN { require 'check_datetime_version.pl' }
+
+plan tests => 12;
 
 foreach ( qw( America/Chicago
               UTC
@@ -19,6 +24,7 @@ foreach ( qw( America/Chicago
 }
 
 foreach ( qw( America/Hell
+              Foo/Bar
               FooBar
               adhdsjghs;dgohas098huqjy4ily
               EST
