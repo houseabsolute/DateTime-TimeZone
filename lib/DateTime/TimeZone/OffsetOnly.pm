@@ -68,10 +68,9 @@ return undef.
 
 =item * new ( offset => $offset )
 
-The value given to the offset parameter may be either a string, such
-as "+0300", or a number.  Strings will be converted into numbers by
-the C<DateTime::TimeZone::offset_as_seconds> function.  Numbers are
-used as is.
+The value given to the offset parameter must be a string such as
+"+0300".  Strings will be converted into numbers by the
+C<DateTime::TimeZone::offset_as_seconds> function.
 
 =item * offset_for_datetime( $datetime )
 
