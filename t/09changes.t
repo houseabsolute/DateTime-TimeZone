@@ -27,32 +27,32 @@ plan tests => 32;
 {
     # one minute before change to standard time
     my $dt = DateTime->new( year => 1997, month => 3, day => 29,
-                            hour => 14, minute => 59,
+                            hour => 15, minute => 59,
                             time_zone => 'UTC' );
 
     $dt->set_time_zone('Australia/Sydney');
 
-    is( $dt->hour, 1, 'A/S 1997: hour should be 1' );
+    is( $dt->hour, 2, 'A/S 1997: hour should be 2' );
 
     $dt->set_time_zone('UTC')->add( minutes => 1 )->set_time_zone('Australia/Sydney');
 
-    is( $dt->hour, 1, 'A/S 1997: hour should still be 1' );
+    is( $dt->hour, 2, 'A/S 1997: hour should still be 2' );
 }
 
 # same tests without using UTC as intermediate
 {
     # Can't start at 1:59 or we get the _2nd_ 1:59 of that day (post-DST change)
     my $dt = DateTime->new( year => 1997, month => 3, day => 30,
-                            hour => 0, minute => 59,
+                            hour => 1, minute => 59,
                             time_zone => 'Australia/Sydney' );
 
     $dt->add( hours => 1 );
 
-    is( $dt->hour, 1, 'A/S 1997: hour should be 1' );
+    is( $dt->hour, 2, 'A/S 1997: hour should be 2' );
 
     $dt->add( minutes => 1 );
 
-    is( $dt->hour, 1, 'A/S 1997: hour should still be 1' );
+    is( $dt->hour, 2, 'A/S 1997: hour should still be 2' );
 }
 
 {
