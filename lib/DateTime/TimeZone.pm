@@ -66,7 +66,10 @@ sub _local_timezone
 {
     my $class = shift;
 
-    if ( defined $ENV{TZ} && $ENV{TZ} ne 'local' )
+    if ( defined $ENV{TZ} && $ENV{TZ} ne 'local' &&
+         # don't bother if the variable contains something that
+         # couldn't be a valid time zone name
+         $ENV{TZ} =~ m,^[\w/]+$, )
     {
         my $tz;
         eval { $tz = $class->new( name => $ENV{TZ} ) };
