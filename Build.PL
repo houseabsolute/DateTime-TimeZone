@@ -24,7 +24,7 @@ EOF
 Module::Build->new( module_name => 'DateTime::TimeZone',
                     author      => 'Dave Rolsky <autarch@urth.org>',
                     license     => 'perl',
-                    requires    => { 'Params::Validate' => 0,
+                    requires    => { 'Params::Validate' => 0.72,
                                      'Class::Singleton' => 1.03,
                                      'Pod::Man'    => 1.14,
                                    },
