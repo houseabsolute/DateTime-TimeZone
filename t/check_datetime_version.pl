@@ -2,7 +2,7 @@ use strict;
 
 BEGIN
 {
-    eval "use DateTime 0.06";
+    eval "use DateTime 0.09";
     if ($@)
     {
         Test::More::plan
