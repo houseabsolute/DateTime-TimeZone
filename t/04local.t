@@ -37,7 +37,7 @@ use DateTime::TimeZone;
 
 {
     $^W = 0;
-    local *DateTime::TimeZone::Local::_readlink = sub { undef };
+    local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
     local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { undef };
     local *DateTime::TimeZone::Local::_local_from_etc_timezone = sub { undef };
     $^W = 1;
@@ -75,7 +75,7 @@ SKIP:
         unless -r '/etc/sysconfig/clock' && -f _;
 
     $^W = 0;
-    local *DateTime::TimeZone::Local::_readlink = sub { undef };
+    local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
     local *DateTime::TimeZone::Local::_from_etc_timezone = sub { undef };
     local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { 'US/Eastern' };
     $^W = 1;
@@ -103,7 +103,7 @@ SKIP:
     isa_ok( $tz, 'DateTime::TimeZone::America::Chicago' );
 
     $^W = 0;
-    local *DateTime::TimeZone::Local::_readlink = sub { undef };
+    local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
     $^W = 1;
 
     eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
@@ -111,7 +111,7 @@ SKIP:
     isa_ok( $tz, 'DateTime::TimeZone::America::Chicago' );
 
     $^W = 0;
-    local *DateTime::TimeZone::Local::_readlink = sub { undef };
+    local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
     local *DateTime::TimeZone::Local::_from_etc_timezone = sub { undef };
     $^W = 1;
 
