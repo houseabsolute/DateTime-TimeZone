@@ -2,18 +2,15 @@ package DateTime::TimeZone;
 
 use strict;
 
-use vars qw ($VERSION);
+use vars qw( $VERSION $INFINITY $NEG_INFINITY );
 $VERSION = 0.01;
 
-use Date::ICal; # will go away later
-use Date::ICal::Duration; # will go away later
-#use DateTime;
-#use DateTime::Duration;
-
 use DateTime::TimeZoneCatalog;
-use DateTime::TimeZoneObservance;
+use Params::Validate qw( validate validate_pos SCALAR ARRAYREF );
+use Tree::RedBlack;
 
-use Params::Validate qw( validate validate_pos SCALAR HASHREF );
+$INFINITY = 10 ** 10 ** 10;
+$NEG_INFINITY = -1 * $INFINITY;
 
 sub new
 {
@@ -22,131 +19,124 @@ sub new
                       { name => { type => SCALAR } },
                     );
 
-    $p{name} =~ s/-/_/g;
-    $p{name} =~ s/\//::/g;
-    my $real_class = "DateTime::TimeZone::" . $p{name};
+    my $subclass = $p{name};
+    $subclass =~ s/-/_/g;
+    $subclass =~ s/\//::/g;
+    my $real_class = "DateTime::TimeZone::$subclass";
 
     eval "require $real_class";
     die "Invalid time zone name: $p{name}" if $@;
 
-    return $real_class->new;
+    return $real_class->load( name => $p{name} );
 }
 
 sub _init
 {
     my $class = shift;
     my %p = validate( @_,
-                      { zone_info => { type => HASHREF } },
+                      { name => { type => SCALAR },
+                        spans => { type => ARRAYREF },
+                      },
                     );
 
-    my $self = bless { zone_info   => $p{zone_info},
-                       observances => [],
-                     }, $class;
+    my $self = bless { name => $p{name} }, $class;
 
-    $self->_build_observances();
+    $self->_build_span_tree( $p{spans} );
 
     return $self;
 }
 
-sub _build_observances
+sub _build_span_tree
 {
     my $self = shift;
+    my $spans = shift;
 
-    foreach my $o ( @{ $self->{zone_info}{STANDARD} } )
+    my $tree = Tree::RedBlack->new;
+    $tree->cmp( \&_is_in_span );
+    foreach my $span (@$spans)
     {
-        push ( @{ $self->{observances} },
-               DateTime::TimeZoneObservance->new
-                   ( %$o,
-                     is_dst => 0,
-                   )
-             );
+        $tree->insert( [ $span->{start_date}, $span->{end_date} ], $span );
     }
 
-    foreach my $o ( @{ $self->{zone_info}{DAYLIGHT} } )
-    {
-        push ( @{ $self->{observances} },
-               DateTime::TimeZoneObservance->new
-                   ( %$o,
-                     is_dst => 1,
-                   )
-             );
-    }
+    $self->{tree} = $tree;
 }
 
-sub observance_for_datetime
+sub _is_in_span
 {
-    my $self = shift;
-    my $dt = validate_pos( @_, { isa => 'DateTime' } );
+    my ($i1, $i2) = @_;
 
-    # will go away
-    my $ical =
-        Date::ICal->new( ical =>
-                         sprintf( '%04d%02d%02dT%02d%02d%02dZ',
-                                  $dt->year, $dt->month, $dt->day,
-                                  $dt->hour, $dt->minute, $dt->second ),
-                       );
-
-    my $most_recent_observance;
-    my $most_recent_max;
-
-    # Iterate through observance specified in the timezone definition
-    # We're trying to find the most recent timezone marker in any
-    # observance.  this will tell us which observance $dt is in
-    foreach my $observance ( @{ $self->{observances} } )
+    if ( ref $i1 && ref $i2 )
     {
-        # Observances should be stored as a b-tree (use
-        # Tree::RedBlack?) where node keys mark range start & end.
-        # Then we find the node inside which the given date fits.  If
-        # no node is found and the date at hand is high than the given
-        # date, we generate new nodes until we find one inside which
-        # the given date fits and store all the nodes in the tree.  If
-        # the given date is earlier than the earliest range start, do
-        # the opposite. - dave
+        return -1 if $i1->[0] < $i2->[0];
+        return  1 if $i1->[1] > $i2->[1];
 
-        # will become a DateTime object eventually
-        my $year_ago = $ical - Date::ICal::Duration->new( weeks => 100 );
-
-        my $set = $observance->date_set;
-        # Limits the span we look at, I think?  - dave
-	$set->during( start => $year_ago, end => $ical );
-
-        # These are ICal datetime specs, which compare properly when
-        # lt/gt is used
-        my $max = $set->max;
-        my $min = $set->min;
-
-        # If we don't yet have _any_ marker or this marker is more
-        # recent than than our last candidate marker, pick this one as
-        # the new candidate
-        if ( ( ( ! defined $most_recent_max ) ||
-               ( $max gt $most_recent_max )
-             )
-             &&
-             ( $min lt $ical )
-           )
-        {
-            $most_recent_max = $max;
-            $most_recent_observance = $observance;
-        }
+        return  0;
     }
+    elsif ( ref $i1 )
+    {
+        return -1 if $i2 <  $i1->[0];
+        return  1 if $i2 >= $i1->[1];
 
-    # there should be _something here - anything else is a bug ;)
-    return $most_recent_observance;
+        return  0;
+    }
+    else
+    {
+        return -1 if $i1 <  $i2->[0];
+        return  1 if $i1 >= $i2->[1];
+
+        return  0;
+    }
 }
 
 sub offset_for_datetime
 {
-    $_[0]->observance_for_datetime->offset( $_[1] );
+    my $self = shift;
+
+    my $span = $self->_span_for_datetime( $_[0] );
+
+    return $span->{offset};
 }
 
-sub offset_string_for_datetime { offset_as_string( $_[0]->offset_for_datetime( $_[1] ) ) }
+sub short_name_for_datetime
+{
+    my $self = shift;
+
+    my $span = $self->_span_for_datetime( $_[0] );
+
+    return $span->{short_name};
+}
+
+sub _span_for_datetime
+{
+    my $self = shift;
+    my $dt   = shift;
+
+    my $number = sprintf( '%04d%02d%02d%02d%02d%02d',
+                          $dt->year, $dt->month, $dt->day,
+                          $dt->hour, $dt->minute, $dt->second,
+                        );
+
+    if ( my $span = $self->{tree}->find($number) )
+    {
+        return $span;
+    }
+    else
+    {
+        return $self->_generate_spans_until_match($dt);
+    }
+}
 
 sub is_floating { 0 }
+
+sub is_utc { 0 }
+
+sub name      { $_[0]->{name} }
+sub category  { (split /\//, $_[0]->{name}, 2)[0] }
+
 
 #
 # Functions
 #
-
 sub offset_as_seconds
 {
     my $offset = shift;
@@ -154,9 +144,10 @@ sub offset_as_seconds
     # if it's just numbers assume it's seconds
     return $offset if $offset =~ /^\d+$/;
 
-    return undef unless $offset =~ /^([\+\-])(\d\d?):?(\d\d)(?::?(\d\d))?$/;
+    return undef unless $offset =~ /^([\+\-])?(\d\d?):?(\d\d)(?::?(\d\d))?$/;
 
     my ( $sign, $hours, $minutes, $seconds ) = ( $1, $2, $3, $4 );
+    $sign = '+' unless defined $sign;
 
     my $total =  ($hours * 60 * 60) + ($minutes * 60);
     $total += $seconds if $seconds;
@@ -229,10 +220,30 @@ returns the offset in seconds for the given datetime.  This takes into
 account historical time zone information, as well as Daylight Saving
 Time.
 
-=item * offset_string_for_datetime( $datetime )
+=item * short_name_for_datetime( $datetime )
 
 Given an object which implements the DateTime.pm API, this method
-returns the offset as a string for the given datetime.
+returns the "short name" for the current observance and rule this
+datetime is in.  These are things like "EST", "GMT", etc.
+
+=item * is_floating
+
+Returns a boolean indicating whether or not this object represents a
+floating timezone, as defined by RFC 2445.
+
+=item * is_utc
+
+Indicates whether or not this object represents the UTC (GMT) time
+zone.
+
+=item * name
+
+Returns the name of the time zone.
+
+=item * category
+
+Returns the part of the time zone name before the first slash.  For
+example, the "America/Chicago" time zone would return "America".
 
 =back
 
@@ -258,10 +269,8 @@ string.
 
 =head1 AUTHOR
 
-Much of the implementaiton for this module comes from work by Jesse
-Vincent <jesse@fsck.com> on Date::ICal::Timezone.
-
-Other pieces were written by Dave Rolsky <autarch@urth.org>
+Dave Rolsky <autarch@urth.org>, with inspiration from Jesse Vincent's
+work on Date::ICal::Timezone.
 
 =head1 COPYRIGHT
 
