@@ -16,9 +16,9 @@ use DateTime::TimeZone;
 {
     # make sure it doesn't find an /etc/localtime file
     $^W = 0;
-    local *DateTime::TimeZone::Local::readlink = sub { undef };
+    local *DateTime::TimeZone::Local::_readlink = sub { undef };
+    local *DateTime::TimeZone::Local::_from_etc_timezone = sub { undef };
     local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { undef };
-    local *DateTime::TimeZone::Local::_local_from_etc_timezone = sub { undef };
     $^W = 1;
 
     local $ENV{TZ} = 'this will not work';
@@ -50,7 +50,8 @@ SKIP:
         unless -l '/etc/localtime';
 
     $^W = 0;
-    local *DateTime::TimeZone::Local::readlink = sub { '/usr/share/zoneinfo/US/Eastern' };
+    local *DateTime::TimeZone::Local::_readlink = sub { '/usr/share/zoneinfo/US/Eastern' };
+    local *DateTime::TimeZone::Local::_from_etc_timezone = sub { undef };
     local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { undef };
     $^W = 1;
 
@@ -68,13 +69,13 @@ SKIP:
         unless -r '/etc/sysconfig/clock' && -f _;
 
     $^W = 0;
-    local *DateTime::TimeZone::Local::readlink = sub { undef };
-    local *DateTime::TimeZone::Local::_local_from_etc_timezone = sub { undef };
+    local *DateTime::TimeZone::Local::_readlink = sub { undef };
+    local *DateTime::TimeZone::Local::_from_etc_timezone = sub { undef };
     local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { 'US/Eastern' };
     $^W = 1;
 
     local $ENV{TZ} = '';
-
+    local $::D=1;
     my $tz;
     eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
     is( $@, '', 'valid time zone name in /etc/sysconfig/clock should not die' );
@@ -96,7 +97,7 @@ SKIP:
     isa_ok( $tz, 'DateTime::TimeZone::America::Chicago' );
 
     $^W = 0;
-    local *DateTime::TimeZone::Local::readlink = sub { undef };
+    local *DateTime::TimeZone::Local::_readlink = sub { undef };
     $^W = 1;
 
     eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
