@@ -16,6 +16,15 @@ use Params::Validate qw( validate validate_pos SCALAR ARRAYREF );
 use constant INFINITY     =>       100 ** 100 ** 100 ;
 use constant NEG_INFINITY => -1 * (100 ** 100 ** 100);
 
+# the offsets for each span element
+use constant UTC_START   => 0;
+use constant UTC_END     => 1;
+use constant LOCAL_START => 2;
+use constant LOCAL_END   => 3;
+use constant OFFSET      => 4;
+use constant IS_DST      => 5;
+use constant SHORT_NAME  => 6;
+
 sub new
 {
     my $class = shift;
@@ -76,6 +85,12 @@ sub _init
                        spans => $p{spans},
                      }, $class;
 
+    foreach my $k ( qw( last_offset last_observance rules max_year ) )
+    {
+        my $m = "_$k";
+        $self->{$k} = $self->$m() if $self->can($m);
+    }
+
     return $self;
 }
 
@@ -87,7 +102,7 @@ sub is_dst_for_datetime
 
     my $span = $self->_span_for_datetime( 'utc', $_[0] );
 
-    return $span->{is_dst};
+    return $span->[IS_DST];
 }
 
 sub offset_for_datetime
@@ -96,7 +111,7 @@ sub offset_for_datetime
 
     my $span = $self->_span_for_datetime( 'utc', $_[0] );
 
-    return $span->{offset};
+    return $span->[OFFSET];
 }
 
 sub offset_for_local_datetime
@@ -105,7 +120,7 @@ sub offset_for_local_datetime
 
     my $span = $self->_span_for_datetime( 'local', $_[0] );
 
-    return $span->{offset};
+    return $span->[OFFSET];
 }
 
 sub short_name_for_datetime
@@ -114,7 +129,7 @@ sub short_name_for_datetime
 
     my $span = $self->_span_for_datetime( 'utc', $_[0] );
 
-    return $span->{short_name};
+    return $span->[SHORT_NAME];
 }
 
 sub _span_for_datetime
@@ -125,9 +140,11 @@ sub _span_for_datetime
 
     my $method = $type . '_rd_as_seconds';
 
+    my $end = $type eq 'UTC' ? UTC_END : LOCAL_END;
+
     my $span;
     my $seconds = $dt->$method();
-    if ( $seconds < $self->max_span->{"${type}_end"} )
+    if ( $seconds < $self->max_span->[$end] )
     {
         $span = $self->_spans_binary_search( $type, $seconds );
     }
@@ -152,15 +169,12 @@ sub _span_for_datetime
     return $span;
 }
 
-sub max_span { $_[0]->{spans}[-1] }
-
 sub _spans_binary_search
 {
     my $self = shift;
     my ( $type, $seconds ) = @_;
 
-    my $start = "${type}_start";
-    my $end   = "${type}_end";
+    my ( $start, $end ) = _keys_for_type($type);
 
     my $min = 0;
     my $max = scalar @{ $self->{spans} } + 1;
@@ -174,7 +188,7 @@ sub _spans_binary_search
     {
         my $current = $self->{spans}[$i];
 
-        if ( $seconds < $current->{$start} )
+        if ( $seconds < $current->[$start] )
         {
             $max = $i;
             my $c = int( ( $i - $min ) / 2 );
@@ -184,7 +198,7 @@ sub _spans_binary_search
 
             return if $i < $min;
         }
-        elsif ( $seconds >= $current->{$end} )
+        elsif ( $seconds >= $current->[$end] )
         {
             $min = $i;
             my $c = int( ( $max - $i ) / 2 );
@@ -199,13 +213,13 @@ sub _spans_binary_search
             # Special case for overlapping ranges because of DST and
             # other weirdness (like Alaska's change when bought from
             # Russia by the US).  Always prefer latest span.
-            if ( $current->{is_dst} && $type eq 'local' )
+            if ( $current->[IS_DST] && $type eq 'local' )
             {
                 my $next = $self->{spans}[$i + 1];
 
-                if ( $next->{$start} <= $seconds &&
-                     $seconds        >= $next->{$end} &&
-                     ! $next->{is_dst} )
+                if ( $next->[$start] <= $seconds &&
+                     $seconds        >= $next->[$end] &&
+                     ! $next->[IS_DST] )
                 {
                     return $next;
                 }
@@ -214,6 +228,73 @@ sub _spans_binary_search
             return $current;
         }
     }
+}
+
+sub _generate_spans_until_match
+{
+    my $self = shift;
+    my $generate_until_year = shift;
+    my $seconds = shift;
+    my $type = shift;
+
+    my @changes;
+    foreach my $rule (@{$self->_rules})
+    {
+        foreach my $year ( $self->{max_year} .. $generate_until_year )
+        {
+            my $next = $rule->date_for_year( $year, $self->{last_offset} );
+
+            # don't bother with changes we've seen already
+            next if $next->{utc}->utc_rd_as_seconds < $self->max_span->[UTC_END];
+
+            push @changes,
+                DateTime::TimeZone::OlsonDB::Change->new
+                    ( start_date => $next->{local},
+                      short_name =>
+                      sprintf( $self->{last_observance}->format, $rule->letter ),
+                      observance => $self->{last_observance},
+                      rule       => $rule,
+                    );
+        }
+    }
+
+    $self->{max_year} = $generate_until_year;
+
+    my @sorted = sort { $a->start_date <=> $b->start_date } @changes;
+
+    my ( $start, $end ) = _keys_for_type($type);
+
+    my $match;
+    for ( my $x = 1; $x < @sorted; $x++ )
+    {
+        my $last_offset =
+            $x == 1 ? $self->max_span->[OFFSET] : $sorted[ $x - 2 ]->offset;
+
+        my $span =
+            DateTime::TimeZone::OlsonDB::Change::two_changes_as_span
+                ( @sorted[ $x - 1, $x ], $last_offset );
+
+        $span = _span_as_array($span);
+
+        push @{ $self->{spans} }, $span;
+
+        $match = $span
+            if $seconds >= $span->[$start] && $seconds < $span->[$end];
+    }
+
+    return $match;
+}
+
+sub max_span { $_[0]->{spans}[-1] }
+
+sub _keys_for_type
+{
+    $_[0] eq 'utc' ? ( UTC_START, UTC_END ) : ( LOCAL_START, LOCAL_END );
+}
+
+sub _span_as_array
+{
+    [ @{ $_[0] }{ qw( utc_start utc_end local_start local_end offset is_dst short_name ) } ];
 }
 
 sub is_floating { 0 }
