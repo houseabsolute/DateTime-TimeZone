@@ -13,6 +13,7 @@ use File::Spec;
 use Getopt::Long;
 
 $Data::Dumper::Indent = 1;
+$Data::Dumper::Sortkeys = 1;
 $Data::Dumper::Terse = 1;
 
 my $VERSION = "0.07";
