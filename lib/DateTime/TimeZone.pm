@@ -49,21 +49,12 @@ sub new
                     ( offset => $gm - $local );
         }
 
-        if ( $p{name} eq 'UTC' )
+        if ( $p{name} eq 'UTC' || $p{name} eq '0' )
         {
             return DateTime::TimeZone::UTC->new;
         }
 
-        my $offset;
-        if ( $offset = offset_as_seconds( $p{name} ) )
-        {
-            return DateTime::TimeZone::OffsetOnly->new( offset => $offset );
-        }
-
-        if ( ( defined $offset && $offset == 0 ) || $p{name} eq '0' )
-        {
-            return DateTime::TimeZone::UTC->new;
-        }
+        return DateTime::TimeZone::OffsetOnly->new( offset => $p{name} );
     }
 
     if ( exists $DateTime::TimeZone::Links{ $p{name} } )
