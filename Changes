@@ -5,8 +5,7 @@ FreeBSD), we now look for a matching file in /usr/share/zoneinfo in
 order to determine the local time zone.  Based on a patch from Slaven
 Rezic.
 
-- This release is based on the 2003e Olson database, which contains
-updates for various zones.
+- This release is based on the 2003e Olson database.
 
 
 0.2505   2003-10-27
