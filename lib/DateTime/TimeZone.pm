@@ -495,9 +495,9 @@ it will end up trying "US/Central", which will then be converted to
 "America/Chicago" internally.
 
 Some systems just copy the relevant file to F</etc/localtime> instead
-of making a symlink.  Unfortunately, these files don't contain their
-own name!  This means that there is no way to look at a copy and
-figure out what time zone it represents.
+of making a symlink.  In this case, we look in F</usr/share/zoneinfo>
+for a file that has the same size and content as F</etc/localtime> to
+determine the local time zone.
 
 Then it checks for a file called F</etc/timezone> or F</etc/TIMEZONE>.
 If one of these exists, it is read and it tries to create a time zone

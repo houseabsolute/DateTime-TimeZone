@@ -1,3 +1,11 @@
+0.xx
+
+- On systems where /etc/localtime is a copy of a zone info file (like
+FreeBSD), we now look for a matching file in /usr/share/zoneinfo in
+order to determine the local time zone.  Based on a patch from Slaven
+Rezic.
+
+
 0.2505   2003-10-27
 
 - The change in 0.2504 to accomodate SuSE's /etc/sysconfig/clock file

@@ -16,8 +16,8 @@ use DateTime::TimeZone;
 {
     # make sure it doesn't find an /etc/localtime file
     $^W = 0;
-    local *DateTime::TimeZone::Local::_readlink = sub { undef };
     local *DateTime::TimeZone::Local::_from_etc_timezone = sub { undef };
+    local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
     local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { undef };
     $^W = 1;
 

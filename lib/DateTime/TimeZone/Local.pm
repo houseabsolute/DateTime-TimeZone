@@ -35,17 +35,25 @@ sub _from_env
 
 sub _from_etc_localtime
 {
-    return unless -l '/etc/localtime';
+    return unless -r '/etc/localtime';
 
-    # called like this so test suite can test this functionality
-    my $real_name = _readlink( '/etc/localtime' );
+    my $real_name;
+    if ( -l '/etc/localtime' )
+    {
+	# called like this so test suite can test this functionality
+	$real_name = _readlink( '/etc/localtime' );
+    }
+    else
+    {
+        $real_name = _find_matching_zoneinfo_file();
+    }
 
     if ( defined $real_name )
     {
-        my ($vol, $dirs, $file) = File::Spec->splitpath( $real_name );
+	my ($vol, $dirs, $file) = File::Spec->splitpath( $real_name );
 
-        my @parts =
-            grep { defined && length } File::Spec->splitdir( $dirs ), $file;
+	my @parts =
+	    grep { defined && length } File::Spec->splitdir( $dirs ), $file;
 
         foreach my $x ( reverse 0..$#parts )
         {
@@ -60,6 +68,8 @@ sub _from_etc_localtime
             return $tz if $tz;
         }
     }
+
+    undef;
 }
 
 sub _from_etc_timezone
@@ -87,6 +97,45 @@ sub _from_etc_timezone
 }
 
 sub _readlink { readlink($_[0]) }
+
+# for systems where /etc/localtime is a copy of a zone info file
+sub _find_matching_zoneinfo_file
+{
+    return unless -d '/usr/share/zoneinfo';
+
+    require File::Find;
+    require File::Compare;
+
+    my $size = -s '/etc/localtime';
+
+    my $real_name;
+
+    local $File::Find::prune;
+    local $_;
+    eval
+    {
+        File::Find::find
+            ( sub
+              {
+                  if ( ! defined $real_name
+                       && -f $_
+                       && $size == -s $_
+                       && File::Compare::compare( $_, '/etc/localtime' ) == 0
+                     )
+                  {
+                      $real_name = $File::Find::name;
+                      die { found => 1 };
+                  }
+          },
+          '/usr/share/zoneinfo' );
+    };
+
+    if ($@)
+    {
+        return $real_name if ref $@ && $@->{found};
+        die $@;
+    }
+}
 
 # RedHat uses this
 sub _from_etc_sysconfig_clock
