@@ -197,14 +197,14 @@ sub parse_day_spec
 
         my $last_day = DateTime->last_day_of_month( year  => $year,
                                                     month => $month,
-                                                    time_zone => 'UTC',
+                                                    time_zone => 'floating',
                                                   );
 
         my $dt =
             DateTime->new( year   => $year,
                            month  => $month,
                            day    => $last_day->day,
-                           time_zone => 'UTC',
+                           time_zone => 'floating',
                          );
 
         while ( $dt->day_of_week != $dow )
@@ -221,7 +221,7 @@ sub parse_day_spec
         my $dt = DateTime->new( year   => $year,
                                 month  => $month,
                                 day    => $3,
-                                time_zone => 'UTC',
+                                time_zone => 'floating',
                               );
 
         my $dur = $2 eq '<' ? $MINUS_ONE_DAY_DUR : $PLUS_ONE_DAY_DUR;
