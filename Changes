@@ -1,3 +1,17 @@
+0.2507   2004-02-14  the "nothing says love like timezones" release
+
+- Fix a test failure in t/04-local.t on systems where /etc/localtime
+is a copy of a zoneinfo file, not a symlink.  This was a bug in the
+testing code.  Reported by Warren Dodge and a few others.
+
+- If /etc/localtime was a copy of a zoneinfo file, then the current
+working directory could be changed while trying to determine the local
+time zone, because we use File::Find to find a matching zoneinfo file.
+Reported by someone ... (I can't find the message reporting this).
+
+- Update the Makefile.PL to work with Module::Build 0.23.
+
+
 0.2506   2003-12-15
 
 - On systems where /etc/localtime is a copy of a zone info file (like
