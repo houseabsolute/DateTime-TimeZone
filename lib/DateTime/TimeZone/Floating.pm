@@ -34,23 +34,8 @@ A floating time has no time zone, and has an effective offset of zero.
 
 =head1 USAGE
 
-This class has the following methods:
-
-=over 4
-
-=item * new ( offset => $offset )
-
-The value given to the offset parameter may be either a string, such
-as "+0300", or a number.  Strings will be converted into numbers by
-the C<DateTime::TimeZone::offset_as_seconds> function.  Numbers are
-used as is.
-
-=item * offset_for_datetime( $datetime )
-
-No matter what date is given, this method always returns zero.
-
-=back
-
-This class does not support the C<observance_for_datetime()> method.
+This class has the same methods as a real time zone object, but the
+C<short_name_for_datetime()>, C<name()>, and C<category()> methods all
+return undef.
 
 =cut
