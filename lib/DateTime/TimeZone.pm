@@ -169,7 +169,8 @@ sub _spans_binary_search
     my $min = 0;
     my $max = scalar @{ $self->{spans} } + 1;
     my $i = int( $max / 2 );
-    $i++ if $max % 2;
+    # special case for when there are only 2 spans
+    $i++ if $max % 2 && $max != 3;
 
     while (1)
     {
