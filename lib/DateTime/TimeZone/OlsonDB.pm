@@ -326,7 +326,7 @@ sub new
         my $obs =
             DateTime::TimeZone::OlsonDB::Observance->new
                 ( %{ $p{observances}[$x] },
-                  utc_start_date => $last_until,
+                  utc_start_datetime => $last_until,
                 );
 
         my $last_rule = $obs->last_rule( $p{olson_db} );
@@ -352,7 +352,7 @@ sub expand_observances
     {
         my $change =
             DateTime::TimeZone::OlsonDB::Change->new
-                ( utc_start_date => $obs->utc_start_date,
+                ( utc_start_datetime => $obs->utc_start_datetime,
                   short_name => sprintf( $obs->format, '' ),
                   observance => $obs,
                 );
@@ -372,7 +372,7 @@ sub add_change
     my $self = shift;
     my $change = shift;
 
-    if ( defined $change->utc_start_date )
+    if ( defined $change->utc_start_datetime )
     {
         push @{ $self->{changes} }, $change;
     }
@@ -395,7 +395,7 @@ sub add_infinite_rule
 }
 
 sub sorted_changes { ( ( defined $_[0]->{earliest} ? $_[0]->{earliest} : () ),
-                       sort { $a->utc_start_date <=> $b->utc_start_date }
+                       sort { $a->utc_start_datetime <=> $b->utc_start_datetime }
                        @{ $_[0]->{changes} } ) }
 
 sub infinite_rules { values %{ $_[0]->{infinite_rules} } }
@@ -414,7 +414,7 @@ sub new
                             rules  => { type => SCALAR, default => undef },
                             format => { type => SCALAR },
                             until  => { type => SCALAR | UNDEF },
-                            utc_start_date => { type => OBJECT | UNDEF },
+                            utc_start_datetime => { type => OBJECT | UNDEF },
                             offset_from_std => { type => SCALAR, default => 0 },
                           }
                     );
@@ -457,7 +457,7 @@ sub _expand_one_rule
     my $min_year = $rule->min_year;
     $max_year = $rule->max_year if defined $rule->max_year;
 
-    my $min_dt = $self->utc_start_date;
+    my $min_dt = $self->utc_start_datetime;
     my $max_dt;
 
     if ( my $until = $self->until( $rule->offset_from_std ) )
@@ -467,8 +467,8 @@ sub _expand_one_rule
     else
     {
         $max_dt = DateTime->new( year   => $max_year,
-                                 month  => 1,
-                                 day    => 1,
+                                 month  => 12,
+                                 day    => 31,
                                  time_zone => 'floating',
                                );
     }
@@ -479,14 +479,14 @@ sub _expand_one_rule
     {
         my $day;
 
-        my $dt = $rule->date_for_year( $year, $self->offset_from_utc );
+        my $dt = $rule->utc_start_datetime_for_year( $year, $self->offset_from_utc );
 
         next if $min_dt && $dt < $min_dt;
-        last if $dt >= $max_dt;
+        last if $dt > $max_dt;
 
         my $change =
             DateTime::TimeZone::OlsonDB::Change->new
-                ( utc_start_date => $dt,
+                ( utc_start_datetime => $dt,
                   short_name => sprintf( $self->{format}, $rule->letter ),
                   observance => $self,
                   rule       => $rule,
@@ -503,7 +503,7 @@ sub _expand_one_rule
 
 sub format { $_[0]->{format} }
 
-sub utc_start_date { $_[0]->{utc_start_date} }
+sub utc_start_datetime { $_[0]->{utc_start_datetime} }
 
 sub until
 {
@@ -565,7 +565,8 @@ sub _rule_for_date
                  ( $rule->max_year && $rule->max_year < $date->year )
                )
         {
-            my $rule_start = $rule->date_for_year( $date->year, $self->offset_from_utc );
+            my $rule_start =
+                $rule->utc_start_datetime_for_year( $date->year, $self->offset_from_utc );
 
             push @rule_dates, [ $rule_start, $rule ];
         }
@@ -573,7 +574,8 @@ sub _rule_for_date
         next if $rule->min_year > $date->year + 1;
         next if $rule->max_year && $rule->max_year < $date->year + 1;
 
-        my $rule_start_next = $rule->date_for_year( $date->year + 1, $self->offset_from_utc );
+        my $rule_start_next =
+            $rule->utc_start_datetime_for_year( $date->year + 1, $self->offset_from_utc );
 
         push @rule_dates, [ $rule_start_next, $rule ];
     }
@@ -643,7 +645,7 @@ sub letter { $_[0]->{letter} }
 
 sub month { $DateTime::TimeZone::OlsonDB::MONTHS{ $_[0]->{in} } }
 
-sub date_for_year
+sub utc_start_datetime_for_year
 {
     my $self   = shift;
     my $year   = shift;
@@ -673,7 +675,7 @@ use Params::Validate qw( validate SCALAR UNDEF OBJECT );
 sub new
 {
     my $class = shift;
-    my %p = validate( @_, { utc_start_date => { type => UNDEF | OBJECT },
+    my %p = validate( @_, { utc_start_datetime => { type => UNDEF | OBJECT },
                             short_name => { type => SCALAR },
                             observance => { type => OBJECT },
                             rule       => { type => OBJECT, default => undef },
@@ -687,7 +689,7 @@ sub new
     return bless \%p, $class;
 }
 
-sub utc_start_date { $_[0]->{utc_start_date} }
+sub utc_start_datetime { $_[0]->{utc_start_datetime} }
 sub short_name { $_[0]->{short_name} }
 sub observance { $_[0]->{observance} }
 sub rule       { $_[0]->{rule} }
@@ -699,9 +701,9 @@ sub two_changes_as_span
 
     my ( $utc_start, $local_start );
 
-    if ( defined $c1->utc_start_date )
+    if ( defined $c1->utc_start_datetime )
     {
-        $utc_start = $c1->utc_start_date->utc_rd_as_seconds;
+        $utc_start = $c1->utc_start_datetime->utc_rd_as_seconds;
         $local_start = $utc_start + $c1->total_offset;
     }
     else
@@ -709,7 +711,7 @@ sub two_changes_as_span
         $utc_start = $local_start = '-inf';
     }
 
-    my $utc_end = $c2->utc_start_date->utc_rd_as_seconds;
+    my $utc_end = $c2->utc_start_datetime->utc_rd_as_seconds;
     my $local_end = $utc_end + $c1->total_offset;
 
     return { utc_start   => $utc_start,
