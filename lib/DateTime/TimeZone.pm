@@ -43,12 +43,10 @@ sub new
                 my $local = Time::Local::timelocal(@t);
                 my $gm    = Time::Local::timegm(@t);
 
-                $offset = $gm - $local;
+                return
+                    DateTime::TimeZone::OffsetOnly->new
+                        ( offset => $gm - $local );
             }
-
-            return
-                DateTime::TimeZone::OffsetOnly->new
-                    ( offset => $offset );
         }
 
         if ( $p{name} eq 'UTC' )
@@ -148,6 +146,15 @@ sub _is_in_span
 
         return  0;
     }
+}
+
+sub is_dst_for_datetime
+{
+    my $self = shift;
+
+    my $span = $self->_span_for_datetime( 'utc', $_[0] );
+
+    return $span->{is_dst};
 }
 
 sub offset_for_datetime
