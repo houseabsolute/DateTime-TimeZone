@@ -16,7 +16,7 @@ use DateTime::TimeZone;
 
 my @names = DateTime::TimeZone::all_names;
 
-plan tests => 14 + ( 4 * scalar @names );
+plan tests => 26 + ( 4 * scalar @names );
 
 foreach my $name (@names)
 {
@@ -28,6 +28,18 @@ foreach my $name (@names)
     is( $tz->is_floating, 0, 'should not be floating' );
     is( $tz->is_utc, 0, 'should not be UTC' );
 }
+
+foreach my $name ( '0', 'Z', 'UTC' )
+{
+    my $tz = DateTime::TimeZone->new( name => $name );
+    isa_ok( $tz, 'DateTime::TimeZone' );
+
+    is( $tz->name, 'UTC', 'name should be UTC' );
+
+    is( $tz->is_floating, 0, 'should not be floating' );
+    is( $tz->is_utc, 1, 'should be UTC' );
+}
+
 
 my $tz = DateTime::TimeZone->new( name => 'America/Chicago' );
 
