@@ -486,7 +486,7 @@ sub expand_from_rules
     my $until = $self->until( $last_offset_from_std );
     if ($until)
     {
-        $max_year = $until->year + 1;
+        $max_year = $until->year;
     }
 
     foreach my $year ( $min_year .. $max_year )
@@ -498,6 +498,8 @@ sub expand_from_rules
             my $dt =
                 $rule->utc_start_datetime_for_year
                     ( $year, $self->offset_from_utc, $last_offset_from_std );
+
+            next if $until && $dt > $until;
 
             my $change =
                 DateTime::TimeZone::OlsonDB::Change->new
