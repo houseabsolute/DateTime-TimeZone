@@ -1,6 +1,11 @@
+0.36     2005-04-21
+
+- This release is based on version 2005i of the Olson database.
+
+
 0.35     2005-03-15  the "I hate this dope" release
 
-- This release is based on version 2005e of the Olson database.
+- This release is based on version 2005g of the Olson database.
 
 - STORABLE_thaw() now returns $self in preparation for proposed
 changes to Storable.
@@ -12,7 +17,7 @@ changes to Storable.
 like "GMT/BST", when it should have been alternating between GMT and
 BST based on the daylight saving time.  Reported by Tom Yandell.
 
-- This release is based on version 2005e of the Olson database.
+- This release is based on version 2005f of the Olson database.
 
 
 0.33     2005-02-26
