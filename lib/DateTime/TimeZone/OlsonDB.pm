@@ -318,8 +318,6 @@ package DateTime::TimeZone::OlsonDB::Zone;
 
 use strict;
 
-use DateTime::TimeZone;
-
 use Params::Validate qw( validate SCALAR ARRAYREF );
 
 sub new
