@@ -333,7 +333,7 @@ BEGIN {
 
     if (!\$loaded_xs) {
         require DateTime::TimeZone::${mod_name}PP;
-        require Datetime::TimeZonePPExtra;
+        require Datetime::TimeZonePP;
     }
 }
 BEGIN { __PACKAGE__->bootstrap_spans() if \$loaded_xs }
