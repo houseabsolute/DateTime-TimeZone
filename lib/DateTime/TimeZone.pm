@@ -3,7 +3,7 @@ package DateTime::TimeZone;
 use strict;
 
 use vars qw( $VERSION );
-$VERSION = '0.36';
+$VERSION = '0.37';
 
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
@@ -93,13 +93,11 @@ sub _init
     my $class = shift;
     my %p = validate( @_,
                       { name     => { type => SCALAR },
-                        spans    => { type => ARRAYREF },
                         is_olson => { type => BOOLEAN, default => 0 },
                       },
                     );
 
     my $self = bless { name     => $p{name},
-                       spans    => $p{spans},
                        is_olson => $p{is_olson},
                      }, $class;
 
@@ -187,80 +185,9 @@ sub _span_for_datetime
     return $span;
 }
 
-sub _spans_binary_search
-{
-    my $self = shift;
-    my ( $type, $seconds ) = @_;
-
-    my ( $start, $end ) = _keys_for_type($type);
-
-    my $min = 0;
-    my $max = scalar @{ $self->{spans} } + 1;
-    my $i = int( $max / 2 );
-    # special case for when there are only 2 spans
-    $i++ if $max % 2 && $max != 3;
-
-    $i = 0 if @{ $self->{spans} } == 1;
-
-    while (1)
-    {
-        my $current = $self->{spans}[$i];
-
-        if ( $seconds < $current->[$start] )
-        {
-            $max = $i;
-            my $c = int( ( $i - $min ) / 2 );
-            $c ||= 1;
-
-            $i -= $c;
-
-            return if $i < $min;
-        }
-        elsif ( $seconds >= $current->[$end] )
-        {
-            $min = $i;
-            my $c = int( ( $max - $i ) / 2 );
-            $c ||= 1;
-
-            $i += $c;
-
-            return if $i >= $max;
-        }
-        else
-        {
-            # Special case for overlapping ranges because of DST and
-            # other weirdness (like Alaska's change when bought from
-            # Russia by the US).  Always prefer latest span.
-            if ( $current->[IS_DST] && $type eq 'local' )
-            {
-                my $next = $self->{spans}[$i + 1];
-                # Sometimes we will get here and the span we're
-                # looking at is the last that's been generated so far.
-                # We need to try to generate one more or else we run
-                # out.
-                $next ||= $self->_generate_next_span;
-
-                die "No next span $self->{max_year}" unless defined $next;
-
-                if ( ( ! $next->[IS_DST] )
-                     && $next->[$start] <= $seconds
-                     && $seconds        <= $next->[$end]
-                   )
-                {
-                    return $next;
-                }
-            }
-
-            return $current;
-        }
-    }
-}
-
 sub _generate_next_span
 {
     my $self = shift;
-
-    my $last_idx = $#{ $self->{spans} };
 
     my $max_span = $self->max_span;
 
@@ -271,8 +198,6 @@ sub _generate_next_span
     # this will cause errors.
     $self->_generate_spans_until_match
         ( $self->{max_year} + 1, $max_span->[UTC_END] + ( 366 * 86400 ), 'utc' );
-
-    return $self->{spans}[ $last_idx + 1 ];
 }
 
 sub _generate_spans_until_match
@@ -349,7 +274,7 @@ sub _generate_spans_until_match
 
         $span = _span_as_array($span);
 
-        push @{ $self->{spans} }, $span;
+        $self->push_span($span);
 
         $match = $span
             if $seconds >= $span->[$start] && $seconds < $span->[$end];
@@ -357,8 +282,6 @@ sub _generate_spans_until_match
 
     return $match;
 }
-
-sub max_span { $_[0]->{spans}[-1] }
 
 sub _keys_for_type
 {
