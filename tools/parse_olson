@@ -457,7 +457,7 @@ static void
 push_span(dtz_span **list, dtz_span *s)
 {
     if (spanset_size <= spanset_count) {
-        spanset_size *= 2;
+        spanset_size += 8;
         Renew(${xs_name_space}_spans, spanset_size, dtz_span *);
     }
 
@@ -638,6 +638,8 @@ sub xs_serialize_spans
 {
     my $xs_name_space = shift;
     my $spans = shift;
+    my $starting_size = scalar @$spans;
+
     my $string = <<EOF;
 void
 bootstrap_spans(class)
@@ -646,7 +648,7 @@ bootstrap_spans(class)
         dtz_span *span;
     CODE:
         if (${xs_name_space}_spans == NULL) {
-            spanset_size = 10;
+            spanset_size = $starting_size;
             Newz(1234, ${xs_name_space}_spans, spanset_size, dtz_span *);
 EOF
 
