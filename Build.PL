@@ -87,6 +87,21 @@ unless ($have_cc)
     );
 }
 
+my $build =
+    $class->new( module_name => 'DateTime::TimeZone',
+                 author      => 'Dave Rolsky <autarch@urth.org>',
+                 license     => 'perl',
+                 requires    => { 'Params::Validate' => 0.72,
+                                  'Class::Singleton' => 1.03,
+                                  'Pod::Man'    => 1.14,
+                                },
+                 sign         => 1,
+                 c_source     => 'source',
+                 create_makefile_pl => 'traditional',
+               );
+
+$build->create_build_script;
+
 if ( -d 'CVS' )
 {
     local *DIR;
@@ -94,6 +109,8 @@ if ( -d 'CVS' )
 
     foreach my $file ( grep { /^\d.+\.t$/ } readdir DIR )
     {
+        next if $file eq '99-pod.t';
+
         my $real_file = File::Spec->catfile( 't', $file );
 
         local *F;
@@ -111,20 +128,7 @@ if ( -d 'CVS' )
         print F $test;
 
         close F;
+
+        $build->add_to_cleanup($new_file);
     }
 }
-
-my $build =
-    $class->new( module_name => 'DateTime::TimeZone',
-                 author      => 'Dave Rolsky <autarch@urth.org>',
-                 license     => 'perl',
-                 requires    => { 'Params::Validate' => 0.72,
-                                  'Class::Singleton' => 1.03,
-                                  'Pod::Man'    => 1.14,
-                                },
-                 sign         => 1,
-                 c_source     => 'source',
-                 create_makefile_pl => 'traditional',
-               );
-
-$build->create_build_script;
