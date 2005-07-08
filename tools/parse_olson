@@ -314,28 +314,36 @@ use DateTime::TimeZone::OlsonDB;
 \@DateTime::TimeZone::${mod_name}::ISA = ( 'Class::Singleton', 'DateTime::TimeZone' );
 
 my \$loaded_xs;
-BEGIN { 
+BEGIN
+{
     \$loaded_xs = 0;
-    if (! \$ENV{PERL_DATETIME_TIMEZONE_PP}) {
-        eval {
-            if (\$] >= 5.006) {
+    unless ( \$ENV{PERL_DATETIME_TIMEZONE_PP} )
+    {
+        eval
+        {
+            if ( \$] >= 5.006 )
+            {
                 require XSLoader;
                 XSLoader::load('DateTime::TimeZone::$mod_name');
-            } else {
+            }
+            else
+            {
                 require DynaLoader;
                 push \@DateTime::TimeZone::${mod_name}::ISA, 'DynaLoader';
                 DateTime::TimeZone::${mod_name}->bootstrap('DateTime::TimeZone::$mod_name');
             }
+
             \$loaded_xs = 1;
         };
         die if \$@ && \$@ !~ /object version/;
     }
 
-    if (!\$loaded_xs) {
+    unless (\$loaded_xs)
+    {
         require DateTime::TimeZone::${mod_name}PP;
-        require Datetime::TimeZonePP;
     }
 }
+
 BEGIN { __PACKAGE__->bootstrap_spans() if \$loaded_xs }
 END { __PACKAGE__->free_spans() if \$loaded_xs }
 
@@ -378,6 +386,7 @@ use strict;
 
 use Class::Singleton;
 use DateTime::TimeZone;
+use DateTime::TimeZonePP;
 use DateTime::TimeZone::OlsonDB;
 
 \@DateTime::TimeZone::${mod_name}::ISA = ( 'Class::Singleton', 'DateTime::TimeZone' );
