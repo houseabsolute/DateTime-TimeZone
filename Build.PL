@@ -97,7 +97,7 @@ my $build =
                                 },
                  sign         => 1,
                  c_source     => 'source',
-                 create_makefile_pl => 'traditional',
+                 create_makefile_pl => 'passthrough',
                );
 
 $build->create_build_script;
