@@ -48,14 +48,14 @@ sub _spans_binary_search
             # Special case for overlapping ranges because of DST and
             # other weirdness (like Alaska's change when bought from
             # Russia by the US).  Always prefer latest span.
-            if ( $current->[IS_DST] && $type eq 'local' )
+            if ( $current->[IS_DST()] && $type eq 'local' )
             {
                 if ($i >= $max) {
                     $self->_generate_next_span();
                 }
                 my $next = $spans->[$i + 1];
 
-                if ( ( ! $next->[IS_DST] )
+                if ( ( ! $next->[IS_DST()] )
                      && $next->[$start] <= $seconds
                      && $seconds        <= $next->[$end]
                    )
