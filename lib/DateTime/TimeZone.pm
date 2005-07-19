@@ -172,31 +172,32 @@ sub _generate_spans_until_match
 
     my @changes;
     my @rules = @{ $self->rules };
-
-    my @offsets;
-    if ( @rules == 2 )
-    {
-        @offsets = ($rules[0]->offset_from_std, $rules[1]->offset_from_std);
-    }
-    elsif ( @rules == 1 )
-    {
-        @offsets = ($rules[0]->offset_from_std, $rules[0]->offset_from_std);
-    }
-    else
-    {
-        my $count = scalar @rules;
-        die "Cannot generate future changes for zone with $count infinite rules\n";
-    }
-
-    foreach my $year ( $self->max_year() .. $generate_until_year )
+    foreach my $year ( $self->max_year .. $generate_until_year )
     {
         for ( my $x = 0; $x < @rules; $x++ )
         {
+            my $last_offset_from_std;
+
+            if ( @rules == 2 )
+            {
+                $last_offset_from_std =
+                    $x ? $rules[0]->offset_from_std : $rules[1]->offset_from_std;
+            }
+            elsif ( @rules == 1 )
+            {
+                $last_offset_from_std = $rules[0]->offset_from_std;
+            }
+            else
+            {
+                my $count = scalar @rules;
+                die "Cannot generate future changes for zone with $count infinite rules\n";
+            }
+
             my $rule = $rules[$x];
 
             my $next =
                 $rule->utc_start_datetime_for_year
-                    ( $year, $self->last_offset, $offsets[$x] );
+                    ( $year, $self->last_offset, $last_offset_from_std );
 
             # don't bother with changes we've seen already
             next if $next->utc_rd_as_seconds < $self->max_span->[UTC_END];
