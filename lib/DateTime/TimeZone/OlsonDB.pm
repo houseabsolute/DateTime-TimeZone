@@ -849,7 +849,12 @@ sub new
     return bless \%p, $class;
 }
 
+sub in   { $_[0]->{in} }
+sub from { $_[0]->{from} }
+sub save { $_[0]->{save} }
+sub to   { $_[0]->{to} }
 sub name { $_[0]->{name} }
+sub type { $_[0]->{type} }
 sub offset_from_std { $_[0]->{offset_from_std} }
 sub letter { $_[0]->{letter} }
 sub min_year { $_[0]->{from} }
