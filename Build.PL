@@ -83,7 +83,7 @@ You can force installation of the XS version with
 EOF
         }
 
-        foreach ('test.c', "test$Config{obj_ext}")
+        for ( 'test.c', "test$Config{obj_ext}" )
         {
             unlink $_ or die "Cannot unlink $_: $!";
         }
@@ -92,11 +92,57 @@ EOF
 
 my $class = 'Module::Build';
 
-# If we don't have C compiler, do not attempt to build the XS files.
-unless ($have_cc)
+if ($have_cc)
 {
-    $class = Module::Build->subclass(
-        code => <<'        EOC',
+    # hack to work around a bug when compiling multiple XS files with
+    # ExtUtils::ParseXS - optimistically assume it'll be fixed in the
+    # next release
+    $class = Module::Build->subclass
+        ( code => <<'          EOC',
+            sub compile_xs {
+              my ($self, $file, %args) = @_;
+
+              $self->log_info("$file -> $args{outfile}\n");
+
+              if (eval {require ExtUtils::ParseXS; 1} && ExtUtils::ParseXS->VERSION > 2.11) {
+
+                ExtUtils::ParseXS::process_file(
+                                                filename => $file,
+                                                prototypes => 0,
+                                                output => $args{outfile},
+                                               );
+              } else {
+                my $xsubpp = Module::Build::ModuleInfo->find_module_by_name('ExtUtils::xsubpp')
+                  or die "Can't find ExtUtils::xsubpp in INC (@INC)";
+
+                my @typemaps;
+                push @typemaps, Module::Build::ModuleInfo->find_module_by_name('ExtUtils::typemap', \@INC);
+                my $lib_typemap = Module::Build::ModuleInfo->find_module_by_name('typemap', ['lib']);
+                if (defined $lib_typemap and -e $lib_typemap) {
+                  push @typemaps, 'typemap';
+                }
+                my $typemaps = join ' ', map qq{-typemap "$_"}, @typemaps;
+
+                my $cf = $self->{config};
+                my $perl = $self->{properties}{perl};
+
+                my $command = (qq{$perl "-I$cf->{installarchlib}" "-I$cf->{installprivlib}" "$xsubpp" -noprototypes } .
+                               qq{$typemaps "$file"});
+
+                $self->log_info($command);
+                my $fh = IO::File->new("> $args{outfile}") or die "Couldn't write $args{outfile}: $!";
+                print $fh `$command`;
+                close $fh;
+              }
+            }
+          EOC
+        );
+}
+else
+{
+    # If we don't have C compiler, do not attempt to build the XS files.
+    $class = Module::Build->subclass
+        ( code => <<'          EOC',
             sub ACTION_build {
                 my $self  = shift;
                 my $elems = $self->build_elements;
@@ -108,26 +154,26 @@ unless ($have_cc)
                 }
                 $self->SUPER::ACTION_build(@_);
             }
-        EOC
-    );
+          EOC
+        );
 }
 
-my %build_args = (
-    module_name => 'DateTime::TimeZone',
-    author      => 'Dave Rolsky <autarch@urth.org>',
-    license     => 'perl',
-    requires    => {
-        'Params::Validate' => 0.72,
-        'Class::Singleton' => 1.03,
-        'Pod::Man'         => 1.14,
-    },
-    sign               => 1,
-    c_source           => 'source',
-    create_makefile_pl => 'passthrough', # XXX - traditional doesn't work, fix later
-);
-if ($use_gdb) {
-    $build_args{extra_compiler_flags} = [ '-ggdb' ]
-}
+my %build_args =
+    ( module_name => 'DateTime::TimeZone',
+      author      => 'Dave Rolsky <autarch@urth.org>',
+      license     => 'perl',
+      requires    => { 'Params::Validate' => 0.72,
+                       'Class::Singleton' => 1.03,
+                       'Pod::Man'         => 1.14,
+                     },
+      build_requires => { 'ExtUtils::CBuilder' => 0 },
+      sign               => 1,
+      c_source           => 'source',
+      create_makefile_pl => 'passthrough', # XXX - traditional doesn't work, fix later
+    );
+
+$build_args{extra_compiler_flags} = [ '-ggdb' ]
+    if $use_gdb;
 
 my $build = $class->new(%build_args);
 
