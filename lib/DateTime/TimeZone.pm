@@ -7,10 +7,6 @@ $VERSION = '0.37';
 
 BEGIN
 {
-    if ($INC{'DateTime::TimeZone'}) {
-        return;
-    }
-
     my $loaded_xs = 0;
     if (! $ENV{PERL_DATETIME_TIMEZONE_PP}) {
         eval {
