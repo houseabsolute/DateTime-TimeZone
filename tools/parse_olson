@@ -314,7 +314,7 @@ use DateTime::TimeZone::OlsonDB;
 \@DateTime::TimeZone::${mod_name}::ISA = ( 'DateTime::TimeZone::Singleton' );
 
 BEGIN { 
-    if (! DateTime::TimeZone::LOADED_XS()) {
+    unless (DateTime::TimeZone::LOADED_XS()) {
         require DateTime::TimeZone::${mod_name}PP;
     } else {
         if (\$] > 5.006) {

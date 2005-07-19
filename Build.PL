@@ -123,7 +123,7 @@ my %build_args = (
     },
     sign               => 1,
     c_source           => 'source',
-    create_makefile_pl => 'traditional',
+    create_makefile_pl => 'passthrough', # XXX - traditional doesn't work, fix later
 );
 if ($use_gdb) {
     $build_args{extra_compiler_flags} = [ '-ggdb' ]
