@@ -134,7 +134,7 @@ bootinit()
     newCONSTSUB(stash, "is_utc", newSViv(0));
     newCONSTSUB(stash, "LOADED_XS", newSViv(1));
 
-    /* load destructor into stash, because subclasses which are implmented
+    /* load destructor into stash, because subclasses which are implemented
      * in XS (in other files) cannot reach it without duplicating it
      */
     hv_store(stash, "_xs_magic_free", 14, newSViv(PTR2IV(&vtbl_free_timezone_state)), 0);
