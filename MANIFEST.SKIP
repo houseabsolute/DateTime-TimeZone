@@ -22,3 +22,5 @@ MANIFEST\.SKIP
 ^_build
 secs_to_dt
 OlsonDB\.pm\.new
+load-all
+t/zz.*
