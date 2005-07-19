@@ -338,43 +338,6 @@ sub offset_as_seconds
     return $total;
 }
 
-sub _span_for_datetime
-{
-    my $self = shift;
-    my $type = shift;
-    my $dt   = shift;
-
-    my $method = $type . '_rd_as_seconds';
-
-    my $end = $type eq 'utc' ? &DateTime::TimeZone::UTC_END : &DateTime::TimeZone::LOCAL_END;
-
-    my $span;
-    my $seconds = $dt->$method();
-    if ( $seconds < $self->max_span->[$end] )
-    {
-        $span = $self->_spans_binary_search( $type, $seconds );
-    }
-    else
-    {
-        my $until_year = $dt->utc_year + 1;
-        $span = $self->_generate_spans_until_match( $until_year, $seconds, $type );
-    }
-
-    # This means someone gave a local time that doesn't exist
-    # (like during a transition into savings time)
-    unless ( defined $span )
-    {
-        my $err = 'Invalid local time for date';
-        $err .= ' ' . $dt->iso8601 if $type eq 'utc';
-        $err .= " in time zone: " . $self->name;
-        $err .= "\n";
-
-        die $err;
-    }
-
-    return $span;
-}
-
 1;
 
 __END__

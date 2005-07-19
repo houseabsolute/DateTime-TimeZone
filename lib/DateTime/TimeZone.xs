@@ -103,6 +103,93 @@ _real_spans_binary_search(pTHX_ SV *self, int use_utc, NV v)
     return span;
 }
 
+static SV *
+_span_for_datetime(pTHX_ SV *sv, int use_utc, SV *dt)
+{
+    char *as_seconds_method = NULL;
+    SV *ret = NULL;
+    AV *av = NULL;
+    I32 count;
+    NV seconds;
+    IV until;
+    dtz_span *span;
+    dtz_timezone_state *state;
+
+    state = XS_STATE(sv);
+    as_seconds_method = use_utc ?
+        "utc_rd_as_seconds" : "local_rd_as_seconds";
+
+    dSP;
+    ENTER;
+    SAVETMPS;
+    PUSHMARK(SP);
+    XPUSHs(dt);
+    PUTBACK;
+
+    count = call_method(as_seconds_method, G_SCALAR);
+    SPAGAIN;
+
+    seconds = POPn;
+
+    PUTBACK;
+    FREETMPS;
+    LEAVE;
+
+    span = state->spanset[SvIV(state->spanset_count) - 1];
+    if (seconds < SPAN_END(use_utc, span)) {
+        span = _real_spans_binary_search(aTHX_ sv, use_utc, seconds);
+        if (span != NULL) {
+            SPAN2AV(span, av);
+            ret = newRV_noinc((SV *) av);
+        }
+    } else {
+        SPAGAIN;
+
+        ENTER;
+        SAVETMPS;
+        PUSHMARK(SP);
+        XPUSHs(dt);
+        PUTBACK;
+
+        count = call_method("utc_year", G_SCALAR);
+        SPAGAIN;
+
+        until = POPi;
+
+        PUTBACK;
+        FREETMPS;
+        LEAVE;
+
+        SPAGAIN;
+
+        ENTER;
+        SAVETMPS;
+        PUSHMARK(SP);
+        XPUSHs(sv);
+        XPUSHs(sv_2mortal(newSViv(until + 1)));
+        XPUSHs(sv_2mortal(newSVnv(seconds)));
+        XPUSHs(sv_2mortal(use_utc ? newSVpv("utc", 3) : newSVpv("local", 5)));
+        PUTBACK;
+
+        count = call_method("_generate_spans_until_match", G_SCALAR|G_EVAL);
+        SPAGAIN;
+
+        if (! SvTRUE(ERRSV)) {
+            ret = POPs;
+            if (SvOK(ret))
+                ret = newSVsv(ret);
+            else 
+                ret = NULL;
+        }
+
+        PUTBACK;
+        FREETMPS;
+        LEAVE;
+    }
+
+    return ret;
+}
+
 static int
 magic_free_timezone_state(pTHX_ SV *sv, MAGIC *mg)
 {
@@ -237,6 +324,23 @@ last_offset (self)
         RETVAL
 
 SV *
+_span_for_datetime(self, type, dt)
+        SV *self;
+        SV *type;
+        SV *dt;
+    PREINIT:
+        SV *ret;
+    CODE:
+        ret = _span_for_datetime(aTHX_ self, strEQ(SvPV_nolen(type), "utc"), dt);
+        if (ret == NULL) {
+            croak("Invalid local time for date");
+        }
+
+        RETVAL = SvREFCNT_inc(ret);
+    OUTPUT:
+        RETVAL
+
+SV *
 _spans_binary_search(self, type, seconds)
         SV *self;
         SV *type;
@@ -341,7 +445,7 @@ push_span(self, span_data)
         span->offset      = svp ? SvNV(*svp) : 0;
 
         svp = av_fetch(span_data, 5, 0);
-        span->is_dst      = svp ? SvTRUE(*svp) : 0;
+        span->is_dst      = svp && SvOK(*svp) ? SvTRUE(*svp) : 0;
 
         svp = av_fetch(span_data, 6, 0);
         if (!svp) 
