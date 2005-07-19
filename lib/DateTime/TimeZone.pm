@@ -274,7 +274,7 @@ sub STORABLE_freeze
 
 sub STORABLE_thaw
 {
-    my($self, $cloning, $serialized) = @_;
+    my ($self, $cloning, $serialized) = @_;
 
     my $class = ref $self || $self;
 
@@ -293,7 +293,14 @@ sub STORABLE_thaw
     # object.  This shouldn't matter since we copy the underlying
     # structures by reference here, so span generation in one object
     # will be visible in another also in memory.
-    %$self = %$obj;
+    {
+        # hack to ensure backwards compatibility with subclasses
+        # implemented as a hash reference
+        local $@;
+        eval { $$self = $$obj };
+        eval { %$self = %$obj };
+    }
+
     return $self;
 }
 

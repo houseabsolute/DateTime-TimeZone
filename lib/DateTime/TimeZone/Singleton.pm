@@ -24,12 +24,9 @@ sub STORABLE_attach
     my $cloning = shift;
     my $serialized = shift;
 
-    $class->instance(name => $serialized);
+    return $class->instance( name => $serialized );
 }
 
-sub STORABLE_thaw
-{
-}
 
 1;
 
@@ -47,7 +44,6 @@ DateTime::TimeZone::Singleton - Base Class For Singleton TimeZones
 =head1 DESCRIPTION
 
 This module is a base class for DateTime::TimeZone objects that are implemented
-as a singleton. It provides the necessary hooks for certain commoon operations.
-
+as a singleton. It provides the necessary hooks for certain common operations.
 
 =cut
