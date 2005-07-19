@@ -818,7 +818,7 @@ use strict;
 use DateTime;
 use DateTime::Duration;
 
-use Params::Validate qw( validate SCALAR );
+use Params::Validate qw( validate SCALAR UNDEF );
 
 sub new
 {
@@ -826,7 +826,7 @@ sub new
     my %p = validate( @_, { name => { type => SCALAR },
                             from => { type => SCALAR },
                             to   => { type => SCALAR },
-                            type => { type => SCALAR, default => undef },
+                            type => { type => UNDEF|SCALAR, default => undef },
                             in   => { type => SCALAR },
                             on   => { type => SCALAR },
                             at   => { type => SCALAR },

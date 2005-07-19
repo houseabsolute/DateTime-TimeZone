@@ -5,7 +5,7 @@
 #
 
 use strict;
-
+BEGIN { $ENV{PERL_DATETIME_TIMEZONE_PP} = 1 }
 use lib './lib';
 
 use Data::Dumper;
@@ -15,6 +15,7 @@ use File::Find;
 use File::Path;
 use File::Spec;
 use Getopt::Long;
+use IO::File;
 
 $Data::Dumper::Indent = 1;
 $Data::Dumper::Sortkeys = 1;
@@ -307,49 +308,24 @@ package DateTime::TimeZone::$mod_name;
 
 use strict;
 
-use Class::Singleton;
-use DateTime::TimeZone;
+use DateTime::TimeZone::Singleton;
 use DateTime::TimeZone::OlsonDB;
 
-\@DateTime::TimeZone::${mod_name}::ISA = ( 'Class::Singleton', 'DateTime::TimeZone' );
+\@DateTime::TimeZone::${mod_name}::ISA = ( 'DateTime::TimeZone::Singleton' );
 
-my \$loaded_xs;
-BEGIN
-{
-    \$loaded_xs = 0;
-    unless ( \$ENV{PERL_DATETIME_TIMEZONE_PP} )
-    {
-        eval
-        {
-            if ( \$] >= 5.006 )
-            {
-                require XSLoader;
-                XSLoader::load('DateTime::TimeZone::$mod_name');
-            }
-            else
-            {
-                require DynaLoader;
-                push \@DateTime::TimeZone::${mod_name}::ISA, 'DynaLoader';
-                DateTime::TimeZone::${mod_name}->bootstrap('DateTime::TimeZone::$mod_name');
-            }
-
-            \$loaded_xs = 1;
-        };
-        die if \$@ && \$@ !~ /object version/;
-    }
-
-    unless (\$loaded_xs)
-    {
+BEGIN { 
+    if (! DateTime::TimeZone::LOADED_XS()) {
         require DateTime::TimeZone::${mod_name}PP;
+    } else {
+        if (\$] > 5.006) {
+            require XSLoader;
+            XSLoader::load('DateTime::TimeZone::${mod_name}');
+        } else {
+            require DynaLoader;
+            push \@DateTime::TimeZone::${mod_name}::ISA, 'DynaLoader';
+            DateTime::TimeZone::${mod_name}->bootstrap();
+        }
     }
-}
-
-BEGIN { __PACKAGE__->bootstrap_spans() if \$loaded_xs }
-END { __PACKAGE__->free_spans() if \$loaded_xs }
-
-sub _new_instance
-{
-    return shift->_init( \@_ );
 }
 
 $generator
@@ -384,19 +360,12 @@ package DateTime::TimeZone::$mod_name;
 
 use strict;
 
-use Class::Singleton;
-use DateTime::TimeZone;
-use DateTime::TimeZonePP;
-use DateTime::TimeZone::OlsonDB;
-
-\@DateTime::TimeZone::${mod_name}::ISA = ( 'Class::Singleton', 'DateTime::TimeZone' );
-
 my \$spans =
 $spans;
 
 sub _spans { \$spans }
 sub max_span { \$spans->[-1] }
-sub _max_year { $max_year }
+sub max_year { $max_year }
 sub push_span { shift; push @\$spans, shift }
 
 $pp_generator
@@ -414,11 +383,10 @@ sub generate_xs
     (my $xs_name_space = lc $zone_name) =~ s/[\/-]/_/g;
     $xs_name_space =~ s/^/__/;
 
-    my $xs_generator = xs_zone_generator($zone);
-    my $xs_spans_bootstrap =
-        xs_serialize_spans($xs_name_space, zone_as_spans($zone));
-    $xs_spans_bootstrap =~ s/-inf\.0/NEG_INFINITY/g;
-    $xs_spans_bootstrap =~ s/inf\.0/INFINITY/g;
+    my $xs_bootstrap = xs_bootstrap_code($xs_name_space, $zone, $max_year);
+
+    $xs_bootstrap =~ s/-inf\.0/NEG_INFINITY/g;
+    $xs_bootstrap =~ s/inf\.0/INFINITY/g;
     my $xs_body = <<"EOF";
 /********************************************************************
  *
@@ -438,131 +406,17 @@ sub generate_xs
 #include "perl.h"
 #include "XSUB.h"
 #include "ppport.h"
+#define NEED_allocTIMEZONE
 #include "timezone.h"
-#include "util.h"
 
-#ifndef INFINITY
-#define INFINITY 1e50f
-#endif
-
-#ifndef NEG_INFINITY
-#define NEG_INFINITY -1 * INFINITY
-#endif
-
-static dtz_span **${xs_name_space}_spans = NULL;
-static int      spanset_size  = 0;
-static int      spanset_count = 0;
-
-static void
-push_span(dtz_span **list, dtz_span *s)
-{
-    if (spanset_size <= spanset_count) {
-        spanset_size += 8;
-        Renew(${xs_name_space}_spans, spanset_size, dtz_span *);
-    }
-
-    ${xs_name_space}_spans[spanset_count++] = s;
-}
-
-static void
-free_spans()
-{
-    Safefree(${xs_name_space}_spans);
-}
-
-MODULE = DateTime::TimeZone::$mod_name  PACKAGE = DateTime::TimeZone::$mod_name
+MODULE = DateTime::TimeZone::$mod_name   PACKAGE = DateTime::TimeZone::$mod_name
 
 PROTOTYPES: ENABLE
 
-$xs_spans_bootstrap
+$xs_bootstrap
 
-void
-free_spans(class)
-        SV *class;
-    CODE:
-        free_spans();
-
-SV *
-push_span(class, span_data)
-        SV *class;
-        AV *span_data;
-    PREINIT:
-        dtz_span  *span;
-        SV       **svp;
-        STRLEN     len;
-        char      *short_name;
-    CODE:
-        Newz(1234, span, 1, dtz_span);
-
-        svp = av_fetch(span_data, 0, 0);
-        span->utc_start   = svp ? SvNV(*svp) : 0;
-
-        svp = av_fetch(span_data, 1, 0);
-        span->utc_end     = svp ? SvNV(*svp) : 0;
-
-        svp = av_fetch(span_data, 2, 0);
-        span->local_start = svp ? SvNV(*svp) : 0;
-
-        svp = av_fetch(span_data, 3, 0);
-        span->local_end   = svp ? SvNV(*svp) : 0;
-
-        svp = av_fetch(span_data, 4, 0);
-        span->offset      = svp ? SvNV(*svp) : 0;
-
-        svp = av_fetch(span_data, 5, 0);
-        span->is_dst      = svp ? SvIV(*svp) : 0;
-
-        svp = av_fetch(span_data, 6, 0);
-        if (!svp) 
-            croak("No name supplied");
-        short_name = SvPV(*svp, len);
-        Copy(short_name, span->short_name, len, char);
-        push_span(${xs_name_space}_spans, span);
-
-AV *
-max_span(class)
-        SV *class;
-    PREINIT:
-        AV *av;
-        dtz_span *span = ${xs_name_space}_spans[spanset_count - 1];
-    CODE:
-        av = newAV();
-        av_push(av, newSVnv(span->utc_start));
-        av_push(av, newSVnv(span->utc_end));
-        av_push(av, newSVnv(span->local_start));
-        av_push(av, newSVnv(span->local_end));
-        av_push(av, newSVnv(span->offset));
-        av_push(av, newSViv(span->is_dst));
-        av_push(av, newSVpv(span->short_name, strlen(span->short_name)));
-        RETVAL = av;
-    OUTPUT:
-        RETVAL
-
-SV *
-_max_year (self)
-        SV *self;
-    CODE:
-        RETVAL = newSViv($max_year);
-    OUTPUT:
-        RETVAL
-
-SV *
-_spans_binary_search(self, type, seconds)
-        SV *self;
-        SV *type;
-        SV *seconds;
-    PREINIT:
-        AV *ret;
-    CODE:
-        ret = util_spans_binary_search(self, type, seconds, ${xs_name_space}_spans, spanset_count);
-        RETVAL = ret ?
-           newRV_noinc((SV *) ret) : &PL_sv_undef; 
-    OUTPUT:
-        RETVAL 
-
-
-$xs_generator
 EOF
+
 }
 
 sub zone_as_spans
@@ -634,80 +488,56 @@ sub serialize_span
     return $string;
 }
 
-sub xs_serialize_spans
+sub xs_bootstrap_code
 {
     my $xs_name_space = shift;
-    my $spans = shift;
-    my $starting_size = scalar @$spans;
-
-    my $string = <<EOF;
-void
-bootstrap_spans(class)
-        SV *class;
-    PREINIT:
-        dtz_span *span;
-    CODE:
-        if (${xs_name_space}_spans == NULL) {
-            spanset_size = $starting_size;
-            Newz(1234, ${xs_name_space}_spans, spanset_size, dtz_span *);
-EOF
-
-    foreach my $span (@$spans) {
-        my $short_name_len = length($span->{short_name});
-        $string .= <<EOF;
-            Newz(1234, span, 1, dtz_span);
-            span->utc_start   = $span->{utc_start}.0;
-            span->utc_end     = $span->{utc_end}.0;
-            span->local_start = $span->{local_start}.0;
-            span->local_end   = $span->{local_end}.0;
-            span->offset      = $span->{offset};
-            span->is_dst      = $span->{is_dst};
-            Copy("$span->{short_name}", span->short_name, $short_name_len, char);
-            push_span(${xs_name_space}_spans, span);
-
-EOF
-    }
-    $string .= <<EOF;
-        }
-EOF
-
-    return $string;
-}
-
-sub xs_zone_generator
-{
     my $zone = shift;
+    my $max_year = shift;
 
-    return '' unless $zone->infinite_rules;
-
+    my $spans = zone_as_spans($zone);
     my $last_observance = ($zone->sorted_changes)[-1]->observance;
-
-    # hack to trim size of dumped object
-    delete $last_observance->{utc_start_datetime}{locale};
-    delete $last_observance->{local_start_datetime}{locale};
-    delete $last_observance->{utc_start_datetime}{local_c};
-    delete $last_observance->{local_start_datetime}{local_c};
-    delete $last_observance->{rules};
-    delete $last_observance->{first_rule};
-
     # This assumes that there is only one observance from end of
     # changes til end of time, which should be guaranteed by code in
     # OlsonDB module.
     my $offset = $last_observance->total_offset;
 
-    my $xs_generator = <<EOF;
-
+    my $string = sprintf(<<EOF, scalar(@$spans), $max_year, $offset);
 SV *
-_last_offset(self)
-        SV *self;
+_init(class, psv)
+        SV *class;
+        SV *psv;
+    PREINIT:
+        dtz_span *span;
+        SV *sv;
+        allocTIMEZONE_PREP;
     CODE:
-        RETVAL = newSViv($offset);
-    OUTPUT:
-        RETVAL
+        allocTIMEZONE(sv, class, psv);
 
+        state = XS_STATE(sv);
+        state->spanset_size  = %d;
+        state->spanset_count = newSViv(state->spanset_size);
+        state->max_year      = newSViv(%d);
+        state->last_offset   = newSViv(%d);
+        Newz(1234, state->spanset, state->spanset_size, dtz_span *);
 EOF
 
-    return $xs_generator ;
+    my $idx = 0;
+    foreach my $span (@$spans) {
+        my $short_name_len = length($span->{short_name});
+        $string .= <<"        EOF";
+        INIT_SPAN(span, $span->{utc_start}.0, $span->{utc_end}.0, $span->{local_start}.0, $span->{local_end}.0, $span->{offset}, $span->{is_dst}, "$span->{short_name}", $short_name_len);
+        state->spanset[$idx] = span;
+
+        EOF
+        $idx++;
+    }
+    $string .= <<EOF;
+        RETVAL = sv;
+    OUTPUT:
+        RETVAL
+EOF
+
+    return $string;
 }
 
 sub pp_zone_generator
@@ -717,7 +547,7 @@ sub pp_zone_generator
     return '' unless $zone->infinite_rules;
 
     my $generator = <<'EOF';
-sub _last_offset { !OFFSET }
+sub last_offset { !OFFSET }
 EOF
 
     my $last_observance = ($zone->sorted_changes)[-1]->observance;
@@ -739,10 +569,10 @@ sub pm_zone_generator
 
     my $generator = <<'EOF';
 my $last_observance = !LAST_OBSERVANCE;
-sub _last_observance { $last_observance }
+sub last_observance { $last_observance }
 
 my $rules = !RULES;
-sub _rules { $rules }
+sub rules { $rules }
 EOF
 
     my $last_observance = ($zone->sorted_changes)[-1]->observance;
@@ -763,7 +593,22 @@ EOF
     my @rules = $zone->infinite_rules;
 
     # This is cleaner than making the above a double-quoted string
-    $generator =~ s/!RULES/Dumper \@rules/eg;
+    $generator =~ s/!RULES/
+        my $string .= "[\n";
+        foreach my $r (@rules) {
+            $string .= "  DateTime::TimeZone::OlsonDB::Rule->new(\n";
+            $string .= join(",\n",
+                map { "    $_ => " . 
+                    (defined($r->$_()) ?
+                        "'" . $r->$_() . "'" :
+                        "undef")
+                } qw(at from in letter name on save to type)
+            );
+            $string .= "\n  ),\n";
+        }
+        $string .= "]\n";
+        $string;
+    /egx;
     $generator =~ s/!LAST_OBSERVANCE/Dumper $last_observance/eg;
     $generator =~
         s/\$VAR1->{'local_start_datetime'}{'tz'}/bless( {

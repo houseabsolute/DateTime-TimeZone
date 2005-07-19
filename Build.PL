@@ -24,10 +24,29 @@ EOF
 
 my $no_xs;
 my $force_xs;
+my $use_gdb;
+my $help;
 for (@ARGV)
 {
     /^--pm/ and $no_xs = 1;
     /^--xs/ and $force_xs = 1;
+    /^--gdb/ and $use_gdb = 1;
+    /^--help/ and $help = 1;
+}
+
+if ($help) {
+    print <<'EOF';
+Usage:
+  perl Build.PL --pm
+  perl Build.PL --xs [ --gdb ]
+  perl Build.PL --help
+
+--pm: Don't compile XS
+--xs: Force XS
+--gdb: Use -ggdb flag when compiling
+
+EOF
+    exit 0;
 }
 
 my $have_cc = $force_xs ? 1 : 0;
@@ -79,26 +98,38 @@ unless ($have_cc)
     $class = Module::Build->subclass(
         code => <<'        EOC',
             sub ACTION_build {
-                my $self = shift;
-                $self->{build_elements} = [grep { $_ ne 'xs' } @{$self->build_elements}];
+                my $self  = shift;
+                my $elems = $self->build_elements;
+                for(my $i = 0; $i < scalar(@$elems); $i++) {
+                    if ($elems->[$i] eq 'xs') {
+                        splice(@$elems, $i, 1);
+                        last;
+                    }
+                }
                 $self->SUPER::ACTION_build(@_);
             }
         EOC
     );
 }
 
-my $build =
-    $class->new( module_name => 'DateTime::TimeZone',
-                 author      => 'Dave Rolsky <autarch@urth.org>',
-                 license     => 'perl',
-                 requires    => { 'Params::Validate' => 0.72,
-                                  'Class::Singleton' => 1.03,
-                                  'Pod::Man'    => 1.14,
-                                },
-                 sign         => 1,
-                 c_source     => 'source',
-                 create_makefile_pl => 'passthrough',
-               );
+my %build_args = (
+    module_name => 'DateTime::TimeZone',
+    author      => 'Dave Rolsky <autarch@urth.org>',
+    license     => 'perl',
+    requires    => {
+        'Params::Validate' => 0.72,
+        'Class::Singleton' => 1.03,
+        'Pod::Man'         => 1.14,
+    },
+    sign               => 1,
+    c_source           => 'source',
+    create_makefile_pl => 'traditional',
+);
+if ($use_gdb) {
+    $build_args{extra_compiler_flags} = [ '-ggdb' ]
+}
+
+my $build = $class->new(%build_args);
 
 $build->create_build_script;
 

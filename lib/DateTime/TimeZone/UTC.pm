@@ -1,31 +1,32 @@
 package DateTime::TimeZone::UTC;
 
 use strict;
-
-use vars qw ($VERSION);
-$VERSION = 0.01;
-
+use vars qw ($VERSION @ISA);
+use Class::Singleton;
 use DateTime::TimeZone;
-use base 'DateTime::TimeZone';
+BEGIN
+{
+    $VERSION = 0.01;
+    @ISA = ('DateTime::TimeZone', 'Class::Singleton');
+    if (! &DateTime::TimeZone::LOADED_XS) {
+        require DateTime::TimeZone::UTCPP;
+    }
+}
 
 sub new
 {
     my $class = shift;
-
-    return bless { name => 'UTC' }, $class;
+    return $class->instance();
 }
 
-sub is_dst_for_datetime { 0 }
+sub _new_instance
+{
+    my $class = shift;
+    my $foo;
+    return bless \$foo, $class;
+}
 
-sub offset_for_datetime { 0 }
-sub offset_for_local_datetime { 0 }
-
-sub short_name_for_datetime { 'UTC' }
-
-sub category { undef }
-
-sub is_utc { 1 }
-
+sub DESTROY {}
 
 1;
 

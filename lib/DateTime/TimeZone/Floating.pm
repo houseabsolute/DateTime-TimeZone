@@ -3,20 +3,33 @@ package DateTime::TimeZone::Floating;
 use strict;
 
 use vars qw ($VERSION @ISA);
-$VERSION = 0.01;
+use Class::Singleton;
+use DateTime::TimeZone::OffsetOnly;
 
-use DateTime::TimeZone;
-use base 'DateTime::TimeZone::OffsetOnly';
+BEGIN
+{
+    $VERSION = 0.01;
+    @ISA = ('DateTime::TimeZone::OffsetOnly', 'Class::Singleton');
+    if ( ! DateTime::TimeZone::LOADED_XS() ) {
+        require DateTime::TimeZone::FloatingPP;
+    }
+}
 
 sub new
 {
     my $class = shift;
-
-    return bless { name => 'floating',
-                   offset => 0 }, $class;
+    return $class->instance();
 }
 
-sub is_floating { 1 }
+sub _new_instance
+{
+    my $class = shift;
+    return $class->_init({ name => 'floating', offset => 0});
+}
+
+sub DESTROY {}
+
+1;
 
 __END__
 

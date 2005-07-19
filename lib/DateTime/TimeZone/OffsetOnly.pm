@@ -2,20 +2,26 @@ package DateTime::TimeZone::OffsetOnly;
 
 use strict;
 
-use vars qw ($VERSION);
-$VERSION = 0.02;
+use vars qw ($VERSION @ISA);
 
 use DateTime::TimeZone;
-use base 'DateTime::TimeZone';
-
 use DateTime::TimeZone::UTC;
-use Params::Validate qw( validate SCALAR );
+use Params::Validate();
+
+BEGIN
+{
+    $VERSION = 0.03;
+    @ISA = ('DateTime::TimeZone');
+    if ( ! DateTime::TimeZone::LOADED_XS() ) {
+        require DateTime::TimeZone::OffsetOnlyPP;
+    }
+}
 
 sub new
 {
     my $class = shift;
-    my %p = validate( @_, { offset => { type => SCALAR },
-                          } );
+    my %p = Params::Validate::validate( @_, 
+        { offset => { type => Params::Validate::SCALAR() } } );
 
     my $offset =
         DateTime::TimeZone::offset_as_seconds( $p{offset} );
@@ -24,23 +30,17 @@ sub new
 
     return DateTime::TimeZone::UTC->new unless $offset;
 
-    my $self = { name   => DateTime::TimeZone::offset_as_string( $offset ),
-                 offset => $offset,
-               };
-
-    return bless $self, $class;
+    %p = (
+        name   => DateTime::TimeZone::offset_as_string( $offset ),
+        offset => $offset
+    );
+    $class->_init(\%p);
 }
 
-sub is_dst_for_datetime { 0 }
-
-sub offset_for_datetime { $_[0]->{offset} }
-sub offset_for_local_datetime { $_[0]->{offset} }
-
-sub is_utc { 0 }
-
+sub offset_for_datetime { $_[0]->offset }
+sub offset_for_local_datetime { $_[0]->offset }
 sub short_name_for_datetime { $_[0]->name }
-
-sub category { undef }
+sub DESTROY {}
 
 1;
 

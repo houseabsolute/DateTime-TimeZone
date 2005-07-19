@@ -5,6 +5,34 @@ use strict;
 use vars qw( $VERSION );
 $VERSION = '0.37';
 
+BEGIN
+{
+    if ($INC{'DateTime::TimeZone'}) {
+        return;
+    }
+
+    my $loaded_xs = 0;
+    if (! $ENV{PERL_DATETIME_TIMEZONE_PP}) {
+        eval {
+            if ($] > 5.006) {
+                require XSLoader;
+                XSLoader::load('DateTime::TimeZone', $VERSION);
+            } else {
+                require DynaLoader;
+                @DateTime::TimeZone::ISA = qw(DynaLoader);
+                DateTime::TimeZone->bootstrap();
+            }
+    
+            $loaded_xs = 1;
+        };
+        die if $@ && $@ !~ /object version/;
+    }
+
+    if (! $loaded_xs) {
+        require DateTime::TimeZonePP;
+    }
+}
+
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
 use DateTime::TimeZone::Local;
@@ -88,30 +116,6 @@ sub new
     return $real_class->instance( name => $p{name}, is_olson => 1 );
 }
 
-sub _init
-{
-    my $class = shift;
-    my %p = validate( @_,
-                      { name     => { type => SCALAR },
-                        is_olson => { type => BOOLEAN, default => 0 },
-                      },
-                    );
-
-    my $self = bless { name     => $p{name},
-                       is_olson => $p{is_olson},
-                     }, $class;
-
-    foreach my $k ( qw( last_offset last_observance rules max_year ) )
-    {
-        my $m = "_$k";
-        $self->{$k} = $self->$m() if $self->can($m);
-    }
-
-    return $self;
-}
-
-sub is_olson { $_[0]->{is_olson} }
-
 sub is_dst_for_datetime
 {
     my $self = shift;
@@ -148,43 +152,6 @@ sub short_name_for_datetime
     return $span->[SHORT_NAME];
 }
 
-sub _span_for_datetime
-{
-    my $self = shift;
-    my $type = shift;
-    my $dt   = shift;
-
-    my $method = $type . '_rd_as_seconds';
-
-    my $end = $type eq 'utc' ? UTC_END : LOCAL_END;
-
-    my $span;
-    my $seconds = $dt->$method();
-    if ( $seconds < $self->max_span->[$end] )
-    {
-        $span = $self->_spans_binary_search( $type, $seconds );
-    }
-    else
-    {
-        my $until_year = $dt->utc_year + 1;
-        $span = $self->_generate_spans_until_match( $until_year, $seconds, $type );
-    }
-
-    # This means someone gave a local time that doesn't exist
-    # (like during a transition into savings time)
-    unless ( defined $span )
-    {
-        my $err = 'Invalid local time for date';
-        $err .= ' ' . $dt->iso8601 if $type eq 'utc';
-        $err .= " in time zone: " . $self->name;
-        $err .= "\n";
-
-        die $err;
-    }
-
-    return $span;
-}
-
 sub _generate_next_span
 {
     my $self = shift;
@@ -197,7 +164,7 @@ sub _generate_next_span
     # one more span.  Of course, I will no doubt be proved wrong and
     # this will cause errors.
     $self->_generate_spans_until_match
-        ( $self->{max_year} + 1, $max_span->[UTC_END] + ( 366 * 86400 ), 'utc' );
+        ( $self->max_year() + 1, $max_span->[UTC_END] + ( 366 * 86400 ), 'utc' );
 }
 
 sub _generate_spans_until_match
@@ -208,33 +175,32 @@ sub _generate_spans_until_match
     my $type = shift;
 
     my @changes;
-    my @rules = @{ $self->_rules };
-    foreach my $year ( $self->{max_year} .. $generate_until_year )
+    my @rules = @{ $self->rules };
+
+    my @offsets;
+    if ( @rules == 2 )
+    {
+        @offsets = ($rules[0]->offset_from_std, $rules[1]->offset_from_std);
+    }
+    elsif ( @rules == 1 )
+    {
+        @offsets = ($rules[0]->offset_from_std, $rules[0]->offset_from_std);
+    }
+    else
+    {
+        my $count = scalar @rules;
+        die "Cannot generate future changes for zone with $count infinite rules\n";
+    }
+
+    foreach my $year ( $self->max_year() .. $generate_until_year )
     {
         for ( my $x = 0; $x < @rules; $x++ )
         {
-            my $last_offset_from_std;
-
-            if ( @rules == 2 )
-            {
-                $last_offset_from_std =
-                    $x ? $rules[0]->offset_from_std : $rules[1]->offset_from_std;
-            }
-            elsif ( @rules == 1 )
-            {
-                $last_offset_from_std = $rules[0]->offset_from_std;
-            }
-            else
-            {
-                my $count = scalar @rules;
-                die "Cannot generate future changes for zone with $count infinite rules\n";
-            }
-
             my $rule = $rules[$x];
 
             my $next =
                 $rule->utc_start_datetime_for_year
-                    ( $year, $self->{last_offset}, $last_offset_from_std );
+                    ( $year, $self->last_offset, $offsets[$x] );
 
             # don't bother with changes we've seen already
             next if $next->utc_rd_as_seconds < $self->max_span->[UTC_END];
@@ -246,17 +212,17 @@ sub _generate_spans_until_match
                       local_start_datetime =>
                       $next +
                       DateTime::Duration->new
-                          ( seconds => $self->{last_observance}->total_offset +
+                          ( seconds => $self->last_observance->total_offset +
                                        $rule->offset_from_std ),
                       short_name =>
-                      sprintf( $self->{last_observance}->format, $rule->letter ),
-                      observance => $self->{last_observance},
+                      sprintf( $self->last_observance->format, $rule->letter ),
+                      observance => $self->last_observance,
                       rule       => $rule,
                     );
         }
     }
 
-    $self->{max_year} = $generate_until_year;
+    $self->max_year($generate_until_year);
 
     my @sorted = sort { $a->utc_start_datetime <=> $b->utc_start_datetime } @changes;
 
@@ -293,12 +259,7 @@ sub _span_as_array
     [ @{ $_[0] }{ qw( utc_start utc_end local_start local_end offset is_dst short_name ) } ];
 }
 
-sub is_floating { 0 }
-
-sub is_utc { 0 }
-
-sub name      { $_[0]->{name} }
-sub category  { (split /\//, $_[0]->{name}, 2)[0] }
+sub category  { (split /\//, $_[0]->name(), 2)[0] }
 
 sub is_valid_name
 {
@@ -316,9 +277,7 @@ sub STORABLE_freeze
 
 sub STORABLE_thaw
 {
-    my $self = shift;
-    my $cloning = shift;
-    my $serialized = shift;
+    my($self, $cloning, $serialized) = @_;
 
     my $class = ref $self || $self;
 
@@ -338,13 +297,9 @@ sub STORABLE_thaw
     # structures by reference here, so span generation in one object
     # will be visible in another also in memory.
     %$self = %$obj;
-
     return $self;
 }
 
-#
-# Functions
-#
 sub offset_as_seconds
 {
     my $offset = shift;
@@ -379,29 +334,42 @@ sub offset_as_seconds
     return $total;
 }
 
-sub offset_as_string
+sub _span_for_datetime
 {
-    my $offset = shift;
+    my $self = shift;
+    my $type = shift;
+    my $dt   = shift;
 
-    return undef unless defined $offset;
-    return undef unless $offset >= -359999 && $offset <= 359999;
+    my $method = $type . '_rd_as_seconds';
 
-    my $sign = $offset < 0 ? '-' : '+';
+    my $end = $type eq 'utc' ? &DateTime::TimeZone::UTC_END : &DateTime::TimeZone::LOCAL_END;
 
-    $offset = abs($offset);
+    my $span;
+    my $seconds = $dt->$method();
+    if ( $seconds < $self->max_span->[$end] )
+    {
+        $span = $self->_spans_binary_search( $type, $seconds );
+    }
+    else
+    {
+        my $until_year = $dt->utc_year + 1;
+        $span = $self->_generate_spans_until_match( $until_year, $seconds, $type );
+    }
 
-    my $hours = int( $offset / 3600 );
-    $offset %= 3600;
-    my $mins = int( $offset / 60 );
-    $offset %= 60;
-    my $secs = int( $offset );
+    # This means someone gave a local time that doesn't exist
+    # (like during a transition into savings time)
+    unless ( defined $span )
+    {
+        my $err = 'Invalid local time for date';
+        $err .= ' ' . $dt->iso8601 if $type eq 'utc';
+        $err .= " in time zone: " . $self->name;
+        $err .= "\n";
 
-    return ( $secs ?
-             sprintf( '%s%02d%02d%02d', $sign, $hours, $mins, $secs ) :
-             sprintf( '%s%02d%02d', $sign, $hours, $mins )
-           );
+        die $err;
+    }
+
+    return $span;
 }
-
 
 1;
 
