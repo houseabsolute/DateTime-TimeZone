@@ -92,7 +92,7 @@ EOF
 
 my $class = 'Module::Build';
 
-if ($have_cc)
+if ( $have_cc && Module::Build->VERSION > 0.27 )
 {
     # hack to work around a bug when compiling multiple XS files with
     # ExtUtils::ParseXS - optimistically assume it'll be fixed in the
