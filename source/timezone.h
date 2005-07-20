@@ -124,4 +124,34 @@ typedef struct _dtz_timezone_state {
 #define XS_STATE(x) \
     INT2PTR(dtz_timezone_state *, SvROK(x) ? SvIV(SvRV(x)) : SvIV(x))
 
+#define SPAN_ERR(sv, dt, name, use_utc) \
+    sv = newSVpv("Invalid local time for date", 27); \
+    if (use_utc) { \
+        sv_catpv(sv, " ");  \
+        \
+        dSP;  \
+        ENTER;  \
+        SAVETMPS;  \
+        PUSHMARK(SP);  \
+        XPUSHs(dt);  \
+        PUTBACK;  \
+        \
+        call_method("iso8601", G_SCALAR);  \
+        \
+        SPAGAIN;  \
+        \
+        sv_catpv(sv, (const char *) SvPV_nolen(POPs));  \
+        \
+        FREETMPS;  \
+        LEAVE;  \
+    } \
+    sv_catpv(sv, " in time zone: ");  \
+    sv_catpv(sv, SvPV_nolen(state->short_name));  \
+    sv_catpv(sv, "\n");
+
+#define THROW_ERR(x) \
+    sv_setsv(get_sv("@", TRUE), x); \
+    croak(Nullch);
+
+
 #endif

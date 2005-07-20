@@ -13,10 +13,14 @@
 #define NEED_allocTIMEZONE
 #include "timezone.h"
 
-/* XXX - Moved this out of XS code so that we can reuse it later.
- * I haven't been been able to make it work, but this code would be
- * used from _span_for_datetime() -- daisuke
- */
+#define SPAN_UTC_START    0
+#define SPAN_UTC_END      1
+#define SPAN_LOCAL_START  2
+#define SPAN_LOCAL_END    3
+#define SPAN_OFFSET       4
+#define SPAN_IS_DST       5
+#define SPAN_SHORT_NAME   6
+
 static dtz_span *
 _real_spans_binary_search(pTHX_ SV *self, int use_utc, NV v)
 {
@@ -187,6 +191,11 @@ _span_for_datetime(pTHX_ SV *sv, int use_utc, SV *dt)
         LEAVE;
     }
 
+    if (ret == NULL) {
+        SPAN_ERR(sv, dt, state->short_name, use_utc);
+        THROW_ERR(sv);
+    }
+
     return ret;
 }
 
@@ -220,6 +229,13 @@ bootinit()
     newCONSTSUB(stash, "is_floating", newSViv(0));
     newCONSTSUB(stash, "is_utc", newSViv(0));
     newCONSTSUB(stash, "LOADED_XS", newSViv(1));
+    newCONSTSUB(stash, "UTC_START", newSViv(SPAN_UTC_START));
+    newCONSTSUB(stash, "UTC_END", newSViv(SPAN_UTC_END));
+    newCONSTSUB(stash, "LOCAL_START", newSViv(SPAN_LOCAL_START));
+    newCONSTSUB(stash, "LOCAL_END", newSViv(SPAN_LOCAL_END));
+    newCONSTSUB(stash, "OFFSET", newSViv(SPAN_OFFSET));
+    newCONSTSUB(stash, "IS_DST", newSViv(SPAN_IS_DST));
+    newCONSTSUB(stash, "SHORT_NAME", newSViv(SPAN_SHORT_NAME));
 
     /* load destructor into stash, because subclasses which are implemented
      * in XS (in other files) cannot reach it without duplicating it
@@ -320,6 +336,54 @@ last_offset (self)
     CODE:
         state = XS_STATE(self);
         RETVAL = SvREFCNT_inc(state->last_offset);
+    OUTPUT:
+        RETVAL
+
+SV *
+short_name_for_datetime(self, dt)
+        SV *self;
+        SV *dt;
+    PREINIT:
+        SV *ret;
+    CODE:
+        ret = _span_for_datetime(aTHX_ self, 1, dt);
+        RETVAL = newSVsv(*(av_fetch((AV *) SvRV(ret), SPAN_SHORT_NAME, 0)));
+    OUTPUT:
+        RETVAL
+
+SV *
+is_dst_for_datetime(self, dt)
+        SV *self;
+        SV *dt;
+    PREINIT:
+        SV *ret;
+    CODE:
+        ret = _span_for_datetime(aTHX_ self, 1, dt);
+        RETVAL = newSVsv(*(av_fetch((AV *) SvRV(ret), SPAN_IS_DST, 0)));
+    OUTPUT:
+        RETVAL
+
+SV *
+offset_for_datetime(self, dt)
+        SV *self;
+        SV *dt;
+    PREINIT:
+        SV *ret;
+    CODE:
+        ret = _span_for_datetime(aTHX_ self, 1, dt);
+        RETVAL = newSVsv(*(av_fetch((AV *) SvRV(ret), SPAN_OFFSET, 0)));
+    OUTPUT:
+        RETVAL
+
+SV *
+offset_for_local_datetime(self, dt)
+        SV *self;
+        SV *dt;
+    PREINIT:
+        SV *ret;
+    CODE:
+        ret = _span_for_datetime(aTHX_ self, 0, dt);
+        RETVAL = newSVsv(*(av_fetch((AV *) SvRV(ret), SPAN_OFFSET, 0)));
     OUTPUT:
         RETVAL
 

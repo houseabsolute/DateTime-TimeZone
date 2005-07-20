@@ -3,6 +3,15 @@
 package DateTime::TimeZone;
 use strict;
 
+# the offsets for each span element
+use constant UTC_START   => 0;
+use constant UTC_END     => 1;
+use constant LOCAL_START => 2;
+use constant LOCAL_END   => 3;
+use constant OFFSET      => 4;
+use constant IS_DST      => 5;
+use constant SHORT_NAME  => 6;
+
 sub LOADED_XS() { 0 }
 
 sub is_floating { 0 }
@@ -16,6 +25,42 @@ sub _init
     my $p     = shift;
     
     return bless { %$p }, $class;
+}
+
+sub short_name_for_datetime
+{
+    my $self = shift;
+
+    my $span = $self->_span_for_datetime( 'utc', $_[0] );
+
+    return $span->[SHORT_NAME()];
+}
+
+sub is_dst_for_datetime
+{
+    my $self = shift;
+
+    my $span = $self->_span_for_datetime( 'utc', $_[0] );
+
+    return $span->[IS_DST()];
+}
+
+sub offset_for_datetime
+{
+    my $self = shift;
+
+    my $span = $self->_span_for_datetime( 'utc', $_[0] );
+
+    return $span->[OFFSET()];
+}
+
+sub offset_for_local_datetime
+{
+    my $self = shift;
+
+    my $span = $self->_span_for_datetime( 'local', $_[0] );
+
+    return $span->[OFFSET()];
 }
 
 sub _span_for_datetime
