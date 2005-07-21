@@ -91,9 +91,12 @@ EOF
 }
 
 my $class = 'Module::Build';
+my %build_requires;
 
 if ( $have_cc && Module::Build->VERSION > 0.27 )
 {
+    $build_requires{'ExtUtils::CBuilder'} = 0;
+
     # hack to work around a bug when compiling multiple XS files with
     # ExtUtils::ParseXS - optimistically assume it'll be fixed in the
     # next release
@@ -138,7 +141,7 @@ if ( $have_cc && Module::Build->VERSION > 0.27 )
           EOC
         );
 }
-else
+elsif (!$have_cc)
 {
     # If we don't have C compiler, do not attempt to build the XS files.
     $class = Module::Build->subclass
@@ -166,7 +169,7 @@ my %build_args =
                        'Class::Singleton' => 1.03,
                        'Pod::Man'         => 1.14,
                      },
-      build_requires => { 'ExtUtils::CBuilder' => 0 },
+      build_requires => \%build_requires,
       sign               => 1,
       c_source           => 'source',
       create_makefile_pl => 'passthrough', # XXX - traditional doesn't work, fix later
