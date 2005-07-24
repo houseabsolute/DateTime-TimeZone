@@ -31,6 +31,9 @@ GetOptions( 'dir:s'     => \$opts{dir},
             'file:s'    => \$opts{file},
             'name:s'    => \$opts{name},
             'version:s' => \$opts{version},
+            'pp'        => \$opts{pp},
+            'pm'        => \$opts{pm},
+            'xs'        => \$opts{xs},
             'help'      => \$opts{help},
           );
 
@@ -93,6 +96,18 @@ else
         if $opts{old};
 }
 
+my $do_pp = 1;
+my $do_pm = 1;
+my $do_xs = 1;
+if (grep { exists $opts{$_} } qw(pm pp xs)) {
+    $do_pm = 0;
+    $do_pp = 0;
+    $do_xs = 0;
+    $do_pm = 1 if ($opts{pm});
+    $do_pp = 1 if ($opts{pp});
+    $do_xs = 1 if ($opts{xs});
+}
+
 unless ( $opts{name} || $opts{file} )
 {
     copy( 'MANIFEST.base', 'MANIFEST' );
@@ -143,10 +158,6 @@ foreach my $f ( sort @files )
         $from .= "  Olson data version $opts{version}"
             if defined $opts{version};
 
-        my $pm_body = generate_pm($mod_name, $zone, $max_year, $from);
-        my $pp_body = generate_pp($mod_name, $zone, $max_year, $from);
-        my $xs_body = generate_xs($mod_name, $zone, $max_year, $from, $zone_name);
-
         my @name_pieces   = split /\//, $outfile1;
         my $base_filename = pop @name_pieces;
         my $pm_filename   = $base_filename . '.pm';
@@ -160,21 +171,31 @@ foreach my $f ( sort @files )
 
         # Write to .pm
         my $pm_outfile = File::Spec->catfile( $outdir, $pm_filename );
-        open OUT,">$pm_outfile" or die "Cannot write to $pm_outfile: $!";
-        print OUT $pm_body or die "Cannot write to $pm_outfile: $!";
-        close (OUT) or die "Cannot write to $pm_outfile: $!";
+        if ($do_pm) {
+            my $pm_body = generate_pm($mod_name, $zone, $max_year, $from);
+            open OUT,">$pm_outfile" or die "Cannot write to $pm_outfile: $!";
+            print OUT $pm_body or die "Cannot write to $pm_outfile: $!";
+            close (OUT) or die "Cannot write to $pm_outfile: $!";
+        }
 
         # Write pure-perl .pm
         my $pp_outfile = File::Spec->catfile( $outdir, $pp_filename );
-        open OUT,">$pp_outfile" or die "Cannot write to $pp_outfile: $!";
-        print OUT $pp_body or die "Cannot write to $pp_outfile: $!";
-        close (OUT) or die "Cannot write to $pp_outfile: $!";
+        if ($do_pp) {
+            my $pp_body = generate_pp($mod_name, $zone, $max_year, $from);
+            open OUT,">$pp_outfile" or die "Cannot write to $pp_outfile: $!";
+            print OUT $pp_body or die "Cannot write to $pp_outfile: $!";
+            close (OUT) or die "Cannot write to $pp_outfile: $!";
+        }
 
         # Write to .xs
         my $xs_outfile = File::Spec->catfile( $outdir, $xs_filename );
-        open OUT,">$xs_outfile" or die "Cannot write to $xs_outfile: $!";
-        print OUT $xs_body or die "Cannot write to $xs_outfile: $!";
-        close (OUT) or die "Cannot write to $xs_outfile: $!";
+        if ($do_xs) {
+            my $xs_body = generate_xs($mod_name, $zone, $max_year, $from, $zone_name);
+
+            open OUT,">$xs_outfile" or die "Cannot write to $xs_outfile: $!";
+            print OUT $xs_body or die "Cannot write to $xs_outfile: $!";
+            close (OUT) or die "Cannot write to $xs_outfile: $!";
+        }
 
         unless ( $opts{name} || $opts{file} )
         {
@@ -311,21 +332,9 @@ use strict;
 use DateTime::TimeZone::Singleton;
 use DateTime::TimeZone::OlsonDB;
 
-\@DateTime::TimeZone::${mod_name}::ISA = ( 'DateTime::TimeZone::Singleton' );
-
-BEGIN { 
-    unless (DateTime::TimeZone::LOADED_XS()) {
-        require DateTime::TimeZone::${mod_name}PP;
-    } else {
-        if (\$] > 5.006) {
-            require XSLoader;
-            XSLoader::load('DateTime::TimeZone::${mod_name}');
-        } else {
-            require DynaLoader;
-            push \@DateTime::TimeZone::${mod_name}::ISA, 'DynaLoader';
-            DateTime::TimeZone::${mod_name}->bootstrap();
-        }
-    }
+BEGIN {
+    \@DateTime::TimeZone::${mod_name}::ISA = ( 'DateTime::TimeZone::Singleton' );
+    __PACKAGE__->_load_class();
 }
 
 $generator

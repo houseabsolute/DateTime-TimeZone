@@ -29,6 +29,20 @@ BEGIN
     }
 }
 
+sub _load_class
+{
+    my $class = shift;
+    unless (DateTime::TimeZone::LOADED_XS()) {
+        eval "require ${class}PP";
+    } else {
+        if ($] > 5.006) {
+            XSLoader::load($class);
+        } else {
+            $class->bootstrap();
+        }
+    }
+}
+
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
 use DateTime::TimeZone::Local;
@@ -127,6 +141,7 @@ sub _generate_spans_until_match
 
     my @changes;
     my @rules = @{ $self->rules };
+    my $utc_end = $self->max_span->[&UTC_END];
     foreach my $year ( $self->max_year .. $generate_until_year )
     {
         for ( my $x = 0; $x < @rules; $x++ )
@@ -155,7 +170,7 @@ sub _generate_spans_until_match
                     ( $year, $self->last_offset, $last_offset_from_std );
 
             # don't bother with changes we've seen already
-            next if $next->utc_rd_as_seconds < $self->max_span->[UTC_END];
+            next if $next->utc_rd_as_seconds < $utc_end;
 
             push @changes,
                 DateTime::TimeZone::OlsonDB::Change->new
@@ -211,12 +226,9 @@ sub _span_as_array
     [ @{ $_[0] }{ qw( utc_start utc_end local_start local_end offset is_dst short_name ) } ];
 }
 
-sub category  { (split /\//, $_[0]->name(), 2)[0] }
-
 sub is_valid_name
 {
     my $tz = eval { $_[0]->new( name => $_[1] ) };
-
     return $tz && UNIVERSAL::isa( $tz, 'DateTime::TimeZone') ? 1 : 0
 }
 
@@ -257,40 +269,6 @@ sub STORABLE_thaw
     }
 
     return $self;
-}
-
-sub offset_as_seconds
-{
-    my $offset = shift;
-
-    return undef unless defined $offset;
-
-    return 0 if $offset eq '0';
-
-    my ( $sign, $hours, $minutes, $seconds );
-    if ( $offset =~ /^([\+\-])?(\d\d?):(\d\d)(?::(\d\d))?$/ )
-    {
-        ( $sign, $hours, $minutes, $seconds ) = ( $1, $2, $3, $4 );
-    }
-    elsif ( $offset =~ /^([\+\-])?(\d\d)(\d\d)(\d\d)?$/ )
-    {
-        ( $sign, $hours, $minutes, $seconds ) = ( $1, $2, $3, $4 );
-    }
-    else
-    {
-        return undef;
-    }
-
-    $sign = '+' unless defined $sign;
-    return undef unless $hours >= 0 && $hours <= 99;
-    return undef unless $minutes >= 0 && $minutes <= 59;
-    return undef unless ! defined( $seconds ) || ( $seconds >= 0 && $seconds <= 59 );
-
-    my $total =  $hours * 3600 + $minutes * 60;
-    $total += $seconds if $seconds;
-    $total *= -1 if $sign eq '-';
-
-    return $total;
 }
 
 1;

@@ -121,8 +121,8 @@ typedef struct _dtz_timezone_state {
     span->is_dst      = d; \
     Copy(n, span->short_name, n_len, char);
 
-#define XS_STATE(x) \
-    INT2PTR(dtz_timezone_state *, SvROK(x) ? SvIV(SvRV(x)) : SvIV(x))
+#define XS_STATE(type, x) \
+    INT2PTR(type, SvROK(x) ? SvIV(SvRV(x)) : SvIV(x))
 
 #define SPAN_ERR(sv, dt, name, use_utc) \
     sv = newSVpv("Invalid local time for date", 27); \

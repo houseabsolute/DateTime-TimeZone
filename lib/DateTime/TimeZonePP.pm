@@ -18,6 +18,8 @@ sub is_floating { 0 }
 sub is_utc { 0 }
 sub is_olson { $_[0]->{is_olson} }
 sub name { $_[0]->{name} }
+sub category  { (split /\//, $_[0]->name(), 2)[0] }
+
 
 sub _init
 {
@@ -187,6 +189,40 @@ sub offset_as_string
              sprintf( '%s%02d%02d%02d', $sign, $hours, $mins, $secs ) :
              sprintf( '%s%02d%02d', $sign, $hours, $mins )
            );
+}
+
+sub offset_as_seconds
+{
+    my $offset = shift;
+
+    return undef unless defined $offset;
+
+    return 0 if $offset eq '0';
+
+    my ( $sign, $hours, $minutes, $seconds );
+    if ( $offset =~ /^([\+\-])?(\d\d?):(\d\d)(?::(\d\d))?$/ )
+    {
+        ( $sign, $hours, $minutes, $seconds ) = ( $1, $2, $3, $4 );
+    }
+    elsif ( $offset =~ /^([\+\-])?(\d\d)(\d\d)(\d\d)?$/ )
+    {
+        ( $sign, $hours, $minutes, $seconds ) = ( $1, $2, $3, $4 );
+    }
+    else
+    {
+        return undef;
+    }
+
+    $sign = '+' unless defined $sign;
+    return undef unless $hours >= 0 && $hours <= 99;
+    return undef unless $minutes >= 0 && $minutes <= 59;
+    return undef unless ! defined( $seconds ) || ( $seconds >= 0 && $seconds <= 59 );
+
+    my $total =  $hours * 3600 + $minutes * 60;
+    $total += $seconds if $seconds;
+    $total *= -1 if $sign eq '-';
+
+    return $total;
 }
 
 1;
