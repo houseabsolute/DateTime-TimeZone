@@ -99,7 +99,7 @@ else
 my $do_pp = 1;
 my $do_pm = 1;
 my $do_xs = 1;
-if (grep { exists $opts{$_} } qw(pm pp xs)) {
+if (grep { defined $opts{$_} } qw(pm pp xs)) {
     $do_pm = 0;
     $do_pp = 0;
     $do_xs = 0;
@@ -522,7 +522,7 @@ _init(class, psv)
     CODE:
         allocTIMEZONE(sv, class, psv);
 
-        state = XS_STATE(sv);
+        state = XS_STATE(dtz_timezone_state *, sv);
         state->spanset_size  = %d;
         state->spanset_count = newSViv(state->spanset_size);
         state->max_year      = newSViv(%d);
