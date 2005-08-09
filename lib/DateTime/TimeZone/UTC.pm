@@ -4,13 +4,14 @@ use strict;
 use vars qw ($VERSION @ISA);
 use Class::Singleton;
 use DateTime::TimeZone;
+
 BEGIN
 {
     $VERSION = 0.01;
     @ISA = ('DateTime::TimeZone', 'Class::Singleton');
-    if (! &DateTime::TimeZone::LOADED_XS) {
-        require DateTime::TimeZone::UTCPP;
-    }
+
+    require DateTime::TimeZone::UTCPP
+        unless DateTime::TimeZone::LOADED_XS();
 }
 
 sub new

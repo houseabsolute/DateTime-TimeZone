@@ -1,12 +1,14 @@
 package DateTime::TimeZone::OlsonDB;
+
 use strict;
 use DateTime::TimeZone;
+
 BEGIN
 {
-    unless (DateTime::TimeZone::LOADED_XS()) {
-        require DateTime::TimeZone::OlsonDBPP;
-    }
+    require DateTime::TimeZone::OlsonDBPP
+        unless DateTime::TimeZone::LOADED_XS();
 }
+
 use vars qw( %MONTHS %DAYS $PLUS_ONE_DAY_DUR $MINUS_ONE_DAY_DUR );
 
 use Params::Validate qw( validate SCALAR );

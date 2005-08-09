@@ -12,9 +12,9 @@ BEGIN
 {
     $VERSION = 0.03;
     @ISA = ('DateTime::TimeZone');
-    if ( ! DateTime::TimeZone::LOADED_XS() ) {
-        require DateTime::TimeZone::OffsetOnlyPP;
-    }
+
+    require DateTime::TimeZone::OffsetOnlyPP
+        unless DateTime::TimeZone::LOADED_XS();
 }
 
 sub new

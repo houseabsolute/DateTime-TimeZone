@@ -9,10 +9,11 @@ use DateTime::TimeZone::OffsetOnly;
 BEGIN
 {
     $VERSION = 0.01;
+
     @ISA = ('DateTime::TimeZone::OffsetOnly', 'Class::Singleton');
-    if ( ! DateTime::TimeZone::LOADED_XS() ) {
-        require DateTime::TimeZone::FloatingPP;
-    }
+
+    require DateTime::TimeZone::FloatingPP
+        unless DateTime::TimeZone::LOADED_XS();
 }
 
 sub new

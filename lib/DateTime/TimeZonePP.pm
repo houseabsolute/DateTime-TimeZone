@@ -25,7 +25,7 @@ sub _init
 {
     my $class = shift;
     my $p     = shift;
-    
+
     return bless { %$p }, $class;
 }
 
@@ -35,7 +35,7 @@ sub short_name_for_datetime
 
     my $span = $self->_span_for_datetime( 'utc', $_[0] );
 
-    return $span->[SHORT_NAME()];
+    return $span->[SHORT_NAME];
 }
 
 sub is_dst_for_datetime
@@ -44,7 +44,7 @@ sub is_dst_for_datetime
 
     my $span = $self->_span_for_datetime( 'utc', $_[0] );
 
-    return $span->[IS_DST()];
+    return $span->[IS_DST];
 }
 
 sub offset_for_datetime
@@ -53,7 +53,7 @@ sub offset_for_datetime
 
     my $span = $self->_span_for_datetime( 'utc', $_[0] );
 
-    return $span->[OFFSET()];
+    return $span->[OFFSET];
 }
 
 sub offset_for_local_datetime
@@ -62,7 +62,7 @@ sub offset_for_local_datetime
 
     my $span = $self->_span_for_datetime( 'local', $_[0] );
 
-    return $span->[OFFSET()];
+    return $span->[OFFSET];
 }
 
 sub _span_for_datetime
@@ -147,7 +147,7 @@ sub _spans_binary_search
             # Special case for overlapping ranges because of DST and
             # other weirdness (like Alaska's change when bought from
             # Russia by the US).  Always prefer latest span.
-            if ( $current->[IS_DST()] && $type eq 'local' )
+            if ( $current->[IS_DST] && $type eq 'local' )
             {
                 if ($i >= $max) {
                     $self->_generate_next_span();

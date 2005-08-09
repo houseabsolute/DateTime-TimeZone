@@ -8,36 +8,48 @@ $VERSION = '0.37';
 BEGIN
 {
     my $loaded_xs = 0;
-    if (! $ENV{PERL_DATETIME_TIMEZONE_PP}) {
-        eval {
-            if ($] > 5.006) {
+    unless ( $ENV{PERL_DATETIME_TIMEZONE_PP} )
+    {
+        eval
+        {
+            if ( $] > 5.006 )
+            {
                 require XSLoader;
                 XSLoader::load('DateTime::TimeZone', $VERSION);
-            } else {
+            }
+            else
+            {
                 require DynaLoader;
                 @DateTime::TimeZone::ISA = qw(DynaLoader);
                 DateTime::TimeZone->bootstrap();
             }
-    
+
             $loaded_xs = 1;
         };
+
         die if $@ && $@ !~ /object version/;
     }
 
-    if (! $loaded_xs) {
-        require DateTime::TimeZonePP;
-    }
+    require DateTime::TimeZonePP
+        unless $loaded_xs;
 }
 
 sub _load_class
 {
     my $class = shift;
-    unless (DateTime::TimeZone::LOADED_XS()) {
+
+    unless ( DateTime::TimeZone::LOADED_XS() )
+    {
         eval "require ${class}PP";
-    } else {
-        if ($] > 5.006) {
+    }
+    else
+    {
+        if ($] > 5.006)
+        {
             XSLoader::load($class);
-        } else {
+        }
+        else
+        {
             $class->bootstrap();
         }
     }
