@@ -241,6 +241,7 @@ foreach my $c ( sort keys %categories )
     $cat .= join "\n", map { "  $_" } sort @{ $categories{$c} };
     $cat .= "\n) ],\n";
 }
+
 my $zonecatalog = <<"EOF";
 $autogen_warning
 #
@@ -275,7 +276,7 @@ sub links { wantarray ? %DateTime::TimeZone::LINKS : { %DateTime::TimeZone::LINK
 
 sub names_in_category
 {
-    shift if $_[0]->isa('DateTime::TimeZone');
+    shift if \$_[0]->isa('DateTime::TimeZone');
     return unless exists \$DateTime::TimeZone::CATEGORIES{ \$_[0] };
 
     return wantarray ? \@{ \$DateTime::TimeZone::CATEGORIES{ \$_[0] } } : [ \$DateTime::TimeZone::CATEGORIES{ \$_[0] } ];
