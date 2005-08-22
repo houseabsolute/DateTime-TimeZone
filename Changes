@@ -8,7 +8,9 @@ be bad.  Reported by Matthew Reilly.
 
 - Made it possible to call catalog-related functions as methods.
 
-- This release is based on version 2005i of the Olson database.
+- This release is based on version 2005i of the Olson database.  This
+include some major changes coming up in the US as a whole in 2007,
+along with other changes for just Indiana.
 
 
 0.36     2005-04-21
