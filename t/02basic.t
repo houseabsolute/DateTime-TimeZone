@@ -86,8 +86,8 @@ my $tz = DateTime::TimeZone->new( name => 'America/Chicago' );
 {
     # check that generation works properly
     my $dt = DateTime->new( year => 2200,
-                            month => 10,
-                            day => 26,
+                            month => 11,
+                            day => 2,
                             time_zone => 'UTC',
                           );
     is( $tz->offset_for_datetime($dt), -18000, 'generated offset should be -1800' );
@@ -97,8 +97,8 @@ my $tz = DateTime::TimeZone->new( name => 'America/Chicago' );
 {
     # check that generation works properly
     my $dt = DateTime->new( year => 2200,
-                            month => 10,
-                            day => 27,
+                            month => 11,
+                            day => 3,
                             time_zone => 'UTC',
                           );
     is( $tz->offset_for_datetime($dt), -21600, 'generated offset should be -21600' );
