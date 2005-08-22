@@ -309,13 +309,19 @@ plan tests => 101;
     };
     ok( ! $@, 'no exception for valid time' );
 
-    my $dt = DateTime->new( year => 2003, month => 4, day => 5,
-                            hour => 2,
-                            time_zone => 'America/Chicago',
-                          );
+ SKIP:
+    {
+        skip "DateTime 0.29 has a date math bug that causes this test to fail", 1
+            if ( DateTime->VERSION >= 0.29 && DateTime->VERSION < 0.30 );
 
-    eval { $dt->add( days => 1 ) };
-    like( $@, qr/Invalid local time .+/, 'exception for invalid time produced via add' );
+        my $dt = DateTime->new( year => 2003, month => 4, day => 5,
+                                hour => 2,
+                                time_zone => 'America/Chicago',
+                              );
+
+        eval { $dt->add( days => 1 ) };
+        like( $@, qr/Invalid local time .+/, 'exception for invalid time produced via add' );
+    }
 }
 
 {
