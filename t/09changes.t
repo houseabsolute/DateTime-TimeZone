@@ -313,6 +313,7 @@ plan tests => 101;
                             hour => 2,
                             time_zone => 'America/Chicago',
                           );
+
     eval { $dt->add( days => 1 ) };
     like( $@, qr/Invalid local time .+/, 'exception for invalid time produced via add' );
 }

@@ -15,7 +15,7 @@ my @names = DateTime::TimeZone::all_names;
 
 my $is_maintainer = -d './CVS' ? 1 : 0;
 
-my $tests_per_zone = $is_maintainer ? 10 : 5;
+my $tests_per_zone = $is_maintainer ? 9 : 4;
 plan tests => 29 + ( $tests_per_zone * scalar @names );
 
 foreach my $name (@names)
@@ -24,7 +24,6 @@ foreach my $name (@names)
     isa_ok( $tz, 'DateTime::TimeZone' );
 
     is( $tz->name, $name, 'check ->name' );
-    is( $tz->category, substr($tz->name, 0, index($name, '/')), 'check ->category');
 
     is( $tz->is_floating, 0, 'should not be floating' );
     is( $tz->is_utc, 0, 'should not be UTC' );
