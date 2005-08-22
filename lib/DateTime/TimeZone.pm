@@ -731,8 +731,13 @@ or via email at bug-datetime-timezone@rt.cpan.org.
 
 =head1 AUTHOR
 
-Dave Rolsky <autarch@urth.org>, inspired by Jesse Vincent's work on
-Date::ICal::Timezone, and with help from the datetime@perl.org list.
+Dave Rolsky <autarch@urth.org>
+
+=head1 CREDITS
+
+This module was inspired by Jesse Vincent's work on
+Date::ICal::Timezone, and written with much help from the
+datetime@perl.org list.
 
 =head1 COPYRIGHT
 
