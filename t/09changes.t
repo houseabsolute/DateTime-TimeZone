@@ -368,7 +368,7 @@ plan tests => 101;
 {
     eval
     {
-        DateTime->new( year => 2040, month => 4, day => 1,
+        DateTime->new( year => 2040, month => 3, day => 11,
                        hour => 2, minute => 59, second => 59,
                        time_zone => 'America/Chicago',
                      );
