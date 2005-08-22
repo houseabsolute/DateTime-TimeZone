@@ -65,6 +65,9 @@ sub new
     $subclass =~ s{/}{::}g;
     my $real_class = "DateTime::TimeZone::$subclass";
 
+    die "The timezone '$p{name}' in an invalid name.\n"
+        unless $real_class =~ /^\w+(::\w+)*$/;
+
     unless ( $real_class->can('instance') )
     {
 
@@ -665,7 +668,7 @@ your module with Storable.
 =head2 Functions
 
 This class also contains several functions, none of which are
-exported.
+exported.  Calling these as class methods will also work.
 
 =over 4
 
