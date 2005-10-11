@@ -244,7 +244,7 @@ sub _spans_binary_search
                 # out.
                 $next ||= $self->_generate_next_span;
 
-                die "No next span $self->{max_year}" unless defined $next;
+                die "No next span in $self->{max_year}" unless defined $next;
 
                 if ( ( ! $next->[IS_DST] )
                      && $next->[$start] <= $seconds
@@ -270,11 +270,11 @@ sub _generate_next_span
 
     # Kind of a hack, but AFAIK there are no zones where it takes
     # _more_ than a year for a _future_ time zone change to occur, so
-    # by looking one year out we can ensure that we will find at least
-    # one more span.  Of course, I will no doubt be proved wrong and
-    # this will cause errors.
+    # by looking two years out we can ensure that we will find at
+    # least one more span.  Of course, I will no doubt be proved wrong
+    # and this will cause errors.
     $self->_generate_spans_until_match
-        ( $self->{max_year} + 1, $max_span->[UTC_END] + ( 366 * 86400 ), 'utc' );
+        ( $self->{max_year} + 2, $max_span->[UTC_END] + ( 366 * 86400 ), 'utc' );
 
     return $self->{spans}[ $last_idx + 1 ];
 }

@@ -16,7 +16,7 @@ my @names = DateTime::TimeZone::all_names;
 my $is_maintainer = -d './CVS' ? 1 : 0;
 
 my $tests_per_zone = $is_maintainer ? 9 : 4;
-plan tests => 29 + ( $tests_per_zone * scalar @names );
+plan tests => 30 + ( $tests_per_zone * scalar @names );
 
 foreach my $name (@names)
 {
@@ -103,6 +103,19 @@ my $tz = DateTime::TimeZone->new( name => 'America/Chicago' );
                           );
     is( $tz->offset_for_datetime($dt), -21600, 'generated offset should be -21600' );
     is( $tz->short_name_for_datetime($dt), 'CST', 'generated name should be CST' );
+}
+
+{
+    # bug when creating new datetime for year just after time zone's
+    # max year
+    my $tz = DateTime::TimeZone->new( name => 'America/Los_Angeles' );
+
+    my $dt = eval { DateTime->new( year => $tz->{max_year} + 1,
+                                   month => 5,
+                                   day => 20,
+                                   time_zone => $tz
+                                 ) };
+    ok( $dt, 'was able to create datetime object' );
 }
 
 {

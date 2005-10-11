@@ -1,6 +1,14 @@
+0.38     
+
+- Trying to create a DateTime object during DST exactly 11 years in
+the future (really, 1 year after the end of the pre-generated TZ
+change data that ships in the package) cause an error.  Reported by
+Daniel B Boorstein.
+
+
 0.37     2005-08-22
 
-* Make sure that provided time zone names are valid, because
+- Make sure that provided time zone names are valid, because
 DateTime::TimeZone uses them in an eval.  If you were passing
 user-provided data directly to DateTime::TimeZone->new, someone could
 give a string like "America/Chicago; system 'rm -rf /';", which would
