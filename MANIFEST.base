@@ -18,7 +18,7 @@ t/11valid-name.t
 t/12storable.t
 t/13short-name-has-slash.t
 t/14invalid-name.t
-t/15-catalog.t
+t/15catalog.t
 t/16has-dst-changes.t
 t/99-pod.t
 t/check_datetime_version.pl
