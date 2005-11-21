@@ -1,9 +1,14 @@
-0.38     
+0.38     2005-11-21
 
 - Trying to create a DateTime object during DST exactly 11 years in
 the future (really, 1 year after the end of the pre-generated TZ
 change data that ships in the package) cause an error.  Reported by
 Daniel B Boorstein.
+
+- This release is based on version 2005n of the Olson database.
+
+- Added a new method, has_dst_changes(), which indicates whether a
+given zone has any DST changes.
 
 
 0.37     2005-08-22

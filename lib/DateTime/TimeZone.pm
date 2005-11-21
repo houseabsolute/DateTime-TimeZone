@@ -3,7 +3,7 @@ package DateTime::TimeZone;
 use strict;
 
 use vars qw( $VERSION );
-$VERSION = '0.37';
+$VERSION = '0.38';
 
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
@@ -378,6 +378,8 @@ sub is_floating { 0 }
 
 sub is_utc { 0 }
 
+sub has_dst_changes { 0 }
+
 sub name      { $_[0]->{name} }
 sub category  { (split /\//, $_[0]->{name}, 2)[0] }
 
@@ -495,7 +497,7 @@ DateTime::TimeZone - Time zone object base class and factory
 =head1 SYNOPSIS
 
   use DateTime;
-  use DateTime::TimeZone
+  use DateTime::TimeZone;
 
   my $tz = DateTime::TimeZone->new( name => 'America/Chicago' );
 
@@ -628,6 +630,11 @@ floating time zone, as defined by RFC 2445.
 
 Indicates whether or not this object represents the UTC (GMT) time
 zone.
+
+=item * has_dst_changes
+
+Indicates whether or not this zone I<ever> has a change to and from
+DST.
 
 =item * is_olson
 

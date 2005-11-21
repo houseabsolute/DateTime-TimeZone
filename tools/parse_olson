@@ -150,6 +150,8 @@ foreach my $f ( sort @files )
 
         my $generator = zone_generator($zone);
 
+        my $has_dst_changes = grep { $_->is_dst } $zone->sorted_changes;
+
         my $from = "Generated from $file.";
         $from .= "  Olson data version $opts{version}"
             if defined $opts{version};
@@ -173,6 +175,8 @@ use DateTime::TimeZone::OlsonDB;
 
 my \$spans =
 $spans;
+
+sub has_dst_changes { $has_dst_changes }
 
 sub _max_year { $max_year }
 
@@ -422,7 +426,6 @@ EOF
       'name' => 'floating',
       'offset' => 0
     }, 'DateTime::TimeZone::Floating' )/;
-    $generator =~ s/!OFFSET/$offset/g;
     $generator =~ s/!OFFSET/$offset/g;
 
     return $generator;
