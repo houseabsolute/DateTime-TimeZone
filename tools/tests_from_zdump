@@ -10,6 +10,7 @@ my %opts;
 GetOptions( 'name:s'     => \@{ $opts{name} },
             'zoneinfo:s' => \$opts{zoneinfo},
             'zdump:s'    => \$opts{zdump},
+            'verbose'    => \$opts{verbose},
             'help'       => \$opts{help},
           );
 
@@ -42,6 +43,8 @@ It takes the following arguments:
 
   --zdump     Path to zdump binary.  Default is just 'zdump'.
 
+  --verbose   Blab about what it's doing as it does it.
+
   --help      What you are reading
 
 EOF
@@ -67,11 +70,11 @@ foreach my $tz_name (@names)
 {
     unless ( -e File::Spec->catfile( $opts{zoneinfo}, split /\//, $tz_name ) )
     {
-        print "\nNo zoneinfo file for $tz_name - skipping\n";
+        print "\nNo zoneinfo file for $tz_name - skipping\n" if $opts{verbose};
         next;
     }
 
-    print "\nGetting change data for $tz_name\n";
+    print "\nGetting change data for $tz_name\n" if $opts{verbose};
 
     my @tests;
     my $command = "$opts{zdump} -v $tz_name";
@@ -156,7 +159,7 @@ foreach my $tz_name (@names)
 
     unless (@tests)
     {
-        print "No change data in time_t range for $tz_name - can't create tests\n";
+        print "No change data in time_t range for $tz_name - can't create tests\n" if $opts{verbose};
         next;
     }
 
@@ -167,7 +170,7 @@ foreach my $tz_name (@names)
     open T, ">$file"
         or die "Cannot write to $file: $!";
 
-    print "Creating tests for $tz_name in $file\n";
+    print "Creating tests for $tz_name in $file\n" if $opts{verbose};
 
     my $test_count = scalar @tests * 9;
 
