@@ -1,3 +1,11 @@
+0.3801   2005-11-24  the "not turkey day" release
+
+- The last release included some generated modules for old zones (like
+Europe/Belfast) which are now links to existing zones.  These modules
+referenced the non-existent DateTime::TimeZone::Singleton module.
+Reported by Rafael Garcia-Suarez.
+
+
 0.38     2005-11-21
 
 - Trying to create a DateTime object during DST exactly 11 years in
