@@ -6,6 +6,13 @@ MANIFEST
 MANIFEST.base
 META.yml
 README
+lib/DateTime/TimeZone.pm
+lib/DateTime/TimeZoneCatalog.pm
+lib/DateTime/TimeZone/Floating.pm
+lib/DateTime/TimeZone/Local.pm
+lib/DateTime/TimeZone/OffsetOnly.pm
+lib/DateTime/TimeZone/OlsonDB.pm
+lib/DateTime/TimeZone/UTC.pm
 t/01load.t
 t/02basic.t
 t/03link.t
