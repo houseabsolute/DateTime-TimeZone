@@ -1,0 +1,60 @@
+#!/usr/bin/perl -w
+
+use strict;
+use warnings;
+
+use File::chdir;
+use File::Temp ();
+use Net::FTP;
+
+my $olson_version;
+my $tempdir = File::Temp::tempdir( CLEANUP => 1 );
+{
+    local $CWD = $tempdir;
+
+    my $ftp = Net::FTP->new('elsie.nci.nih.gov')
+        or die "Cannot connect to elsie.nci.nih.gov: $@";
+    $ftp->login()
+        or die 'Cannot login: ', $ftp->message;
+    $ftp->cwd('/pub')
+        or die 'Cannot cwd to /pub: ', $ftp->message;
+
+    for my $f ( $ftp->ls )
+    {
+        if ( $f =~ /^tz(?:code|data)/ )
+        {
+            print "Getting $f\n";
+            $ftp->get($f);
+
+            system( 'tar', 'xzf', $f );
+
+            ($olson_version) = $f =~ /\d\d\d\d\w/;
+        }
+    }
+
+    system( 'make' )
+        and die "Cannot run make: $!";
+
+    for my $f ( qw( africa antarctica asia australasia
+                    europe northamerica pacificnew
+                    southamerica backward
+                  )
+                )
+    {
+        system( 'sudo', './zic', '-d', '/usr/share/zoneinfo', $f )
+            and die "Cannot run zic on $f";
+    }
+}
+
+{
+    print "Generating tests from zdump\n";
+    system( './tools/tests_from_zdump' )
+        and die "Cannot run tests_from_zdump: $!";
+
+    system( './tools/parse_olson',
+            '--remove-old',
+            '--version', $olson_version,
+            '--dir', $tempdir,
+          )
+        and die "Cannot run parse_olson: $!";
+}
