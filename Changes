@@ -1,3 +1,8 @@
+0.39
+
+- This release is based on version 2005o of the Olson database.
+
+
 0.3801   2005-11-24  the "not turkey day" release
 
 - The last release included some generated modules for old zones (like
