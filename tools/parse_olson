@@ -7,7 +7,7 @@ use lib './lib';
 use Data::Dumper;
 use DateTime::TimeZone::OlsonDB;
 use File::Copy;
-use File::Find;
+use File::Find::Rule;
 use File::Path;
 use File::Spec;
 use Getopt::Long;
@@ -22,10 +22,11 @@ my $INFINITY  = 100 ** 100 ** 100;
 
 my %opts;
 GetOptions( 'dir:s'     => \$opts{dir},
+            'clean'     => \$opts{clean},
+            'version:s' => \$opts{version},
             'old'       => \$opts{old},
             'file:s'    => \$opts{file},
             'name:s'    => \$opts{name},
-            'version:s' => \$opts{version},
             'help'      => \$opts{help},
           );
 
@@ -56,6 +57,9 @@ It takes the following arguments:
   --version  The version of the Olson data files being used.
              Required unless one of the debugging options is given.
 
+  --clean    Remove old generated modules (which may not be valid with
+             the latest Olson database)
+
   --file     Parse just the file with the given name.  For debugging.
 
   --name     Only create the specified time zone.  For debugging.
@@ -71,6 +75,8 @@ EOF
 
     exit;
 }
+
+clean() if $opts{clean};
 
 my @files;
 
@@ -310,6 +316,19 @@ EOF
 open OUT2, ">lib/DateTime/TimeZoneCatalog.pm" or die $!;
 print OUT2 $zonecatalog or die $!;
 close OUT2 or die $!;
+
+sub clean
+{
+    for my $f ( File::Find::Rule
+                ->file
+                ->name('*.pm')
+                ->grep('This file is auto-generated' )
+                ->in('lib')
+              )
+    {
+        unlink $f or die "Cannot unlink $f: $!";
+    }
+}
 
 sub zone_as_spans
 {
