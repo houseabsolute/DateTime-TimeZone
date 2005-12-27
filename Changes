@@ -1,3 +1,11 @@
+0.40     2005-12-27
+
+- This release is based on version 2005r of the Olson database.  This
+includes the latest Canadian changes to match the recent US changes.
+Also note that as of this version several zones which used to be
+links, including "EST", "MST", and "CST6DST", are now separate zones.
+
+
 0.39     2005-06-05
 
 - This release is based on version 2005o of the Olson database.

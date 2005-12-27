@@ -291,6 +291,9 @@ qw(
   Australia/Melbourne
   Australia/Perth
   Australia/Sydney
+  CST6CDT
+  EST
+  EST5EDT
   Europe/Amsterdam
   Europe/Andorra
   Europe/Athens
@@ -333,6 +336,7 @@ qw(
   Europe/Warsaw
   Europe/Zaporozhye
   Europe/Zurich
+  HST
   Indian/Antananarivo
   Indian/Chagos
   Indian/Christmas
@@ -344,6 +348,9 @@ qw(
   Indian/Mauritius
   Indian/Mayotte
   Indian/Reunion
+  MST
+  MST7MDT
+  PST8PDT
   Pacific/Apia
   Pacific/Auckland
   Pacific/Chatham
@@ -837,7 +844,6 @@ qw(
   'Brazil/DeNoronha' => 'America/Noronha',
   'Brazil/East' => 'America/Sao_Paulo',
   'Brazil/West' => 'America/Manaus',
-  'CST6CDT' => 'America/Chicago',
   'Canada/Atlantic' => 'America/Halifax',
   'Canada/Central' => 'America/Winnipeg',
   'Canada/East-Saskatchewan' => 'America/Regina',
@@ -850,7 +856,6 @@ qw(
   'Chile/Continental' => 'America/Santiago',
   'Chile/EasterIsland' => 'Pacific/Easter',
   'Cuba' => 'America/Havana',
-  'EST5EDT' => 'America/New_York',
   'Egypt' => 'Africa/Cairo',
   'Eire' => 'Europe/Dublin',
   'Etc/GMT+0' => 'UTC',
@@ -875,7 +880,6 @@ qw(
   'GMT-0' => 'Etc/GMT',
   'GMT0' => 'UTC',
   'Greenwich' => 'Etc/GMT',
-  'HST' => 'Pacific/Honolulu',
   'Hongkong' => 'Asia/Hong_Kong',
   'Iceland' => 'Atlantic/Reykjavik',
   'Iran' => 'Asia/Tehran',
@@ -884,7 +888,6 @@ qw(
   'Japan' => 'Asia/Tokyo',
   'Kwajalein' => 'Pacific/Kwajalein',
   'Libya' => 'Africa/Tripoli',
-  'MST7MDT' => 'America/Denver',
   'Mexico/BajaNorte' => 'America/Tijuana',
   'Mexico/BajaSur' => 'America/Mazatlan',
   'Mexico/General' => 'America/Mexico_City',
@@ -892,7 +895,6 @@ qw(
   'NZ-CHAT' => 'Pacific/Chatham',
   'Navajo' => 'America/Denver',
   'PRC' => 'Asia/Shanghai',
-  'PST8PDT' => 'America/Los_Angeles',
   'Pacific/Samoa' => 'Pacific/Pago_Pago',
   'Pacific/Yap' => 'Pacific/Truk',
   'Poland' => 'Europe/Warsaw',

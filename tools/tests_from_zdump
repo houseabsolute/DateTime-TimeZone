@@ -2,6 +2,8 @@
 
 use strict;
 
+use lib './lib';
+
 use DateTime::TimeZone;
 use File::Spec;
 use Getopt::Long;
@@ -90,7 +92,7 @@ foreach my $tz_name (@names)
              $short_name, $is_dst, $offset_from_utc ) =
                  $line =~
                      m/ ^
-                        \w+\/[\w\/-]+ # zone name
+                        \w+(?:\/[\w\/-]+)? # zone name
                         \s+
                         \w\w\w        # UTC day name
                         \s+

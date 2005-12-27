@@ -133,10 +133,21 @@ foreach my $f ( sort @files )
 
         push @zones, $zone_name;
 
-        my ($category, $name) = split /\//, $zone_name, 2;
-        push @{ $categories{$category} }, $name;
+        my $name;
+        my @dir;
+        if ( $zone_name =~ m{/} )
+        {
+            my $category;
+            ( $category, $name ) = split /\//, $zone_name, 2;
+            push @{ $categories{$category} }, $name;
 
-        (my $dir = $category) =~ tr/-/_/;
+            ($dir[0] = $category) =~ tr/-/_/;
+        }
+        else
+        {
+            $name = $zone_name;
+        }
+
         (my $outfile1 = $name) =~ tr/-/_/;
 
         (my $mod_name = $zone_name) =~ s/\//::/g;
@@ -201,7 +212,7 @@ EOF
         my $filename = (pop @name_pieces) . '.pm';
 
         my $outdir = File::Spec->catdir( qw( lib DateTime TimeZone ),
-                                         $dir, @name_pieces  );
+                                         @dir, @name_pieces  );
 
         mkpath( $outdir, 1, 0755 );
 

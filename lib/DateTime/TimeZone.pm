@@ -3,7 +3,7 @@ package DateTime::TimeZone;
 use strict;
 
 use vars qw( $VERSION );
-$VERSION = '0.39';
+$VERSION = '0.40';
 
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
@@ -24,6 +24,8 @@ use constant OFFSET      => 4;
 use constant IS_DST      => 5;
 use constant SHORT_NAME  => 6;
 
+my %SpecialName = map { $_ => 1 } qw( EST MST HST EST5EDT CST6CDT MST7MDT PST8PDT );
+
 sub new
 {
     my $class = shift;
@@ -40,7 +42,9 @@ sub new
         $p{name} = $DateTime::TimeZone::LINKS{ uc $p{name} };
     }
 
-    unless ( $p{name} =~ m,/, )
+    unless ( $p{name} =~ m,/,
+             || $SpecialName{ $p{name} }
+           )
     {
         if ( $p{name} eq 'floating' )
         {
@@ -70,7 +74,6 @@ sub new
 
     unless ( $real_class->can('instance') )
     {
-
         eval "require $real_class";
 
         if ($@)
