@@ -17,6 +17,7 @@ foreach ( qw( America/Chicago
               Europe/Paris
               Etc/Zulu
               Pacific/Midway
+              EST
             ) )
 {
     ok( DateTime::TimeZone->is_valid_name($_),
@@ -27,7 +28,6 @@ foreach ( qw( America/Hell
               Foo/Bar
               FooBar
               adhdsjghs;dgohas098huqjy4ily
-              EST
               1000:0001
             ) )
 {
