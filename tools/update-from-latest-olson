@@ -47,14 +47,14 @@ my $tempdir = File::Temp::tempdir( CLEANUP => 1 );
 }
 
 {
-    print "Generating tests from zdump\n";
-    system( './tools/tests_from_zdump' )
-        and die "Cannot run tests_from_zdump: $!";
-
     system( './tools/parse_olson',
             '--clean',
             '--version', $olson_version,
             '--dir', $tempdir,
           )
         and die "Cannot run parse_olson: $!";
+
+    print "Generating tests from zdump\n";
+    system( './tools/tests_from_zdump' )
+        and die "Cannot run tests_from_zdump: $!";
 }
