@@ -52,7 +52,7 @@ my $tempdir = File::Temp::tempdir( CLEANUP => 1 );
         and die "Cannot run tests_from_zdump: $!";
 
     system( './tools/parse_olson',
-            '--remove-old',
+            '--clean',
             '--version', $olson_version,
             '--dir', $tempdir,
           )
