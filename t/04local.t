@@ -153,7 +153,7 @@ SKIP:
 
         my $tz;
         eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
-        is( $@, '', 'valid time zone name in /etc/timezone should not die' );
+        is( $@, '', '/etc/default/init contains TZ=Australia/Melbourne' );
         isa_ok( $tz, 'DateTime::TimeZone::Australia::Melbourne' );
     }
 }
