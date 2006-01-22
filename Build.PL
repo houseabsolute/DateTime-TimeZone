@@ -28,6 +28,7 @@ Module::Build->new( module_name => 'DateTime::TimeZone',
                                      'Class::Singleton' => 1.03,
                                      'Pod::Man'    => 1.14,
                                    },
+                    build_requires => { 'Module::Build' => 0 },
 		    sign        => 1,
                     create_makefile_pl => 'passthrough',
                   )->create_build_script;
