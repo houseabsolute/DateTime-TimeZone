@@ -123,7 +123,9 @@ qw(
   America/Indiana/Indianapolis
   America/Indiana/Knox
   America/Indiana/Marengo
+  America/Indiana/Petersburg
   America/Indiana/Vevay
+  America/Indiana/Vincennes
   America/Inuvik
   America/Iqaluit
   America/Jamaica
@@ -142,6 +144,7 @@ qw(
   America/Merida
   America/Mexico_City
   America/Miquelon
+  America/Moncton
   America/Monterrey
   America/Montevideo
   America/Montreal
@@ -521,7 +524,9 @@ qw(
   Indiana/Indianapolis
   Indiana/Knox
   Indiana/Marengo
+  Indiana/Petersburg
   Indiana/Vevay
+  Indiana/Vincennes
   Inuvik
   Iqaluit
   Jamaica
@@ -540,6 +545,7 @@ qw(
   Merida
   Mexico_City
   Miquelon
+  Moncton
   Monterrey
   Montevideo
   Montreal
