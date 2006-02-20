@@ -21,7 +21,7 @@ my $tempdir = File::Temp::tempdir( CLEANUP => 1 );
 
     for my $f ( $ftp->ls )
     {
-        if ( $f =~ /^tz(?:code|data)/ )
+        if ( $f =~ /^tz(?:32code|data)/ )
         {
             print "Getting $f\n";
             $ftp->get($f);
