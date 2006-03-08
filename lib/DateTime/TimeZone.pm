@@ -636,8 +636,8 @@ zone.
 
 =item * has_dst_changes
 
-Indicates whether or not this zone I<ever> has a change to and from
-DST.
+Indicates whether or not this zone has I<ever> had a change to and
+from DST, either in the past or future.
 
 =item * is_olson
 
