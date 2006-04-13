@@ -21,14 +21,14 @@ my $tempdir = File::Temp::tempdir( CLEANUP => 1 );
 
     for my $f ( $ftp->ls )
     {
-        if ( $f =~ /^tz(?:32code|data)/ )
+        if ( $f =~ /^tz(?:code|data)/ )
         {
             print "Getting $f\n";
             $ftp->get($f);
 
             system( 'tar', 'xzf', $f );
 
-            ($olson_version) = $f =~ /\d\d\d\d\w/;
+            ($olson_version) = $f =~ /(\d\d\d\d\w)/;
         }
     }
 
