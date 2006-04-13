@@ -1,7 +1,6 @@
 Build.PL
 Changes
 LICENSE
-load-all
 Makefile.PL
 MANIFEST
 MANIFEST.base
