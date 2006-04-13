@@ -240,6 +240,7 @@ exit if $opts{name};
       'Etc/UCT'     => 'UTC',
       'GMT0'        => 'UTC',
       'GMT'         => 'UTC',
+      'AKST9AKDT'   => 'America/Anchorage',
     );
 
 delete $links{UTC};
