@@ -155,6 +155,7 @@ qw(
   America/Nome
   America/Noronha
   America/North_Dakota/Center
+  America/North_Dakota/New_Salem
   America/Panama
   America/Pangnirtung
   America/Paramaribo
@@ -556,6 +557,7 @@ qw(
   Nome
   Noronha
   North_Dakota/Center
+  North_Dakota/New_Salem
   Panama
   Pangnirtung
   Paramaribo
@@ -806,6 +808,7 @@ qw(
 
 %DateTime::TimeZone::LINKS =
 (
+  'AKST9AKDT' => 'America/Anchorage',
   'Africa/Timbuktu' => 'Africa/Bamako',
   'America/Argentina/ComodRivadavia' => 'America/Argentina/Catamarca',
   'America/Atka' => 'America/Adak',
