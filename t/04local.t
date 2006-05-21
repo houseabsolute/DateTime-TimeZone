@@ -120,7 +120,7 @@ SKIP:
 SKIP:
 {
     skip "Cannot run these tests without explicitly knowing local time zone first (only runs on developers' machine)", 6
-        unless hostname =~ /houseabsolute|quasar/ && -d 'CVS';
+        unless hostname =~ /houseabsolute|quasar/ && -d '.svn';
 
     {
         local $ENV{TZ} = '';
@@ -161,7 +161,7 @@ SKIP:
 SKIP:
 {
     skip "These tests are too dangerous to run on someone else's machine ;)", 3
-        unless hostname =~ /houseabsolute|quasar/ && -d 'CVS';
+        unless hostname =~ /houseabsolute|quasar/ && -d '.svn';
 
     skip "These tests can only be run if we can overwrite /etc/localtime", 3
         unless -w '/etc/localtime' && -l '/etc/localtime';
