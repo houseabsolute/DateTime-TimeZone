@@ -234,13 +234,15 @@ exit if $opts{name};
 # override some links and add others
 %links =
     ( %links,
-      'Etc/GMT+0'   => 'UTC',
+      'Etc/GMT'       => 'UTC',
+      'Etc/GMT+0'     => 'UTC',
       'Etc/Universal' => 'UTC',
-      'Etc/Zulu'    => 'UTC',
-      'Etc/UCT'     => 'UTC',
-      'GMT0'        => 'UTC',
-      'GMT'         => 'UTC',
-      'AKST9AKDT'   => 'America/Anchorage',
+      'Etc/UCT'       => 'UTC',
+      'Etc/UTC'       => 'UTC',
+      'Etc/Zulu'      => 'UTC',
+      'GMT0'          => 'UTC',
+      'GMT'           => 'UTC',
+      'AKST9AKDT'     => 'America/Anchorage',
     );
 
 delete $links{UTC};
@@ -249,6 +251,16 @@ delete $links{UTC};
 delete $links{EST};
 # And this one is for America/Phoenix
 delete $links{MST};
+
+# Some links resolve to other links - chase them down until they point
+# to a real zone.
+while ( my @k = grep { $links{ $links{$_} } } keys %links )
+{
+    for my $k (@k)
+    {
+        $links{$k} = $links{ $links{$k} };
+    }
+}
 
 my $links = Dumper \%links;
 $links =~ s/{/(/;

@@ -867,8 +867,10 @@ qw(
   'Cuba' => 'America/Havana',
   'Egypt' => 'Africa/Cairo',
   'Eire' => 'Europe/Dublin',
+  'Etc/GMT' => 'UTC',
   'Etc/GMT+0' => 'UTC',
   'Etc/UCT' => 'UTC',
+  'Etc/UTC' => 'UTC',
   'Etc/Universal' => 'UTC',
   'Etc/Zulu' => 'UTC',
   'Europe/Belfast' => 'Europe/London',
@@ -885,10 +887,10 @@ qw(
   'GB' => 'Europe/London',
   'GB-Eire' => 'Europe/London',
   'GMT' => 'UTC',
-  'GMT+0' => 'Etc/GMT',
-  'GMT-0' => 'Etc/GMT',
+  'GMT+0' => 'UTC',
+  'GMT-0' => 'UTC',
   'GMT0' => 'UTC',
-  'Greenwich' => 'Etc/GMT',
+  'Greenwich' => 'UTC',
   'Hongkong' => 'Asia/Hong_Kong',
   'Iceland' => 'Atlantic/Reykjavik',
   'Iran' => 'Asia/Tehran',
@@ -912,7 +914,7 @@ qw(
   'ROK' => 'Asia/Seoul',
   'Singapore' => 'Asia/Singapore',
   'Turkey' => 'Europe/Istanbul',
-  'UCT' => 'Etc/UCT',
+  'UCT' => 'UTC',
   'US/Alaska' => 'America/Anchorage',
   'US/Aleutian' => 'America/Adak',
   'US/Arizona' => 'America/Phoenix',
@@ -926,9 +928,9 @@ qw(
   'US/Pacific' => 'America/Los_Angeles',
   'US/Pacific-New' => 'America/Los_Angeles',
   'US/Samoa' => 'Pacific/Pago_Pago',
-  'Universal' => 'Etc/UTC',
+  'Universal' => 'UTC',
   'W-SU' => 'Europe/Moscow',
-  'Zulu' => 'Etc/UTC'
+  'Zulu' => 'UTC'
 )
 
 ;
