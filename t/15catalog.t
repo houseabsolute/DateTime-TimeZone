@@ -44,7 +44,7 @@ plan tests => 21;
 {
     my %links = DateTime::TimeZone::links();
     is( $links{Israel}, 'Asia/Jerusalem', 'Israel links to Asia/Jerusalem' );
-    is( $links{UCT}, 'Etc/UCT', 'UCT links to Etc/UCT' );
+    is( $links{UCT}, 'UTC', 'UCT links to UTC' );
 
     my $links = DateTime::TimeZone::links();
     ok( ref $links, 'links() returns ref in scalar context' );
