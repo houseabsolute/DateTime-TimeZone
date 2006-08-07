@@ -1,10 +1,8 @@
 Build.PL
 Changes
 LICENSE
-Makefile.PL
 MANIFEST
 MANIFEST.base
-META.yml
 README
 lib/DateTime/TimeZone.pm
 lib/DateTime/TimeZoneCatalog.pm
