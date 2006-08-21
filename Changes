@@ -1,4 +1,4 @@
-0.46     2006-08-21
+0.47     2006-08-22
 
 - This release is based on version 2006j of the Olson database.
 
@@ -9,6 +9,11 @@
 - Some links in the Olson data pointed to other links, or pointed to
   non-existent zone names. These have been fixed so that all links
   resolve to valid zones, and this is now part of the test suite.
+
+
+0.46     2006-05-08
+
+- This release is based on version 2006g of the Olson database.
 
 
 0.45     2006-05-01
