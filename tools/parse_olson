@@ -243,6 +243,7 @@ exit if $opts{name};
       'GMT0'          => 'UTC',
       'GMT'           => 'UTC',
       'AKST9AKDT'     => 'America/Anchorage',
+      'JST-9'         => 'Asia/Tokyo',
     );
 
 delete $links{UTC};
