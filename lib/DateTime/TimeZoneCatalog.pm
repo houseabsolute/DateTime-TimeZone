@@ -79,10 +79,12 @@ qw(
   America/Argentina/Ushuaia
   America/Aruba
   America/Asuncion
+  America/Atikokan
   America/Bahia
   America/Barbados
   America/Belem
   America/Belize
+  America/Blanc-Sablon
   America/Boa_Vista
   America/Bogota
   America/Boise
@@ -94,7 +96,6 @@ qw(
   America/Cayman
   America/Chicago
   America/Chihuahua
-  America/Coral_Harbour
   America/Costa_Rica
   America/Cuiaba
   America/Curacao
@@ -337,6 +338,7 @@ qw(
   Europe/Vaduz
   Europe/Vienna
   Europe/Vilnius
+  Europe/Volgograd
   Europe/Warsaw
   Europe/Zaporozhye
   Europe/Zurich
@@ -481,10 +483,12 @@ qw(
   Argentina/Ushuaia
   Aruba
   Asuncion
+  Atikokan
   Bahia
   Barbados
   Belem
   Belize
+  Blanc-Sablon
   Boa_Vista
   Bogota
   Boise
@@ -496,7 +500,6 @@ qw(
   Cayman
   Chicago
   Chihuahua
-  Coral_Harbour
   Costa_Rica
   Cuiaba
   Curacao
@@ -746,6 +749,7 @@ qw(
   Vaduz
   Vienna
   Vilnius
+  Volgograd
   Warsaw
   Zaporozhye
   Zurich
@@ -814,6 +818,7 @@ qw(
   'America/Atka' => 'America/Adak',
   'America/Buenos_Aires' => 'America/Argentina/Buenos_Aires',
   'America/Catamarca' => 'America/Argentina/Catamarca',
+  'America/Coral_Harbour' => 'America/Atikokan',
   'America/Cordoba' => 'America/Argentina/Cordoba',
   'America/Ensenada' => 'America/Tijuana',
   'America/Fort_Wayne' => 'America/Indiana/Indianapolis',
@@ -875,6 +880,9 @@ qw(
   'Etc/Zulu' => 'UTC',
   'Europe/Belfast' => 'Europe/London',
   'Europe/Bratislava' => 'Europe/Prague',
+  'Europe/Guernsey' => 'Europe/London',
+  'Europe/Isle_of_Man' => 'Europe/London',
+  'Europe/Jersey' => 'Europe/London',
   'Europe/Ljubljana' => 'Europe/Belgrade',
   'Europe/Mariehamn' => 'Europe/Helsinki',
   'Europe/Nicosia' => 'Asia/Nicosia',
@@ -895,6 +903,7 @@ qw(
   'Iceland' => 'Atlantic/Reykjavik',
   'Iran' => 'Asia/Tehran',
   'Israel' => 'Asia/Jerusalem',
+  'JST-9' => 'Asia/Tokyo',
   'Jamaica' => 'America/Jamaica',
   'Japan' => 'Asia/Tokyo',
   'Kwajalein' => 'Pacific/Kwajalein',
