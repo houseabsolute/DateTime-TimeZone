@@ -348,7 +348,11 @@ sub clean
                 ->file
                 ->name('*.pm')
                 ->grep('This file is auto-generated' )
-                ->in('lib')
+                ->in('lib'),
+                File::Find::Rule
+                ->file
+                ->name('zd*.t')
+                ->in('t')
               )
     {
         unlink $f or die "Cannot unlink $f: $!";
