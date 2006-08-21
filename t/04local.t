@@ -120,7 +120,7 @@ SKIP:
 SKIP:
 {
     skip "Cannot run these tests without explicitly knowing local time zone first (only runs on developers' machine)", 6
-        unless hostname =~ /houseabsolute|quasar/ && -d '.svn';
+        unless hostname =~ /houseabsolute/ && -d '.svn';
 
     {
         local $ENV{TZ} = '';
