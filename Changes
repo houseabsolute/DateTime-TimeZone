@@ -3,7 +3,8 @@
 - This release is based on version 2006j of the Olson database.
 
 - Added a link to Asia/Tokyo for the "JST-9" timezone. According to
-  Kenichi Ishigaki this is a TZ env var setting in Japan.
+  Kenichi Ishigaki this is a TZ env var setting commonly used in
+  Japan.
 
 - Some links in the Olson data pointed to other links, or pointed to
   non-existent zone names. These have been fixed so that all links
