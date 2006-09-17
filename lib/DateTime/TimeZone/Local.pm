@@ -137,6 +137,7 @@ sub _find_matching_zoneinfo_file
     local $_;
     eval
     {
+        local $SIG{__DIE__};
         File::Find::find
             ( { wanted =>
                 sub

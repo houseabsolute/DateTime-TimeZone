@@ -10,7 +10,7 @@ use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
 
-plan tests => 19;
+plan tests => 20;
 
 use DateTime::TimeZone;
 
@@ -160,10 +160,10 @@ SKIP:
 
 SKIP:
 {
-    skip "These tests are too dangerous to run on someone else's machine ;)", 3
+    skip "These tests are too dangerous to run on someone else's machine ;)", 4
         unless hostname =~ /houseabsolute|quasar/ && -d '.svn';
 
-    skip "These tests can only be run if we can overwrite /etc/localtime", 3
+    skip "These tests can only be run if we can overwrite /etc/localtime", 4
         unless -w '/etc/localtime' && -l '/etc/localtime';
 
     my $tz_file = readlink '/etc/localtime';
@@ -186,6 +186,18 @@ SKIP:
         isa_ok( $tz, 'DateTime::TimeZone::Asia::Calcutta' );
 
         is( Cwd::cwd(), $cwd, 'cwd should not change after finding local time zone' );
+    }
+
+    {
+        local $ENV{TZ} = '';
+
+        # Make sure that a die handler does not break our use of die
+        # to escape from File::Find::find()
+        local $SIG{__DIE__} = sub { die 'haha'; };
+
+        my $tz;
+        eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
+        isa_ok( $tz, 'DateTime::TimeZone::Asia::Calcutta' );
     }
 
     unlink '/etc/localtime' or die "Cannot unlink /etc/localtime: $!";

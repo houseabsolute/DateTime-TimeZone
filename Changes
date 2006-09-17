@@ -1,3 +1,11 @@
+0.48
+
+- Fix finding of local time zone when there is a $SIG{__DIE__} handler
+  in effect. The handler broke the internal use of exceptions in one
+  of DateTime::TimeZone::Local's methods. Reported by JD Hedden. RT
+  #20982.
+
+
 0.47     2006-08-22
 
 - This release is based on version 2006j of the Olson database.
