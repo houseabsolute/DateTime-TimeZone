@@ -1,4 +1,6 @@
-0.48
+0.48     2006-09-18
+
+- This release is based on version 2006l of the Olson database.
 
 - Fix finding of local time zone when there is a $SIG{__DIE__} handler
   in effect. The handler broke the internal use of exceptions in one
