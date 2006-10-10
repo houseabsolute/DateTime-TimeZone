@@ -886,6 +886,7 @@ qw(
   'Europe/Ljubljana' => 'Europe/Belgrade',
   'Europe/Mariehamn' => 'Europe/Helsinki',
   'Europe/Nicosia' => 'Asia/Nicosia',
+  'Europe/Podgorica' => 'Europe/Belgrade',
   'Europe/San_Marino' => 'Europe/Rome',
   'Europe/Sarajevo' => 'Europe/Belgrade',
   'Europe/Skopje' => 'Europe/Belgrade',
