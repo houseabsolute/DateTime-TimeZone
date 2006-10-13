@@ -1,3 +1,11 @@
+0.51     2006-10-13
+
+- Added two new catalog-related functions, countries() and
+  names_in_country(). Using these functions allows you to map ISO3066
+  country codes to the time zones used in that country. Based on code
+  by Tatsuhiko Miyagawa.
+
+
 0.50     2006-10-10
 
 - This release is based on version 2006n of the Olson database.

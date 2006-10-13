@@ -8,7 +8,7 @@ use Test::More;
 use DateTime::TimeZoneCatalog;
 
 
-plan tests => 21;
+plan tests => 29;
 
 {
     my @all = DateTime::TimeZone::all_names();
@@ -70,4 +70,34 @@ plan tests => 21;
     {
         ok( exists $names{$n}, "$n is in America category (names_in_category() called as class method)" );
     }
+}
+
+{
+    my @countries = DateTime::TimeZone::countries();
+    my %countries = map { $_ => 1 } @countries;
+    for my $c ( qw( jp us ) )
+    {
+        ok( exists $countries{$c}, "$c is in the list of countries" );
+    }
+}
+
+{
+    my @zones = DateTime::TimeZone::names_in_country('jp');
+    is( @zones, 1, 'one zone for Japan' );
+    is( $zones[0], 'Asia/Tokyo', 'zone for Japan is Asia/Tokyo' );
+}
+
+{
+    my @zones = DateTime::TimeZone::names_in_country('JP');
+    is( @zones, 1, 'one zone for Japan' );
+    is( $zones[0], 'Asia/Tokyo', 'zone for Japan is Asia/Tokyo (uc country code)' );
+}
+
+
+{
+    my @zones = DateTime::TimeZone::names_in_country('cl');
+    is( @zones, 2, 'two zones for Chile' );
+    is_deeply( [ sort @zones ],
+               [ 'America/Santiago', 'Pacific/Easter' ],
+               'zones for Chile are America/Santiago and Pacific/Easter' );
 }

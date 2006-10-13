@@ -3,7 +3,7 @@ package DateTime::TimeZone;
 use strict;
 
 use vars qw( $VERSION );
-$VERSION = '0.50';
+$VERSION = '0.51';
 
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
@@ -675,10 +675,10 @@ If you subclass C<DateTime::TimeZone>, you will inherit its hooks,
 which may not work for your module, so please test the interaction of
 your module with Storable.
 
-=head2 Functions
+=head2 Catalog Functions
 
-This class also contains several functions, none of which are
-exported.  Calling these as class methods will also work.
+This class provides several functions for examining the catalog of
+time zones. Calling these as class methods will also work.
 
 =over 4
 
@@ -706,8 +706,33 @@ a hash.
 Given a valid category, this method returns a list of the names in
 that category, without the category portion.  So the list for the
 "America" category would include the strings "Chicago",
-"Kentucky/Monticello", and "New_York".  In scalar context, it returns
+"Kentucky/Monticello", and "New_York". In scalar context, it returns
 an array reference, while in list context it returns an array.
+
+=item * countries()
+
+Returns a sorted list of all the valid country codes (in lower-case)
+which can be passed to C<names_in_country()>. In scalar context, it
+returns an array reference, while in list context it returns an array.
+
+If you need to convert country codes to names or vice versa you can
+use C<Locale::Country> to do so.
+
+=item * names_in_country( $country_code )
+
+Given a two-letter ISO3066 country code, this method returns a list of
+time zones used in that country. The country code may be of any
+case. In scalar context, it returns an array reference, while in list
+context it returns an array.
+
+=back
+
+=head2 Other Functions
+
+This class also contains several functions, none of which are
+exported.  Calling these as class methods will also work.
+
+=over 4
 
 =item * offset_as_seconds( $offset )
 
