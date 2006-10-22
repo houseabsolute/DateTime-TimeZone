@@ -4,7 +4,7 @@ use strict;
 
 use DateTime::TimeZone;
 
-use Test::More tests => 28;
+use Test::More tests => 30;
 
 is(DateTime::TimeZone::offset_as_string(0), "+0000",
     "offset_as_string does the right thing on 0");
@@ -67,3 +67,10 @@ foreach ( @offset_strings ) {
         $_, "n -> offset_as_seconds -> offset_as_string= n "
     );
 }
+
+# just checking that calling these as class methods works
+is( DateTime::TimeZone->offset_as_string(3600), '+0100',
+    'offset_as_string as class method' );
+
+is( DateTime::TimeZone->offset_as_seconds('+0100'), 3600,
+    'offset_as_seconds as class method' );

@@ -427,9 +427,13 @@ sub make_catalog_pm
     }
 
     my %countries = parse_zone_tab();
+    # hard-code this alias per request of David Cantrell on the list.
+    $countries{UK} = $countries{GB};
 
     my $countries = '';
-    for my $c ( sort keys %countries )
+    # We explicitly do not sort these because the order in zones.tab
+    # is by population.
+    for my $c ( keys %countries )
     {
         $countries .= qq|  '\L$c' => [ qw(\n|;
         $countries .= join "\n", map { "    $_" } sort @{ $countries{$c} };

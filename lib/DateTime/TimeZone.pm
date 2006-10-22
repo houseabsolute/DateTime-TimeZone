@@ -3,7 +3,7 @@ package DateTime::TimeZone;
 use strict;
 
 use vars qw( $VERSION );
-$VERSION = '0.51';
+$VERSION = '0.52';
 
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
@@ -400,6 +400,15 @@ sub STORABLE_freeze
     return $self->name;
 }
 
+sub STORABLE_attach
+{
+    my $class = shift;
+    my $cloning = shift;
+    my $serialized = shift;
+
+    return $class->new( name => $serialized );
+}
+
 sub STORABLE_thaw
 {
     my $self = shift;
@@ -418,11 +427,6 @@ sub STORABLE_thaw
         $obj = $class->new( name => $serialized );
     }
 
-    # This breaks the "singleton-ness" of timezone objects, but
-    # there's no way to tell Storable to simply use an existing
-    # object.  This shouldn't matter since we copy the underlying
-    # structures by reference here, so span generation in one object
-    # will be visible in another also in memory.
     %$self = %$obj;
 
     return $self;
@@ -433,6 +437,7 @@ sub STORABLE_thaw
 #
 sub offset_as_seconds
 {
+    shift if eval { $_[0]->isa('DateTime::TimeZone') };
     my $offset = shift;
 
     return undef unless defined $offset;
@@ -467,6 +472,7 @@ sub offset_as_seconds
 
 sub offset_as_string
 {
+    shift if eval { $_[0]->isa('DateTime::TimeZone') };
     my $offset = shift;
 
     return undef unless defined $offset;
@@ -708,6 +714,9 @@ that category, without the category portion.  So the list for the
 "America" category would include the strings "Chicago",
 "Kentucky/Monticello", and "New_York". In scalar context, it returns
 an array reference, while in list context it returns an array.
+
+The list is returned in order of population by zone, which should mean
+that this order will be the best to use for most UIs.
 
 =item * countries()
 

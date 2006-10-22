@@ -812,152 +812,168 @@ qw(
 
 %DateTime::TimeZone::ZONES_BY_COUNTRY =
 (
-  'ad' => [ qw(
-    Europe/Andorra
+  'gl' => [ qw(
+    America/Danmarkshavn
+    America/Godthab
+    America/Scoresbysund
+    America/Thule
 ) ],
-  'ae' => [ qw(
-    Asia/Dubai
+  'dj' => [ qw(
+    Africa/Djibouti
 ) ],
-  'af' => [ qw(
-    Asia/Kabul
-) ],
-  'ag' => [ qw(
-    America/Antigua
-) ],
-  'ai' => [ qw(
-    America/Anguilla
-) ],
-  'al' => [ qw(
-    Europe/Tirane
-) ],
-  'am' => [ qw(
-    Asia/Yerevan
-) ],
-  'an' => [ qw(
-    America/Curacao
-) ],
-  'ao' => [ qw(
-    Africa/Luanda
-) ],
-  'aq' => [ qw(
-    Antarctica/Casey
-    Antarctica/Davis
-    Antarctica/DumontDUrville
-    Antarctica/Mawson
-    Antarctica/McMurdo
-    Antarctica/Palmer
-    Antarctica/Rothera
-    Antarctica/South_Pole
-    Antarctica/Syowa
-    Antarctica/Vostok
-) ],
-  'ar' => [ qw(
-    America/Argentina/Buenos_Aires
-    America/Argentina/Catamarca
-    America/Argentina/Cordoba
-    America/Argentina/Jujuy
-    America/Argentina/La_Rioja
-    America/Argentina/Mendoza
-    America/Argentina/Rio_Gallegos
-    America/Argentina/San_Juan
-    America/Argentina/Tucuman
-    America/Argentina/Ushuaia
-) ],
-  'as' => [ qw(
-    Pacific/Pago_Pago
+  'jm' => [ qw(
+    America/Jamaica
 ) ],
   'at' => [ qw(
     Europe/Vienna
 ) ],
-  'au' => [ qw(
-    Australia/Adelaide
-    Australia/Brisbane
-    Australia/Broken_Hill
-    Australia/Currie
-    Australia/Darwin
-    Australia/Hobart
-    Australia/Lindeman
-    Australia/Lord_Howe
-    Australia/Melbourne
-    Australia/Perth
-    Australia/Sydney
+  'pg' => [ qw(
+    Pacific/Port_Moresby
 ) ],
-  'aw' => [ qw(
-    America/Aruba
+  'ki' => [ qw(
+    Pacific/Enderbury
+    Pacific/Kiritimati
+    Pacific/Tarawa
 ) ],
-  'ax' => [ qw(
-    Europe/Mariehamn
+  'sz' => [ qw(
+    Africa/Mbabane
 ) ],
-  'az' => [ qw(
-    Asia/Baku
-) ],
-  'ba' => [ qw(
-    Europe/Sarajevo
-) ],
-  'bb' => [ qw(
-    America/Barbados
-) ],
-  'bd' => [ qw(
-    Asia/Dhaka
-) ],
-  'be' => [ qw(
-    Europe/Brussels
-) ],
-  'bf' => [ qw(
-    Africa/Ouagadougou
-) ],
-  'bg' => [ qw(
-    Europe/Sofia
-) ],
-  'bh' => [ qw(
-    Asia/Bahrain
-) ],
-  'bi' => [ qw(
-    Africa/Bujumbura
-) ],
-  'bj' => [ qw(
-    Africa/Porto-Novo
-) ],
-  'bm' => [ qw(
-    Atlantic/Bermuda
+  'yt' => [ qw(
+    Indian/Mayotte
 ) ],
   'bn' => [ qw(
     Asia/Brunei
 ) ],
-  'bo' => [ qw(
-    America/La_Paz
+  'cd' => [ qw(
+    Africa/Kinshasa
+    Africa/Lubumbashi
 ) ],
-  'br' => [ qw(
-    America/Araguaina
-    America/Bahia
-    America/Belem
-    America/Boa_Vista
-    America/Campo_Grande
-    America/Cuiaba
-    America/Eirunepe
-    America/Fortaleza
-    America/Maceio
-    America/Manaus
-    America/Noronha
-    America/Porto_Velho
-    America/Recife
-    America/Rio_Branco
-    America/Sao_Paulo
+  'zm' => [ qw(
+    Africa/Lusaka
 ) ],
-  'bs' => [ qw(
-    America/Nassau
-) ],
-  'bt' => [ qw(
-    Asia/Thimphu
+  'ao' => [ qw(
+    Africa/Luanda
 ) ],
   'bw' => [ qw(
     Africa/Gaborone
 ) ],
+  'zw' => [ qw(
+    Africa/Harare
+) ],
+  'vc' => [ qw(
+    America/St_Vincent
+) ],
+  'pr' => [ qw(
+    America/Puerto_Rico
+) ],
+  'jp' => [ qw(
+    Asia/Tokyo
+) ],
+  'na' => [ qw(
+    Africa/Windhoek
+) ],
+  'sh' => [ qw(
+    Atlantic/St_Helena
+) ],
+  'tj' => [ qw(
+    Asia/Dushanbe
+) ],
+  'lc' => [ qw(
+    America/St_Lucia
+) ],
+  'ma' => [ qw(
+    Africa/Casablanca
+) ],
+  'mt' => [ qw(
+    Europe/Malta
+) ],
+  'sv' => [ qw(
+    America/El_Salvador
+) ],
+  'vu' => [ qw(
+    Pacific/Efate
+) ],
+  'mn' => [ qw(
+    Asia/Choibalsan
+    Asia/Hovd
+    Asia/Ulaanbaatar
+) ],
+  'mp' => [ qw(
+    Pacific/Saipan
+) ],
+  'it' => [ qw(
+    Europe/Rome
+) ],
+  're' => [ qw(
+    Indian/Reunion
+) ],
+  'ws' => [ qw(
+    Pacific/Apia
+) ],
+  'eg' => [ qw(
+    Africa/Cairo
+) ],
+  'fr' => [ qw(
+    Europe/Paris
+) ],
+  'pw' => [ qw(
+    Pacific/Palau
+) ],
+  'uz' => [ qw(
+    Asia/Samarkand
+    Asia/Tashkent
+) ],
+  'lr' => [ qw(
+    Africa/Monrovia
+) ],
+  'tk' => [ qw(
+    Pacific/Fakaofo
+) ],
+  'rw' => [ qw(
+    Africa/Kigali
+) ],
+  'be' => [ qw(
+    Europe/Brussels
+) ],
+  'tn' => [ qw(
+    Africa/Tunis
+) ],
+  'um' => [ qw(
+    Pacific/Johnston
+    Pacific/Midway
+    Pacific/Wake
+) ],
+  'ee' => [ qw(
+    Europe/Tallinn
+) ],
+  'ck' => [ qw(
+    Pacific/Rarotonga
+) ],
   'by' => [ qw(
     Europe/Minsk
 ) ],
-  'bz' => [ qw(
-    America/Belize
+  'kr' => [ qw(
+    Asia/Seoul
+) ],
+  'ls' => [ qw(
+    Africa/Maseru
+) ],
+  'no' => [ qw(
+    Europe/Oslo
+) ],
+  'sa' => [ qw(
+    Asia/Riyadh
+) ],
+  'za' => [ qw(
+    Africa/Johannesburg
+) ],
+  'pt' => [ qw(
+    Atlantic/Azores
+    Atlantic/Madeira
+    Europe/Lisbon
+) ],
+  'bf' => [ qw(
+    Africa/Ouagadougou
 ) ],
   'ca' => [ qw(
     America/Atikokan
@@ -987,276 +1003,71 @@ qw(
     America/Winnipeg
     America/Yellowknife
 ) ],
-  'cc' => [ qw(
-    Indian/Cocos
-) ],
-  'cd' => [ qw(
-    Africa/Kinshasa
-    Africa/Lubumbashi
-) ],
-  'cf' => [ qw(
-    Africa/Bangui
-) ],
-  'cg' => [ qw(
-    Africa/Brazzaville
-) ],
-  'ch' => [ qw(
-    Europe/Zurich
-) ],
-  'ci' => [ qw(
-    Africa/Abidjan
-) ],
-  'ck' => [ qw(
-    Pacific/Rarotonga
-) ],
-  'cl' => [ qw(
-    America/Santiago
-    Pacific/Easter
+  'am' => [ qw(
+    Asia/Yerevan
 ) ],
   'cm' => [ qw(
     Africa/Douala
 ) ],
-  'cn' => [ qw(
-    Asia/Chongqing
-    Asia/Harbin
-    Asia/Kashgar
-    Asia/Shanghai
-    Asia/Urumqi
+  'mg' => [ qw(
+    Indian/Antananarivo
 ) ],
-  'co' => [ qw(
-    America/Bogota
+  'sr' => [ qw(
+    America/Paramaribo
 ) ],
-  'cr' => [ qw(
-    America/Costa_Rica
+  'np' => [ qw(
+    Asia/Katmandu
 ) ],
-  'cu' => [ qw(
-    America/Havana
+  'bt' => [ qw(
+    Asia/Thimphu
 ) ],
-  'cv' => [ qw(
-    Atlantic/Cape_Verde
+  'pl' => [ qw(
+    Europe/Warsaw
 ) ],
-  'cx' => [ qw(
-    Indian/Christmas
-) ],
-  'cy' => [ qw(
-    Asia/Nicosia
-) ],
-  'cz' => [ qw(
-    Europe/Prague
-) ],
-  'de' => [ qw(
-    Europe/Berlin
-) ],
-  'dj' => [ qw(
-    Africa/Djibouti
-) ],
-  'dk' => [ qw(
-    Europe/Copenhagen
-) ],
-  'dm' => [ qw(
-    America/Dominica
-) ],
-  'do' => [ qw(
-    America/Santo_Domingo
-) ],
-  'dz' => [ qw(
-    Africa/Algiers
-) ],
-  'ec' => [ qw(
-    America/Guayaquil
-    Pacific/Galapagos
-) ],
-  'ee' => [ qw(
-    Europe/Tallinn
-) ],
-  'eg' => [ qw(
-    Africa/Cairo
-) ],
-  'eh' => [ qw(
-    Africa/El_Aaiun
-) ],
-  'er' => [ qw(
-    Africa/Asmera
-) ],
-  'es' => [ qw(
-    Africa/Ceuta
-    Atlantic/Canary
-    Europe/Madrid
-) ],
-  'et' => [ qw(
-    Africa/Addis_Ababa
-) ],
-  'fi' => [ qw(
-    Europe/Helsinki
-) ],
-  'fj' => [ qw(
-    Pacific/Fiji
-) ],
-  'fk' => [ qw(
-    Atlantic/Stanley
-) ],
-  'fm' => [ qw(
-    Pacific/Kosrae
-    Pacific/Ponape
-    Pacific/Truk
-) ],
-  'fo' => [ qw(
-    Atlantic/Faeroe
-) ],
-  'fr' => [ qw(
-    Europe/Paris
+  'cf' => [ qw(
+    Africa/Bangui
 ) ],
   'ga' => [ qw(
     Africa/Libreville
 ) ],
-  'gb' => [ qw(
+  'tm' => [ qw(
+    Asia/Ashgabat
+) ],
+  'ae' => [ qw(
+    Asia/Dubai
+) ],
+  'ba' => [ qw(
+    Europe/Sarajevo
+) ],
+  'ky' => [ qw(
+    America/Cayman
+) ],
+  'th' => [ qw(
+    Asia/Bangkok
+) ],
+  'uk' => [ qw(
     Europe/London
 ) ],
-  'gd' => [ qw(
-    America/Grenada
+  'la' => [ qw(
+    Asia/Vientiane
 ) ],
-  'ge' => [ qw(
-    Asia/Tbilisi
+  'cc' => [ qw(
+    Indian/Cocos
 ) ],
-  'gf' => [ qw(
-    America/Cayenne
+  'ph' => [ qw(
+    Asia/Manila
 ) ],
-  'gg' => [ qw(
-    Europe/Guernsey
-) ],
-  'gh' => [ qw(
-    Africa/Accra
-) ],
-  'gi' => [ qw(
-    Europe/Gibraltar
-) ],
-  'gl' => [ qw(
-    America/Danmarkshavn
-    America/Godthab
-    America/Scoresbysund
-    America/Thule
-) ],
-  'gm' => [ qw(
-    Africa/Banjul
-) ],
-  'gn' => [ qw(
-    Africa/Conakry
-) ],
-  'gp' => [ qw(
-    America/Guadeloupe
-) ],
-  'gq' => [ qw(
-    Africa/Malabo
-) ],
-  'gr' => [ qw(
-    Europe/Athens
-) ],
-  'gs' => [ qw(
-    Atlantic/South_Georgia
-) ],
-  'gt' => [ qw(
-    America/Guatemala
+  'ni' => [ qw(
+    America/Managua
 ) ],
   'gu' => [ qw(
     Pacific/Guam
 ) ],
-  'gw' => [ qw(
-    Africa/Bissau
+  'nc' => [ qw(
+    Pacific/Noumea
 ) ],
-  'gy' => [ qw(
-    America/Guyana
-) ],
-  'hk' => [ qw(
-    Asia/Hong_Kong
-) ],
-  'hn' => [ qw(
-    America/Tegucigalpa
-) ],
-  'hr' => [ qw(
-    Europe/Zagreb
-) ],
-  'ht' => [ qw(
-    America/Port-au-Prince
-) ],
-  'hu' => [ qw(
-    Europe/Budapest
-) ],
-  'id' => [ qw(
-    Asia/Jakarta
-    Asia/Jayapura
-    Asia/Makassar
-    Asia/Pontianak
-) ],
-  'ie' => [ qw(
-    Europe/Dublin
-) ],
-  'il' => [ qw(
-    Asia/Jerusalem
-) ],
-  'im' => [ qw(
-    Europe/Isle_of_Man
-) ],
-  'in' => [ qw(
-    Asia/Calcutta
-) ],
-  'io' => [ qw(
-    Indian/Chagos
-) ],
-  'iq' => [ qw(
-    Asia/Baghdad
-) ],
-  'ir' => [ qw(
-    Asia/Tehran
-) ],
-  'is' => [ qw(
-    Atlantic/Reykjavik
-) ],
-  'it' => [ qw(
-    Europe/Rome
-) ],
-  'je' => [ qw(
-    Europe/Jersey
-) ],
-  'jm' => [ qw(
-    America/Jamaica
-) ],
-  'jo' => [ qw(
-    Asia/Amman
-) ],
-  'jp' => [ qw(
-    Asia/Tokyo
-) ],
-  'ke' => [ qw(
-    Africa/Nairobi
-) ],
-  'kg' => [ qw(
-    Asia/Bishkek
-) ],
-  'kh' => [ qw(
-    Asia/Phnom_Penh
-) ],
-  'ki' => [ qw(
-    Pacific/Enderbury
-    Pacific/Kiritimati
-    Pacific/Tarawa
-) ],
-  'km' => [ qw(
-    Indian/Comoro
-) ],
-  'kn' => [ qw(
-    America/St_Kitts
-) ],
-  'kp' => [ qw(
-    Asia/Pyongyang
-) ],
-  'kr' => [ qw(
-    Asia/Seoul
-) ],
-  'kw' => [ qw(
-    Asia/Kuwait
-) ],
-  'ky' => [ qw(
-    America/Cayman
+  'tf' => [ qw(
+    Indian/Kerguelen
 ) ],
   'kz' => [ qw(
     Asia/Almaty
@@ -1265,213 +1076,104 @@ qw(
     Asia/Oral
     Asia/Qyzylorda
 ) ],
-  'la' => [ qw(
-    Asia/Vientiane
-) ],
-  'lb' => [ qw(
-    Asia/Beirut
-) ],
-  'lc' => [ qw(
-    America/St_Lucia
-) ],
-  'li' => [ qw(
-    Europe/Vaduz
-) ],
-  'lk' => [ qw(
-    Asia/Colombo
-) ],
-  'lr' => [ qw(
-    Africa/Monrovia
-) ],
-  'ls' => [ qw(
-    Africa/Maseru
-) ],
-  'lt' => [ qw(
-    Europe/Vilnius
-) ],
-  'lu' => [ qw(
-    Europe/Luxembourg
-) ],
-  'lv' => [ qw(
-    Europe/Riga
-) ],
-  'ly' => [ qw(
-    Africa/Tripoli
-) ],
-  'ma' => [ qw(
-    Africa/Casablanca
-) ],
-  'mc' => [ qw(
-    Europe/Monaco
-) ],
-  'md' => [ qw(
-    Europe/Chisinau
-) ],
-  'me' => [ qw(
-    Europe/Podgorica
-) ],
-  'mg' => [ qw(
-    Indian/Antananarivo
-) ],
-  'mh' => [ qw(
-    Pacific/Kwajalein
-    Pacific/Majuro
-) ],
-  'mk' => [ qw(
-    Europe/Skopje
-) ],
-  'ml' => [ qw(
-    Africa/Bamako
+  'sj' => [ qw(
+    Arctic/Longyearbyen
+    Atlantic/Jan_Mayen
 ) ],
   'mm' => [ qw(
     Asia/Rangoon
 ) ],
-  'mn' => [ qw(
-    Asia/Choibalsan
-    Asia/Hovd
-    Asia/Ulaanbaatar
+  'nr' => [ qw(
+    Pacific/Nauru
 ) ],
-  'mo' => [ qw(
-    Asia/Macau
-) ],
-  'mp' => [ qw(
-    Pacific/Saipan
-) ],
-  'mq' => [ qw(
-    America/Martinique
-) ],
-  'mr' => [ qw(
-    Africa/Nouakchott
-) ],
-  'ms' => [ qw(
-    America/Montserrat
-) ],
-  'mt' => [ qw(
-    Europe/Malta
-) ],
-  'mu' => [ qw(
-    Indian/Mauritius
-) ],
-  'mv' => [ qw(
-    Indian/Maldives
-) ],
-  'mw' => [ qw(
-    Africa/Blantyre
-) ],
-  'mx' => [ qw(
-    America/Cancun
-    America/Chihuahua
-    America/Hermosillo
-    America/Mazatlan
-    America/Merida
-    America/Mexico_City
-    America/Monterrey
-    America/Tijuana
-) ],
-  'my' => [ qw(
-    Asia/Kuala_Lumpur
-    Asia/Kuching
-) ],
-  'mz' => [ qw(
-    Africa/Maputo
-) ],
-  'na' => [ qw(
-    Africa/Windhoek
-) ],
-  'nc' => [ qw(
-    Pacific/Noumea
+  'dm' => [ qw(
+    America/Dominica
 ) ],
   'ne' => [ qw(
     Africa/Niamey
 ) ],
-  'nf' => [ qw(
-    Pacific/Norfolk
+  'ad' => [ qw(
+    Europe/Andorra
+) ],
+  'mr' => [ qw(
+    Africa/Nouakchott
+) ],
+  'to' => [ qw(
+    Pacific/Tongatapu
+) ],
+  'se' => [ qw(
+    Europe/Stockholm
+) ],
+  'az' => [ qw(
+    Asia/Baku
+) ],
+  'af' => [ qw(
+    Asia/Kabul
+) ],
+  'gs' => [ qw(
+    Atlantic/South_Georgia
 ) ],
   'ng' => [ qw(
     Africa/Lagos
 ) ],
-  'ni' => [ qw(
-    America/Managua
+  'bj' => [ qw(
+    Africa/Porto-Novo
 ) ],
-  'nl' => [ qw(
-    Europe/Amsterdam
+  'ke' => [ qw(
+    Africa/Nairobi
 ) ],
-  'no' => [ qw(
-    Europe/Oslo
+  'me' => [ qw(
+    Europe/Podgorica
 ) ],
-  'np' => [ qw(
-    Asia/Katmandu
-) ],
-  'nr' => [ qw(
-    Pacific/Nauru
-) ],
-  'nu' => [ qw(
-    Pacific/Niue
-) ],
-  'nz' => [ qw(
-    Pacific/Auckland
-    Pacific/Chatham
+  'ax' => [ qw(
+    Europe/Mariehamn
 ) ],
   'om' => [ qw(
     Asia/Muscat
 ) ],
-  'pa' => [ qw(
-    America/Panama
+  'vg' => [ qw(
+    America/Tortola
 ) ],
-  'pe' => [ qw(
-    America/Lima
+  'vn' => [ qw(
+    Asia/Saigon
 ) ],
-  'pf' => [ qw(
-    Pacific/Gambier
-    Pacific/Marquesas
-    Pacific/Tahiti
+  'dz' => [ qw(
+    Africa/Algiers
 ) ],
-  'pg' => [ qw(
-    Pacific/Port_Moresby
+  'ci' => [ qw(
+    Africa/Abidjan
 ) ],
-  'ph' => [ qw(
-    Asia/Manila
+  'ye' => [ qw(
+    Asia/Aden
 ) ],
-  'pk' => [ qw(
-    Asia/Karachi
+  'lk' => [ qw(
+    Asia/Colombo
 ) ],
-  'pl' => [ qw(
-    Europe/Warsaw
+  'id' => [ qw(
+    Asia/Jakarta
+    Asia/Jayapura
+    Asia/Makassar
+    Asia/Pontianak
 ) ],
-  'pm' => [ qw(
-    America/Miquelon
+  'fm' => [ qw(
+    Pacific/Kosrae
+    Pacific/Ponape
+    Pacific/Truk
 ) ],
-  'pn' => [ qw(
-    Pacific/Pitcairn
+  'ge' => [ qw(
+    Asia/Tbilisi
 ) ],
-  'pr' => [ qw(
-    America/Puerto_Rico
+  'gm' => [ qw(
+    Africa/Banjul
 ) ],
-  'ps' => [ qw(
-    Asia/Gaza
+  'cx' => [ qw(
+    Indian/Christmas
 ) ],
-  'pt' => [ qw(
-    Atlantic/Azores
-    Atlantic/Madeira
-    Europe/Lisbon
+  'lv' => [ qw(
+    Europe/Riga
 ) ],
-  'pw' => [ qw(
-    Pacific/Palau
-) ],
-  'py' => [ qw(
-    America/Asuncion
-) ],
-  'qa' => [ qw(
-    Asia/Qatar
-) ],
-  're' => [ qw(
-    Indian/Reunion
-) ],
-  'ro' => [ qw(
-    Europe/Bucharest
-) ],
-  'rs' => [ qw(
-    Europe/Belgrade
+  'lb' => [ qw(
+    Asia/Beirut
 ) ],
   'ru' => [ qw(
     Asia/Anadyr
@@ -1490,114 +1192,276 @@ qw(
     Europe/Samara
     Europe/Volgograd
 ) ],
-  'rw' => [ qw(
-    Africa/Kigali
+  'fk' => [ qw(
+    Atlantic/Stanley
 ) ],
-  'sa' => [ qw(
-    Asia/Riyadh
+  'de' => [ qw(
+    Europe/Berlin
 ) ],
-  'sb' => [ qw(
-    Pacific/Guadalcanal
+  'fi' => [ qw(
+    Europe/Helsinki
 ) ],
-  'sc' => [ qw(
-    Indian/Mahe
+  'mv' => [ qw(
+    Indian/Maldives
 ) ],
-  'sd' => [ qw(
-    Africa/Khartoum
+  'lu' => [ qw(
+    Europe/Luxembourg
 ) ],
-  'se' => [ qw(
-    Europe/Stockholm
+  'pn' => [ qw(
+    Pacific/Pitcairn
 ) ],
-  'sg' => [ qw(
-    Asia/Singapore
+  've' => [ qw(
+    America/Caracas
 ) ],
-  'sh' => [ qw(
-    Atlantic/St_Helena
+  'bh' => [ qw(
+    Asia/Bahrain
 ) ],
-  'si' => [ qw(
-    Europe/Ljubljana
+  'gi' => [ qw(
+    Europe/Gibraltar
 ) ],
-  'sj' => [ qw(
-    Arctic/Longyearbyen
-    Atlantic/Jan_Mayen
+  'ro' => [ qw(
+    Europe/Bucharest
 ) ],
-  'sk' => [ qw(
-    Europe/Bratislava
+  'wf' => [ qw(
+    Pacific/Wallis
 ) ],
-  'sl' => [ qw(
-    Africa/Freetown
+  'ar' => [ qw(
+    America/Argentina/Buenos_Aires
+    America/Argentina/Catamarca
+    America/Argentina/Cordoba
+    America/Argentina/Jujuy
+    America/Argentina/La_Rioja
+    America/Argentina/Mendoza
+    America/Argentina/Rio_Gallegos
+    America/Argentina/San_Juan
+    America/Argentina/Tucuman
+    America/Argentina/Ushuaia
 ) ],
-  'sm' => [ qw(
-    Europe/San_Marino
+  'gp' => [ qw(
+    America/Guadeloupe
 ) ],
-  'sn' => [ qw(
-    Africa/Dakar
-) ],
-  'so' => [ qw(
-    Africa/Mogadishu
-) ],
-  'sr' => [ qw(
-    America/Paramaribo
-) ],
-  'st' => [ qw(
-    Africa/Sao_Tome
-) ],
-  'sv' => [ qw(
-    America/El_Salvador
-) ],
-  'sy' => [ qw(
-    Asia/Damascus
-) ],
-  'sz' => [ qw(
-    Africa/Mbabane
-) ],
-  'tc' => [ qw(
-    America/Grand_Turk
-) ],
-  'td' => [ qw(
-    Africa/Ndjamena
-) ],
-  'tf' => [ qw(
-    Indian/Kerguelen
-) ],
-  'tg' => [ qw(
-    Africa/Lome
-) ],
-  'th' => [ qw(
-    Asia/Bangkok
-) ],
-  'tj' => [ qw(
-    Asia/Dushanbe
-) ],
-  'tk' => [ qw(
-    Pacific/Fakaofo
-) ],
-  'tl' => [ qw(
-    Asia/Dili
-) ],
-  'tm' => [ qw(
-    Asia/Ashgabat
-) ],
-  'tn' => [ qw(
-    Africa/Tunis
-) ],
-  'to' => [ qw(
-    Pacific/Tongatapu
-) ],
-  'tr' => [ qw(
-    Europe/Istanbul
-) ],
-  'tt' => [ qw(
-    America/Port_of_Spain
+  'in' => [ qw(
+    Asia/Calcutta
 ) ],
   'tv' => [ qw(
     Pacific/Funafuti
 ) ],
-  'tw' => [ qw(
-    Asia/Taipei
+  'vi' => [ qw(
+    America/St_Thomas
 ) ],
-  'tz' => [ qw(
-    Africa/Dar_es_Salaam
+  'aw' => [ qw(
+    America/Aruba
+) ],
+  'fo' => [ qw(
+    Atlantic/Faeroe
+) ],
+  'mx' => [ qw(
+    America/Cancun
+    America/Chihuahua
+    America/Hermosillo
+    America/Mazatlan
+    America/Merida
+    America/Mexico_City
+    America/Monterrey
+    America/Tijuana
+) ],
+  'sn' => [ qw(
+    Africa/Dakar
+) ],
+  'br' => [ qw(
+    America/Araguaina
+    America/Bahia
+    America/Belem
+    America/Boa_Vista
+    America/Campo_Grande
+    America/Cuiaba
+    America/Eirunepe
+    America/Fortaleza
+    America/Maceio
+    America/Manaus
+    America/Noronha
+    America/Porto_Velho
+    America/Recife
+    America/Rio_Branco
+    America/Sao_Paulo
+) ],
+  'hn' => [ qw(
+    America/Tegucigalpa
+) ],
+  'mc' => [ qw(
+    Europe/Monaco
+) ],
+  'gg' => [ qw(
+    Europe/Guernsey
+) ],
+  'il' => [ qw(
+    Asia/Jerusalem
+) ],
+  'sb' => [ qw(
+    Pacific/Guadalcanal
+) ],
+  'do' => [ qw(
+    America/Santo_Domingo
+) ],
+  'hu' => [ qw(
+    Europe/Budapest
+) ],
+  'nz' => [ qw(
+    Pacific/Auckland
+    Pacific/Chatham
+) ],
+  'ps' => [ qw(
+    Asia/Gaza
+) ],
+  'ug' => [ qw(
+    Africa/Kampala
+) ],
+  'kh' => [ qw(
+    Asia/Phnom_Penh
+) ],
+  'gb' => [ qw(
+    Europe/London
+) ],
+  'tg' => [ qw(
+    Africa/Lome
+) ],
+  'bb' => [ qw(
+    America/Barbados
+) ],
+  'je' => [ qw(
+    Europe/Jersey
+) ],
+  'ht' => [ qw(
+    America/Port-au-Prince
+) ],
+  'dk' => [ qw(
+    Europe/Copenhagen
+) ],
+  'pa' => [ qw(
+    America/Panama
+) ],
+  'cv' => [ qw(
+    Atlantic/Cape_Verde
+) ],
+  'qa' => [ qw(
+    Asia/Qatar
+) ],
+  'gd' => [ qw(
+    America/Grenada
+) ],
+  'gf' => [ qw(
+    America/Cayenne
+) ],
+  'mo' => [ qw(
+    Asia/Macau
+) ],
+  'km' => [ qw(
+    Indian/Comoro
+) ],
+  'kw' => [ qw(
+    Asia/Kuwait
+) ],
+  'hr' => [ qw(
+    Europe/Zagreb
+) ],
+  'mq' => [ qw(
+    America/Martinique
+) ],
+  'tc' => [ qw(
+    America/Grand_Turk
+) ],
+  'cz' => [ qw(
+    Europe/Prague
+) ],
+  'es' => [ qw(
+    Africa/Ceuta
+    Atlantic/Canary
+    Europe/Madrid
+) ],
+  'mz' => [ qw(
+    Africa/Maputo
+) ],
+  'bo' => [ qw(
+    America/La_Paz
+) ],
+  'au' => [ qw(
+    Australia/Adelaide
+    Australia/Brisbane
+    Australia/Broken_Hill
+    Australia/Currie
+    Australia/Darwin
+    Australia/Hobart
+    Australia/Lindeman
+    Australia/Lord_Howe
+    Australia/Melbourne
+    Australia/Perth
+    Australia/Sydney
+) ],
+  'st' => [ qw(
+    Africa/Sao_Tome
+) ],
+  'al' => [ qw(
+    Europe/Tirane
+) ],
+  'ir' => [ qw(
+    Asia/Tehran
+) ],
+  'cg' => [ qw(
+    Africa/Brazzaville
+) ],
+  'md' => [ qw(
+    Europe/Chisinau
+) ],
+  'tr' => [ qw(
+    Europe/Istanbul
+) ],
+  'gw' => [ qw(
+    Africa/Bissau
+) ],
+  'gn' => [ qw(
+    Africa/Conakry
+) ],
+  'bi' => [ qw(
+    Africa/Bujumbura
+) ],
+  'mk' => [ qw(
+    Europe/Skopje
+) ],
+  'gr' => [ qw(
+    Europe/Athens
+) ],
+  'ag' => [ qw(
+    America/Antigua
+) ],
+  'co' => [ qw(
+    America/Bogota
+) ],
+  'si' => [ qw(
+    Europe/Ljubljana
+) ],
+  'ai' => [ qw(
+    America/Anguilla
+) ],
+  'aq' => [ qw(
+    Antarctica/Casey
+    Antarctica/Davis
+    Antarctica/DumontDUrville
+    Antarctica/Mawson
+    Antarctica/McMurdo
+    Antarctica/Palmer
+    Antarctica/Rothera
+    Antarctica/South_Pole
+    Antarctica/Syowa
+    Antarctica/Vostok
+) ],
+  'an' => [ qw(
+    America/Curacao
+) ],
+  'jo' => [ qw(
+    Asia/Amman
+) ],
+  'sm' => [ qw(
+    Europe/San_Marino
 ) ],
   'ua' => [ qw(
     Europe/Kiev
@@ -1605,13 +1469,109 @@ qw(
     Europe/Uzhgorod
     Europe/Zaporozhye
 ) ],
-  'ug' => [ qw(
-    Africa/Kampala
+  'eh' => [ qw(
+    Africa/El_Aaiun
 ) ],
-  'um' => [ qw(
-    Pacific/Johnston
-    Pacific/Midway
-    Pacific/Wake
+  'cu' => [ qw(
+    America/Havana
+) ],
+  'cl' => [ qw(
+    America/Santiago
+    Pacific/Easter
+) ],
+  'kn' => [ qw(
+    America/St_Kitts
+) ],
+  'ml' => [ qw(
+    Africa/Bamako
+) ],
+  'et' => [ qw(
+    Africa/Addis_Ababa
+) ],
+  'sc' => [ qw(
+    Indian/Mahe
+) ],
+  'is' => [ qw(
+    Atlantic/Reykjavik
+) ],
+  'ms' => [ qw(
+    America/Montserrat
+) ],
+  'nl' => [ qw(
+    Europe/Amsterdam
+) ],
+  'hk' => [ qw(
+    Asia/Hong_Kong
+) ],
+  'ec' => [ qw(
+    America/Guayaquil
+    Pacific/Galapagos
+) ],
+  'my' => [ qw(
+    Asia/Kuala_Lumpur
+    Asia/Kuching
+) ],
+  'cr' => [ qw(
+    America/Costa_Rica
+) ],
+  'va' => [ qw(
+    Europe/Vatican
+) ],
+  'io' => [ qw(
+    Indian/Chagos
+) ],
+  'rs' => [ qw(
+    Europe/Belgrade
+) ],
+  'sd' => [ qw(
+    Africa/Khartoum
+) ],
+  'cn' => [ qw(
+    Asia/Chongqing
+    Asia/Harbin
+    Asia/Kashgar
+    Asia/Shanghai
+    Asia/Urumqi
+) ],
+  'bg' => [ qw(
+    Europe/Sofia
+) ],
+  'mh' => [ qw(
+    Pacific/Kwajalein
+    Pacific/Majuro
+) ],
+  'uy' => [ qw(
+    America/Montevideo
+) ],
+  'bs' => [ qw(
+    America/Nassau
+) ],
+  'py' => [ qw(
+    America/Asuncion
+) ],
+  'mu' => [ qw(
+    Indian/Mauritius
+) ],
+  'tl' => [ qw(
+    Asia/Dili
+) ],
+  'li' => [ qw(
+    Europe/Vaduz
+) ],
+  'ch' => [ qw(
+    Europe/Zurich
+) ],
+  'kg' => [ qw(
+    Asia/Bishkek
+) ],
+  'gh' => [ qw(
+    Africa/Accra
+) ],
+  'nu' => [ qw(
+    Pacific/Niue
+) ],
+  'pe' => [ qw(
+    America/Lima
 ) ],
   'us' => [ qw(
     America/Adak
@@ -1640,54 +1600,97 @@ qw(
     America/Yakutat
     Pacific/Honolulu
 ) ],
-  'uy' => [ qw(
-    America/Montevideo
+  'bz' => [ qw(
+    America/Belize
 ) ],
-  'uz' => [ qw(
-    Asia/Samarkand
-    Asia/Tashkent
+  'sl' => [ qw(
+    Africa/Freetown
 ) ],
-  'va' => [ qw(
-    Europe/Vatican
+  'cy' => [ qw(
+    Asia/Nicosia
 ) ],
-  'vc' => [ qw(
-    America/St_Vincent
+  'im' => [ qw(
+    Europe/Isle_of_Man
 ) ],
-  've' => [ qw(
-    America/Caracas
+  'fj' => [ qw(
+    Pacific/Fiji
 ) ],
-  'vg' => [ qw(
-    America/Tortola
+  'ie' => [ qw(
+    Europe/Dublin
 ) ],
-  'vi' => [ qw(
-    America/St_Thomas
+  'tw' => [ qw(
+    Asia/Taipei
 ) ],
-  'vn' => [ qw(
-    Asia/Saigon
+  'kp' => [ qw(
+    Asia/Pyongyang
 ) ],
-  'vu' => [ qw(
-    Pacific/Efate
+  'pf' => [ qw(
+    Pacific/Gambier
+    Pacific/Marquesas
+    Pacific/Tahiti
 ) ],
-  'wf' => [ qw(
-    Pacific/Wallis
+  'er' => [ qw(
+    Africa/Asmera
 ) ],
-  'ws' => [ qw(
-    Pacific/Apia
+  'iq' => [ qw(
+    Asia/Baghdad
 ) ],
-  'ye' => [ qw(
-    Asia/Aden
+  'as' => [ qw(
+    Pacific/Pago_Pago
 ) ],
-  'yt' => [ qw(
-    Indian/Mayotte
+  'mw' => [ qw(
+    Africa/Blantyre
 ) ],
-  'za' => [ qw(
-    Africa/Johannesburg
+  'tz' => [ qw(
+    Africa/Dar_es_Salaam
 ) ],
-  'zm' => [ qw(
-    Africa/Lusaka
+  'ly' => [ qw(
+    Africa/Tripoli
 ) ],
-  'zw' => [ qw(
-    Africa/Harare
+  'gt' => [ qw(
+    America/Guatemala
+) ],
+  'gy' => [ qw(
+    America/Guyana
+) ],
+  'bm' => [ qw(
+    Atlantic/Bermuda
+) ],
+  'gq' => [ qw(
+    Africa/Malabo
+) ],
+  'pk' => [ qw(
+    Asia/Karachi
+) ],
+  'lt' => [ qw(
+    Europe/Vilnius
+) ],
+  'pm' => [ qw(
+    America/Miquelon
+) ],
+  'sg' => [ qw(
+    Asia/Singapore
+) ],
+  'tt' => [ qw(
+    America/Port_of_Spain
+) ],
+  'nf' => [ qw(
+    Pacific/Norfolk
+) ],
+  'so' => [ qw(
+    Africa/Mogadishu
+) ],
+  'td' => [ qw(
+    Africa/Ndjamena
+) ],
+  'sk' => [ qw(
+    Europe/Bratislava
+) ],
+  'sy' => [ qw(
+    Asia/Damascus
+) ],
+  'bd' => [ qw(
+    Asia/Dhaka
 ) ],
 
 );

@@ -1,3 +1,17 @@
+0.52
+
+- The names_in_country() method no longer sorts the zone
+  names. Instead, it returns them in order from most- to
+  least-populated.
+
+- Added a STORABLE_attach method for integration with newer versions
+  of Storable which provide better support for singletons.
+
+- Made offset_as_seconds() and offset_as_string() work as class
+  methods, since the docs say they should. Reported by Tatsuhiko
+  Miyagawa.
+
+
 0.51     2006-10-13
 
 - Added two new catalog-related functions, countries() and
