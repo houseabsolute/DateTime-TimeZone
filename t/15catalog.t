@@ -93,7 +93,6 @@ plan tests => 29;
     is( $zones[0], 'Asia/Tokyo', 'zone for Japan is Asia/Tokyo (uc country code)' );
 }
 
-
 {
     my @zones = DateTime::TimeZone::names_in_country('cl');
     is( @zones, 2, 'two zones for Chile' );
