@@ -1,4 +1,4 @@
-0.52
+0.52     2006-10-22
 
 - The names_in_country() method no longer sorts the zone
   names. Instead, it returns them in order from most- to
