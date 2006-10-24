@@ -42,6 +42,47 @@ sub short_name_for_datetime { $_[0]->name }
 
 sub category { undef }
 
+
+sub STORABLE_freeze
+{
+    my $self = shift;
+
+    return $self->name;
+}
+
+sub STORABLE_attach
+{
+    my $class = shift;
+    my $cloning = shift;
+    my $serialized = shift;
+
+    return $class->new( offset => $serialized );
+}
+
+sub STORABLE_thaw
+{
+    my $self = shift;
+    my $cloning = shift;
+    my $serialized = shift;
+
+    my $class = ref $self || $self;
+
+    my $obj;
+    if ( $class->isa(__PACKAGE__) )
+    {
+        $obj = __PACKAGE__->new( offset => $serialized );
+    }
+    else
+    {
+        $obj = $class->new( offset => $serialized );
+    }
+
+    %$self = %$obj;
+
+    return $self;
+}
+
+
 1;
 
 __END__

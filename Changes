@@ -1,3 +1,10 @@
+0.53     2006-10-24
+
+- Freezing and thawing a DT::TimeZone::OffsetOnly object was broken in
+  0.52 (and probably earlier versions as well). Reported by Tatsuhiko
+  Miyagawa.
+
+
 0.52     2006-10-22
 
 - The names_in_country() method no longer sorts the zone
