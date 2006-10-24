@@ -13,7 +13,7 @@ use DateTime::TimeZone;
 use DateTime::TimeZone::OffsetOnly;
 use Storable;
 
-plan tests => 9;
+plan tests => 17;
 
 
 {
@@ -36,6 +36,19 @@ plan tests => 9;
     }
 }
 
+delete $DateTime::TimeZone::{STORABLE_attach};
+delete $DateTime::TimeZone::OffsetOnly::{STORABLE_attach};
+
+{
+    for my $obj ( DateTime::TimeZone->new( name => 'America/Chicago' ),
+                  DateTime::TimeZone::OffsetOnly->new( offset => '+0100' ),
+                  DateTime::TimeZone::Floating->new(),
+                  DateTime::TimeZone::UTC->new(),
+                )
+    {
+        test_thaw_and_clone($obj);
+    }
+}
 
 sub test_thaw_and_clone
 {

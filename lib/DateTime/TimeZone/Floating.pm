@@ -18,6 +18,39 @@ sub new
 
 sub is_floating { 1 }
 
+sub STORABLE_attach
+{
+    my $class = shift;
+    my $cloning = shift;
+    my $serialized = shift;
+
+    return $class->new();
+}
+
+sub STORABLE_thaw
+{
+    my $self = shift;
+    my $cloning = shift;
+    my $serialized = shift;
+
+    my $class = ref $self || $self;
+
+    my $obj;
+    if ( $class->isa(__PACKAGE__) )
+    {
+        $obj = __PACKAGE__->new();
+    }
+    else
+    {
+        $obj = $class->new();
+    }
+
+    %$self = %$obj;
+
+    return $self;
+}
+
+
 __END__
 
 =head1 NAME

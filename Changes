@@ -4,6 +4,8 @@
   0.52 (and probably earlier versions as well). Reported by Tatsuhiko
   Miyagawa.
 
+- Freezing and thawing a DT::TimeZone::Floating object was also broken.
+
 
 0.52     2006-10-22
 

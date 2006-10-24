@@ -20,7 +20,7 @@ sub new
     my $offset =
         DateTime::TimeZone::offset_as_seconds( $p{offset} );
 
-    die "Invalid offset: $p{offset}\n" unless defined $offset;
+    Carp::confess "Invalid offset: $p{offset}\n" unless defined $offset;
 
     return DateTime::TimeZone::UTC->new unless $offset;
 
