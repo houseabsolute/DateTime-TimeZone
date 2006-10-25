@@ -3,7 +3,7 @@ package DateTime::TimeZone;
 use strict;
 
 use vars qw( $VERSION );
-$VERSION = '0.53';
+$VERSION = '0.54';
 
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
@@ -398,15 +398,6 @@ sub STORABLE_freeze
     my $self = shift;
 
     return $self->name;
-}
-
-sub STORABLE_attach
-{
-    my $class = shift;
-    my $cloning = shift;
-    my $serialized = shift;
-
-    return $class->new( name => $serialized );
 }
 
 sub STORABLE_thaw

@@ -1,3 +1,13 @@
+0.54     2006-10-25
+
+- Got rid of the STORABLE_attach methods. This was causing bugs when
+  trying to freeze/thaw a DateTime.pm object, and I realized that
+  because of how the DT::TimeZone internals work, there's not much
+  gained by using STORABLE_attach instead of STORABLE_freeze. Even
+  with STORABLE_freeze, the core data structures for a timezone are
+  still shared.
+
+
 0.53     2006-10-24
 
 - Freezing and thawing a DT::TimeZone::OffsetOnly object was broken in
