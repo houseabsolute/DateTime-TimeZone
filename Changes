@@ -1,3 +1,8 @@
+0.55     2006-11-06
+
+- This release is based on version 2006o of the Olson database.
+
+
 0.54     2006-10-25
 
 - Got rid of the STORABLE_attach methods. This was causing bugs when
