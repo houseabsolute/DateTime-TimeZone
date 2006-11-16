@@ -11,8 +11,9 @@ use lib File::Spec->catdir( File::Spec->curdir, 't' );
 BEGIN { require 'check_datetime_version.pl' }
 
 my @aliases = sort keys %{ DateTime::TimeZone::links() };
+my @names = DateTime::TimeZone::all_names;
 
-plan tests => @aliases + 20;
+plan tests => @aliases + @names + 20;
 
 use DateTime::TimeZone;
 
@@ -21,6 +22,15 @@ use DateTime::TimeZone;
     for my $alias ( sort @aliases )
     {
         local $ENV{TZ} = $alias;
+        my $tz = eval { DateTime::TimeZone->new( name => 'local' ) };
+        isa_ok( $tz, 'DateTime::TimeZone' );
+    }
+}
+
+{
+    for my $name ( sort @names )
+    {
+        local $ENV{TZ} = $name;
         my $tz = eval { DateTime::TimeZone->new( name => 'local' ) };
         isa_ok( $tz, 'DateTime::TimeZone' );
     }
