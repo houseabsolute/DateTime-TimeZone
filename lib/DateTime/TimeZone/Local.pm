@@ -229,7 +229,7 @@ sub _could_be_valid_time_zone
     return 0 unless defined $_[0];
     return 0 if $_[0] eq 'local';
 
-    return $_[0] =~ m,^[\w/]+$, ? 1 : 0;
+    return $_[0] =~ m,^[\w/\-\+]+$, ? 1 : 0;
 }
 
 

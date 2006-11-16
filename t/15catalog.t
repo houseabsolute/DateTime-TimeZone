@@ -8,7 +8,7 @@ use Test::More;
 use DateTime::TimeZoneCatalog;
 
 
-plan tests => 29;
+plan tests => 30;
 
 {
     my @all = DateTime::TimeZone::all_names();
@@ -99,4 +99,10 @@ plan tests => 29;
     is_deeply( [ sort @zones ],
                [ 'America/Santiago', 'Pacific/Easter' ],
                'zones for Chile are America/Santiago and Pacific/Easter' );
+}
+
+{
+    my @zones = DateTime::TimeZone::names_in_country('us');
+    is( $zones[0], 'America/New_York',
+        'First timezone by country in US is America/New_York' );
 }

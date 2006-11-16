@@ -431,12 +431,12 @@ sub make_catalog_pm
     $countries{UK} = $countries{GB};
 
     my $countries = '';
-    # We explicitly do not sort these because the order in zones.tab
-    # is by population.
-    for my $c ( keys %countries )
+    for my $c ( sort keys %countries )
     {
         $countries .= qq|  '\L$c' => [ qw(\n|;
-        $countries .= join "\n", map { "    $_" } sort @{ $countries{$c} };
+        # We explicitly do not sort these because the order in
+        # zones.tab is by population.
+        $countries .= join "\n", map { "    $_" } @{ $countries{$c} };
         $countries .= "\n) ],\n";
     }
 

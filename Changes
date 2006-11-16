@@ -1,3 +1,12 @@
+0.56
+
+- Really fix the sorting of names_in_country(). Patch by Tatsuhiko
+  Miyagawa.
+
+- Allow names like "JST-9" and "GMT+0" in $ENV{TZ} when trying to find
+  the local time zone. Reported by Tatsuhiko Miyagawa.
+
+
 0.55     2006-11-06
 
 - This release is based on version 2006o of the Olson database.
