@@ -1,3 +1,8 @@
+0.57     2006-11-27
+
+- This release is based on version 2006p of the Olson database.
+
+
 0.56     2006-11-16
 
 - Really fix the sorting of names_in_country(). Patch by Tatsuhiko
