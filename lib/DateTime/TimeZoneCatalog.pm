@@ -15,7 +15,7 @@ qw(
   Africa/Accra
   Africa/Addis_Ababa
   Africa/Algiers
-  Africa/Asmera
+  Africa/Asmara
   Africa/Bamako
   Africa/Bangui
   Africa/Banjul
@@ -279,7 +279,7 @@ qw(
   Atlantic/Bermuda
   Atlantic/Canary
   Atlantic/Cape_Verde
-  Atlantic/Faeroe
+  Atlantic/Faroe
   Atlantic/Madeira
   Atlantic/Reykjavik
   Atlantic/South_Georgia
@@ -290,6 +290,7 @@ qw(
   Australia/Broken_Hill
   Australia/Currie
   Australia/Darwin
+  Australia/Eucla
   Australia/Hobart
   Australia/Lindeman
   Australia/Lord_Howe
@@ -417,7 +418,7 @@ qw(
     Accra
     Addis_Ababa
     Algiers
-    Asmera
+    Asmara
     Bamako
     Bangui
     Banjul
@@ -689,7 +690,7 @@ qw(
     Bermuda
     Canary
     Cape_Verde
-    Faeroe
+    Faroe
     Madeira
     Reykjavik
     South_Georgia
@@ -702,6 +703,7 @@ qw(
     Broken_Hill
     Currie
     Darwin
+    Eucla
     Hobart
     Lindeman
     Lord_Howe
@@ -881,6 +883,7 @@ qw(
     Australia/Adelaide
     Australia/Darwin
     Australia/Perth
+    Australia/Eucla
 ) ],
   'aw' => [ qw(
     America/Aruba
@@ -1076,7 +1079,7 @@ qw(
     Africa/El_Aaiun
 ) ],
   'er' => [ qw(
-    Africa/Asmera
+    Africa/Asmara
 ) ],
   'es' => [ qw(
     Europe/Madrid
@@ -1101,7 +1104,7 @@ qw(
     Pacific/Kosrae
 ) ],
   'fo' => [ qw(
-    Atlantic/Faeroe
+    Atlantic/Faroe
 ) ],
   'fr' => [ qw(
     Europe/Paris
@@ -1698,6 +1701,7 @@ qw(
 %DateTime::TimeZone::LINKS =
 (
   'AKST9AKDT' => 'America/Anchorage',
+  'Africa/Asmera' => 'Africa/Asmara',
   'Africa/Timbuktu' => 'Africa/Bamako',
   'America/Argentina/ComodRivadavia' => 'America/Argentina/Catamarca',
   'America/Atka' => 'America/Adak',
@@ -1727,6 +1731,7 @@ qw(
   'Asia/Thimbu' => 'Asia/Thimphu',
   'Asia/Ujung_Pandang' => 'Asia/Makassar',
   'Asia/Ulan_Bator' => 'Asia/Ulaanbaatar',
+  'Atlantic/Faeroe' => 'Atlantic/Faroe',
   'Atlantic/Jan_Mayen' => 'Europe/Oslo',
   'Australia/ACT' => 'Australia/Sydney',
   'Australia/Canberra' => 'Australia/Sydney',
