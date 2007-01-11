@@ -4,6 +4,7 @@ use strict;
 
 use File::Spec;
 
+
 sub local_time_zone
 {
     my $tz;
@@ -39,17 +40,19 @@ sub _from_env
 
 sub _from_etc_localtime
 {
-    return unless -r '/etc/localtime';
+    my $lt_file = '/etc/localtime';
+
+    return unless -r $lt_file && -s _;
 
     my $real_name;
-    if ( -l '/etc/localtime' )
+    if ( -l $lt_file )
     {
-	# called like this so test suite can test this functionality
-	$real_name = _readlink( '/etc/localtime' );
+	# The _readlink sub exists so the test suite can mock it.
+	$real_name = _readlink( $lt_file );
     }
     else
     {
-        $real_name = _find_matching_zoneinfo_file( '/etc/localtime' );
+        $real_name = _find_matching_zoneinfo_file( $lt_file );
     }
 
     if ( defined $real_name )
@@ -127,8 +130,9 @@ sub _find_matching_zoneinfo_file
 
     return unless -d '/usr/share/zoneinfo';
 
-    require File::Find;
+    require File::Basename;
     require File::Compare;
+    require File::Find;
 
     my $size = -s $file_to_match;
 
@@ -145,14 +149,18 @@ sub _find_matching_zoneinfo_file
                     if ( ! defined $real_name
                          && -f $_
                          && ! -l $_
-                         && $size == -s $_
+                         && $size == -s _
+                         # This fixes RT 24026 - apparently such a
+                         # file exists on FreeBSD and it can cause a
+                         # false positive
+                         && File::Basename::basename($_) ne 'posixrules'
                          && File::Compare::compare( $_, $file_to_match ) == 0
                        )
                     {
                         $real_name = $_;
 
                         # File::Find has no mechanism for bailing in the
-                        # middle of a scan
+                        # middle of a find.
                         die { found => 1 };
                     }
                 },
