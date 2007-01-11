@@ -93,7 +93,7 @@ SKIP:
 
     my $tz;
     eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
-    is( $@, '', 'valid time zone name in /etc/localtime should not die' );
+    is( $@, '', 'valid time zone name in /etc/localtime symlink should not die' );
     isa_ok( $tz, 'DateTime::TimeZone::America::New_York' );
 }
 
