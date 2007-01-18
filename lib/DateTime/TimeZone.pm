@@ -3,7 +3,7 @@ package DateTime::TimeZone;
 use strict;
 
 use vars qw( $VERSION );
-$VERSION = '0.58';
+$VERSION = '0.59';
 
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
@@ -12,8 +12,8 @@ use DateTime::TimeZone::OffsetOnly;
 use DateTime::TimeZone::UTC;
 use Params::Validate qw( validate validate_pos SCALAR ARRAYREF BOOLEAN );
 
-use constant INFINITY     =>       100 ** 100 ** 100 ;
-use constant NEG_INFINITY => -1 * (100 ** 100 ** 100);
+use constant INFINITY     =>       100 ** 1000 ;
+use constant NEG_INFINITY => -1 * (100 ** 1000);
 
 # the offsets for each span element
 use constant UTC_START   => 0;

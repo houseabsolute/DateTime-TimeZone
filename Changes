@@ -1,3 +1,14 @@
+0.59
+
+- When trying to find the local timezone for a machine based on
+  /etc/localtime, ignore /usr/share/zoneinfo/posixrules. This fixes a
+  bug seen on FreeBSD 6.2. Reported by . RT #24026.
+
+- For infinity, use 100 ** 1000 instead of 100 ** 100 ** 100. This may
+  fix the problems with infinity on some platforms (or may
+  not). Suggested by Bjorn Tackmann.
+
+
 0.58     2007-01-08
 
 - This release is based on version 2007a of the Olson database.
