@@ -1,4 +1,4 @@
-0.59
+0.59     2007-01-18
 
 - When trying to find the local timezone for a machine based on
   /etc/localtime, ignore /usr/share/zoneinfo/posixrules. This fixes a
