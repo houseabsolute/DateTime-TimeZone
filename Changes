@@ -1,3 +1,8 @@
+0.60     2007-02-13
+
+- This release is based on version 2007b of the Olson database.
+
+
 0.59     2007-01-18
 
 - When trying to find the local timezone for a machine based on
