@@ -2,6 +2,8 @@
 
 use strict;
 
+use DateTime::TimeZone::Local;
+use DateTime::TimeZone::Local::Unix;
 use File::Spec;
 use Sys::Hostname;
 use Test::More;
@@ -15,14 +17,12 @@ my @names = DateTime::TimeZone::all_names;
 
 plan tests => @aliases + @names + 20;
 
-use DateTime::TimeZone;
-
 
 {
     for my $alias ( sort @aliases )
     {
         local $ENV{TZ} = $alias;
-        my $tz = eval { DateTime::TimeZone->new( name => 'local' ) };
+        my $tz = eval { DateTime::TimeZone::Local->TimeZone() };
         isa_ok( $tz, 'DateTime::TimeZone' );
     }
 }
@@ -31,49 +31,32 @@ use DateTime::TimeZone;
     for my $name ( sort @names )
     {
         local $ENV{TZ} = $name;
-        my $tz = eval { DateTime::TimeZone->new( name => 'local' ) };
+        my $tz = eval { DateTime::TimeZone::Local->TimeZone() };
         isa_ok( $tz, 'DateTime::TimeZone' );
     }
 }
 
 {
-    # make sure it doesn't find an /etc/localtime file
-    $^W = 0;
-    local *DateTime::TimeZone::Local::_from_etc_timezone = sub { undef };
-    local *DateTime::TimeZone::Local::_from_etc_TIMEZONE = sub { undef };
-    local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
-    local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { undef };
-    local *DateTime::TimeZone::Local::_read_etc_default_init = sub { undef };
-    $^W = 1;
-
     local $ENV{TZ} = 'this will not work';
 
     my $tz;
-    eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
-    like( $@, qr/cannot determine local time zone/i,
-          'invalid time zone name in $ENV{TZ} and no other info available should die' );
+    eval { $tz = DateTime::TimeZone::Local::Unix->FromEnv() };
+    is( $tz, undef,
+        'invalid time zone name in $ENV{TZ} fails' );
 
     local $ENV{TZ} = '123/456';
 
-    eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
-    like( $@, qr/cannot determine local time zone/i,
-          'invalid time zone name in $ENV{TZ} and no other info available should die' );
+    eval { $tz = DateTime::TimeZone::Local::Unix->FromEnv() };
+    is( $tz, undef,
+        'invalid time zone name in $ENV{TZ} fails' );
 }
 
 {
-    $^W = 0;
-    local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
-    local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { undef };
-    local *DateTime::TimeZone::Local::_read_etc_default_init = sub { undef };
-    local *DateTime::TimeZone::Local::_local_from_etc_timezone = sub { undef };
-    $^W = 1;
-
     local $ENV{TZ} = 'Africa/Kinshasa';
 
     my $tz;
-    eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
-    is( $@, '', 'valid time zone name in $ENV{TZ} should not die' );
-    isa_ok( $tz, 'DateTime::TimeZone::Africa::Kinshasa' );
+    eval { $tz = DateTime::TimeZone::Local::Unix->FromEnv() };
+    is( $tz->name(), 'Africa/Kinshasa', 'tz object name() is Africa::Kinshasa' );
 }
 
 SKIP:
@@ -82,17 +65,11 @@ SKIP:
         unless -l '/etc/localtime';
 
     $^W = 0;
-    local *DateTime::TimeZone::Local::_readlink = sub { '/usr/share/zoneinfo/US/Eastern' };
-    local *DateTime::TimeZone::Local::_from_etc_timezone = sub { undef };
-    local *DateTime::TimeZone::Local::_from_etc_TIMEZONE = sub { undef };
-    local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { undef };
-    local *DateTime::TimeZone::Local::_read_etc_default_init = sub { undef };
+    local *DateTime::TimeZone::Local::Unix::_Readlink = sub { '/usr/share/zoneinfo/US/Eastern' };
     $^W = 1;
 
-    local $ENV{TZ} = '';
-
     my $tz;
-    eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
+    eval { $tz = DateTime::TimeZone::Local::Unix->_EtcLocaltime() };
     is( $@, '', 'valid time zone name in /etc/localtime symlink should not die' );
     isa_ok( $tz, 'DateTime::TimeZone::America::New_York' );
 }
@@ -103,17 +80,11 @@ SKIP:
         unless -r '/etc/sysconfig/clock' && -f _;
 
     $^W = 0;
-    local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
-    local *DateTime::TimeZone::Local::_from_etc_timezone = sub { undef };
-    local *DateTime::TimeZone::Local::_from_etc_TIMEZONE = sub { undef };
-    local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { 'US/Eastern' };
-    local *DateTime::TimeZone::Local::_read_etc_default_init = sub { undef };
+    local *DateTime::TimeZone::Local::Unix::_ReadEtcSysconfigClock = sub { 'US/Eastern' };
     $^W = 1;
 
-    local $ENV{TZ} = '';
-
     my $tz;
-    eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
+    eval { $tz = DateTime::TimeZone::Local::Unix->_EtcSysconfigClock() };
     is( $@, '', 'valid time zone name in /etc/sysconfig/clock should not die' );
     isa_ok( $tz, 'DateTime::TimeZone::America::New_York' );
 }
@@ -123,20 +94,12 @@ SKIP:
     skip "cannot read /etc/default/init", 2
         unless -r '/etc/default/init' && -f _;
 
-    $^W = 0;
-    local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
-    local *DateTime::TimeZone::Local::_from_etc_timezone = sub { undef };
-    local *DateTime::TimeZone::Local::_from_etc_TIMEZONE = sub { undef };
-    local *DateTime::TimeZone::Local::_read_etc_sysconfig_clock = sub { undef };
     local *DateTime::TimeZone::Local::_read_etc_default_init = sub { 'US/Eastern' };
-    $^W = 1;
-
-    local $ENV{TZ} = '';
 
     my $tz;
-    eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
+    eval { $tz = DateTime::TimeZone::Local::Unix->_EtcDefaultInit() };
     is( $@, '', 'valid time zone name in /etc/default/init should not die' );
-    isa_ok( $tz, 'DateTime::TimeZone::America::New_York' );
+    isa_ok( $tz, 'DateTime::TimeZone::Australia::Melbourne' );
 }
 
 SKIP:
@@ -148,18 +111,18 @@ SKIP:
         local $ENV{TZ} = '';
 
         my $tz;
-        eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
+        eval { $tz = DateTime::TimeZone::Local->TimeZone() };
         is( $@, '', 'valid time zone name in /etc/localtime should not die' );
         isa_ok( $tz, 'DateTime::TimeZone::America::Chicago' );
     }
 
     {
         $^W = 0;
-        local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
+        local *DateTime::TimeZone::Local::Unix::_EtcLocaltime = sub { undef };
         $^W = 1;
 
         my $tz;
-        eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
+        eval { $tz = DateTime::TimeZone::Local->TimeZone() };
         is( $@, '', 'valid time zone name in /etc/timezone should not die' );
         isa_ok( $tz, 'DateTime::TimeZone::America::Chicago' );
     }
@@ -168,13 +131,13 @@ SKIP:
         # requires that /etc/default/init contain
         # TZ=Australia/Melbourne to work.
         $^W = 0;
-        local *DateTime::TimeZone::Local::_from_etc_localtime = sub { undef };
-        local *DateTime::TimeZone::Local::_from_etc_timezone = sub { undef };
-        local *DateTime::TimeZone::Local::_from_etc_TIMEZONE = sub { undef };
+        local *DateTime::TimeZone::Local::Unix::_EtcLocaltime = sub { undef };
+        local *DateTime::TimeZone::Local::Unix::_EtcTimezone = sub { undef };
+        local *DateTime::TimeZone::Local::Unix::_EtcTIMEZONE = sub { undef };
         $^W = 1;
 
         my $tz;
-        eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
+        eval { $tz = DateTime::TimeZone::Local->TimeZone() };
         is( $@, '', '/etc/default/init contains TZ=Australia/Melbourne' );
         isa_ok( $tz, 'DateTime::TimeZone::Australia::Melbourne' );
     }
@@ -203,7 +166,7 @@ SKIP:
         my $cwd = Cwd::cwd();
 
         my $tz;
-        eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
+        eval { $tz = DateTime::TimeZone::Local->TimeZone() };
         is( $@, '', 'copy of zoneinfo file at /etc/localtime' );
         isa_ok( $tz, 'DateTime::TimeZone::Asia::Calcutta' );
 
@@ -218,7 +181,7 @@ SKIP:
         local $SIG{__DIE__} = sub { die 'haha'; };
 
         my $tz;
-        eval { $tz = DateTime::TimeZone->new( name => 'local' ) };
+        eval { $tz = DateTime::TimeZone::Local->TimeZone() };
         isa_ok( $tz, 'DateTime::TimeZone::Asia::Calcutta' );
     }
 
@@ -226,3 +189,22 @@ SKIP:
     symlink $tz_file, '/etc/localtime'
         or die "Cannot symlink $tz_file to '/etc/localtime': $!";
 }
+
+SKIP:
+{
+    skip "These tests only run on Win32", 1
+        unless $^O =~ /win32/i;
+
+    require DateTime::TimeZone::Local::Win32;
+
+    my %Reg;
+    Win32::TieRegistry->import( TiedHash => \%Reg );
+
+    local $Reg{'HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation\\StandardName'}
+        = 'Eastern Standard Time';
+
+    my $tz;
+    eval { $tz = DateTime::TimeZone::Local::Win32->FromRegistry() };
+    isa_ok( $tz, 'DateTime::TimeZone::America::New_York' );
+}
+

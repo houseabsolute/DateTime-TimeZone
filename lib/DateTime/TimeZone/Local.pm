@@ -1,24 +1,24 @@
 package DateTime::TimeZone::Local;
 
 use strict;
+use warnings;
 
+use vars qw( $VERSION );
+$VERSION = '0.01';
+
+use DateTime::TimeZone;
 use File::Spec;
 
 
-sub local_time_zone
+sub TimeZone
 {
-    my $tz;
+    my $class = shift;
 
-    foreach ( qw( env
-                  etc_localtime
-                  etc_timezone
-                  etc_TIMEZONE
-                  etc_sysconfig_clock
-                  etc_default_init
-                ) )
+    my $subclass = $class->_load_subclass();
+
+    for my $ meth ( $subclass->Methods() )
     {
-        my $meth = "_from_$_";
-	$tz = __PACKAGE__->$meth();
+	my $tz = $subclass->$meth();
 
 	return $tz if $tz;
     }
@@ -26,219 +26,75 @@ sub local_time_zone
     die "Cannot determine local time zone\n";
 }
 
-sub _from_env
 {
-    # names with '$' are for VMS
-    foreach my $k ( qw( TZ SYS$TIMEZONE_RULE SYS$TIMEZONE_NAME UCX$TZ TCPIP$TZ ) )
+    # Stolen from File::Spec. My theory is that other folks can write
+    # the non-existent modules if they feel a need, and release them
+    # to CPAN separately.
+    my %subclass = ( MSWin32 => 'Win32',
+                     VMS     => 'VMS',
+                     MacOS   => 'Mac',
+                     os2     => 'OS2',
+                     epoc    => 'Epoc',
+                     NetWare => 'Win32',
+                     symbian => 'Win32',
+                     dos     => 'OS2',
+                     cygwin  => 'Unix',
+                   );
+
+    sub _load_subclass
     {
-	if ( _could_be_valid_time_zone( $ENV{$k} ) )
-	{
-	    return eval { DateTime::TimeZone->new( name => $ENV{$k} ) };
-	}
-    }
-}
+        my $class = shift;
 
-sub _from_etc_localtime
-{
-    my $lt_file = '/etc/localtime';
+        my $subclass = $class . '::' . ( shift || $subclass{ $^O } || 'Unix' );
 
-    return unless -r $lt_file && -s _;
+        return $subclass if $subclass->can('Methods');
 
-    my $real_name;
-    if ( -l $lt_file )
-    {
-	# The _readlink sub exists so the test suite can mock it.
-	$real_name = _readlink( $lt_file );
-    }
-    else
-    {
-        $real_name = _find_matching_zoneinfo_file( $lt_file );
-    }
-
-    if ( defined $real_name )
-    {
-	my ($vol, $dirs, $file) = File::Spec->splitpath( $real_name );
-
-	my @parts =
-	    grep { defined && length } File::Spec->splitdir( $dirs ), $file;
-
-        foreach my $x ( reverse 0..$#parts )
+        eval "use $subclass";
+        if ($@)
         {
-            my $name =
-                ( $x < $#parts ?
-                  join '/', @parts[$x..$#parts] :
-                  $parts[$x]
-                );
+            if ( $@ =~ /locate/ )
+            {
+                $subclass = $class . '::' . 'Unix';
 
-            my $tz;
-            $tz = eval { DateTime::TimeZone->new( name => $name ) };
-            return $tz if $tz;
+                eval "use $subclass";
+                die $@ if $@;
+            }
+            else
+            {
+                die $@;
+            }
         }
-    }
 
-    undef;
-}
-
-sub _readlink { readlink $_[0] }
-
-sub _from_etc_timezone
-{
-    my $tz_file = '/etc/timezone';
-
-    return unless -f $tz_file && -r _;
-
-    local *TZ;
-    open TZ, "<$tz_file"
-        or die "Cannot read $tz_file: $!";
-    my $name = join '', <TZ>;
-    close TZ;
-
-    $name =~ s/^\s+|\s+$//g;
-
-    return eval { DateTime::TimeZone->new( name => $name ) };
-}
-
-sub _from_etc_TIMEZONE
-{
-    my $tz_file = '/etc/TIMEZONE';
-
-    return unless -f $tz_file && -r _;
-
-    local *TZ;
-    open TZ, "<$tz_file"
-        or die "Cannot read $tz_file: $!";
-
-    my $name;
-    while ($name = <TZ>)
-    {
-       if ($name =~ /\A\s*TZ=\s*(\S+)/)
-       {
-          $name = $1;
-          last;
-       }
-    }
-
-    close TZ;
-
-    return $name && eval { DateTime::TimeZone->new( name => $name ) };
-}
-
-# for systems where /etc/localtime is a copy of a zoneinfo file
-sub _find_matching_zoneinfo_file
-{
-    my $file_to_match = shift;
-
-    return unless -d '/usr/share/zoneinfo';
-
-    require File::Basename;
-    require File::Compare;
-    require File::Find;
-
-    my $size = -s $file_to_match;
-
-    my $real_name;
-
-    local $_;
-    eval
-    {
-        local $SIG{__DIE__};
-        File::Find::find
-            ( { wanted =>
-                sub
-                {
-                    if ( ! defined $real_name
-                         && -f $_
-                         && ! -l $_
-                         && $size == -s _
-                         # This fixes RT 24026 - apparently such a
-                         # file exists on FreeBSD and it can cause a
-                         # false positive
-                         && File::Basename::basename($_) ne 'posixrules'
-                         && File::Compare::compare( $_, $file_to_match ) == 0
-                       )
-                    {
-                        $real_name = $_;
-
-                        # File::Find has no mechanism for bailing in the
-                        # middle of a find.
-                        die { found => 1 };
-                    }
-                },
-                no_chdir => 1,
-              },
-              '/usr/share/zoneinfo',
-            );
-    };
-
-    if ($@)
-    {
-        return $real_name if ref $@ && $@->{found};
-        die $@;
+        return $subclass;
     }
 }
 
-# RedHat uses this
-sub _from_etc_sysconfig_clock
+sub _IsValidName
 {
-    return unless -r "/etc/sysconfig/clock" && -f _;
+    shift;
 
-    my $name = _read_etc_sysconfig_clock();
-
-    if ( _could_be_valid_time_zone($name) )
-    {
-        return eval { DateTime::TimeZone->new( name => $name ) };
-    }
-}
-
-# this is a sparate function so that it can be overridden in the test
-# suite
-sub _read_etc_sysconfig_clock
-{
-    local *CLOCK;
-    local $_;
-    open CLOCK, '</etc/sysconfig/clock'
-        or die "Cannot read /etc/sysconfig/clock: $!";
-
-    while (<CLOCK>)
-    {
-        return $1 if /^(?:TIME)?ZONE="([^"]+)"/;
-    }
-}
-
-sub _from_etc_default_init
-{
-    return unless -r "/etc/default/init" && -f _;
-
-    my $name = _read_etc_default_init();
-
-    if ( _could_be_valid_time_zone($name) )
-    {
-        return eval { DateTime::TimeZone->new( name => $name ) };
-    }
-}
-
-# this is a sparate function so that it can be overridden in the test
-# suite
-sub _read_etc_default_init
-{
-    local *INIT;
-    local $_;
-    open INIT, '</etc/default/init'
-        or die "Cannot read /etc/default/init: $!";
-
-    while (<INIT>)
-    {
-        return $1 if /^TZ=(.+)/;
-    }
-}
-
-sub _could_be_valid_time_zone
-{
     return 0 unless defined $_[0];
     return 0 if $_[0] eq 'local';
 
-    return $_[0] =~ m,^[\w/\-\+]+$, ? 1 : 0;
+    return $_[0] =~ m{^[\w/\-\+]+$};
 }
+
+sub FromEnv
+{
+    my $class = shift;
+
+    foreach my $var ( $class->EnvVars() )
+    {
+	if ( $class->_IsValidName( $ENV{$var} ) )
+	{
+	    my $tz = eval { DateTime::TimeZone->new( name => $ENV{$var} ) };
+            return $tz if $tz;
+	}
+    }
+
+    return;
+}
+
 
 
 1;
@@ -247,16 +103,38 @@ __END__
 
 =head1 NAME
 
-DateTime::TimeZone::Local - Code to determine the system's local time zone
+DateTime::TimeZone::Local - Determine the local system's time zone
 
 =head1 SYNOPSIS
 
   my $tz = DateTime::TimeZone->new( name => 'local' );
 
+  my $tz = DateTime::TimeZone::Local->TimeZone();
+
 =head1 DESCRIPTION
 
-This package is used to try to figure out what the local time zone is,
-in a variety of ways.  See the
-L<DateTime::TimeZone|DateTime::TimeZone> docs for more details.
+...
+
+=head1 METHODS/FUNCTIONS
+
+...
+
+=head1 AUTHOR
+
+Dave Rolsky, <autarch@urth.org>
+
+=head1 BUGS
+
+Please report any bugs or feature requests to
+C<bug-datetime-timezone-local@rt.cpan.org>, or through the web interface at
+L<http://rt.cpan.org>.  I will be notified, and then you'll automatically be
+notified of progress on your bug as I make changes.
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2007 Dave Rolsky, All Rights Reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
 
 =cut
