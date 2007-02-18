@@ -69,16 +69,6 @@ sub TimeZone
     }
 }
 
-sub _IsValidName
-{
-    shift;
-
-    return 0 unless defined $_[0];
-    return 0 if $_[0] eq 'local';
-
-    return $_[0] =~ m{^[\w/\-\+]+$};
-}
-
 sub FromEnv
 {
     my $class = shift;
@@ -93,6 +83,16 @@ sub FromEnv
     }
 
     return;
+}
+
+sub _IsValidName
+{
+    shift;
+
+    return 0 unless defined $_[0];
+    return 0 if $_[0] eq 'local';
+
+    return $_[0] =~ m{^[\w/\-\+]+$};
 }
 
 
@@ -113,28 +113,90 @@ DateTime::TimeZone::Local - Determine the local system's time zone
 
 =head1 DESCRIPTION
 
-...
+This module provides an interface for determining the local system's
+time zone. Most of the functionality for doing this is in OS-specific
+subclasses.
 
-=head1 METHODS/FUNCTIONS
+=head1 USAGE
 
-...
+This class provides the following methods:
+
+=head2 DateTime::TimeZone::Locale->TimeZone()
+
+This attempts to load an appropriate subclass and asks it to find the
+local time zone. This method is called by when you pass "local" as the
+time zone name to C<< DateTime:TimeZone->new() >>.
+
+If an appropriate subclass does not exist, we fall back to using the
+Unix subclass.
+
+=head1 SUBCLASSING
+
+If you want to make a new OS-specific subclass, there are several
+methods provided by this module you should know about.
+
+=head2 $class->Methods()
+
+This method should be provided by your class. It should provide a list
+of methods that will be called to try to determine the local time
+zone.
+
+Each of these methods is expected to return a new
+C<DateTime::TimeZone> object if it determines the time zone.
+
+=head2 $class->FromEnv()
+
+This method tries to find a valid time zone in an C<%ENV> value. It
+calls C<< $class->EnvVars() >> to determine which keys to look at.
+
+To use this from a subclass, simply return "FromEnv" as one of the
+items from C<< $class->Methods() >>.
+
+=head2 $class->EnvVars()
+
+This method should be provided by your subclass. It should return a
+list of env vars to be checked by C<< $class->FromEnv() >>.
+
+=head2 $class->_IsValidName($name)
+
+Given a possible time zone name, this returns a boolean indicating
+whether or not the the name looks valid. It always return false for
+"local" in order to avoid infinite loops.
+
+=head1 EXAMPLE SUBCLASS
+
+Here is a simple example subclass:
+
+  package DateTime::TimeZone::SomeOS;
+
+  use strict;
+  use warnings;
+
+  use base 'DateTime::TimeZone::Local';
+
+
+  sub Methods { qw( FromEnv FromEther ) }
+
+  sub EnvVars { qw( TZ ZONE ) }
+
+  sub FromEther
+  {
+      my $class = shift;
+
+      ...
+  }
 
 =head1 AUTHOR
 
 Dave Rolsky, <autarch@urth.org>
 
-=head1 BUGS
-
-Please report any bugs or feature requests to
-C<bug-datetime-timezone-local@rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org>.  I will be notified, and then you'll automatically be
-notified of progress on your bug as I make changes.
-
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2007 Dave Rolsky, All Rights Reserved.
-
-This program is free software; you can redistribute it and/or modify it
+Copyright (c) 2003-2007 David Rolsky.  All rights reserved.  This
+program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
+
+The full text of the license can be found in the LICENSE file included
+with this module.
 
 =cut

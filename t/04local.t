@@ -69,7 +69,7 @@ SKIP:
     $^W = 1;
 
     my $tz;
-    eval { $tz = DateTime::TimeZone::Local::Unix->_EtcLocaltime() };
+    eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcLocaltime() };
     is( $@, '', 'valid time zone name in /etc/localtime symlink should not die' );
     isa_ok( $tz, 'DateTime::TimeZone::America::New_York' );
 }
@@ -84,7 +84,7 @@ SKIP:
     $^W = 1;
 
     my $tz;
-    eval { $tz = DateTime::TimeZone::Local::Unix->_EtcSysconfigClock() };
+    eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcSysconfigClock() };
     is( $@, '', 'valid time zone name in /etc/sysconfig/clock should not die' );
     isa_ok( $tz, 'DateTime::TimeZone::America::New_York' );
 }
@@ -97,7 +97,7 @@ SKIP:
     local *DateTime::TimeZone::Local::_read_etc_default_init = sub { 'US/Eastern' };
 
     my $tz;
-    eval { $tz = DateTime::TimeZone::Local::Unix->_EtcDefaultInit() };
+    eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcDefaultInit() };
     is( $@, '', 'valid time zone name in /etc/default/init should not die' );
     isa_ok( $tz, 'DateTime::TimeZone::Australia::Melbourne' );
 }
@@ -118,7 +118,7 @@ SKIP:
 
     {
         $^W = 0;
-        local *DateTime::TimeZone::Local::Unix::_EtcLocaltime = sub { undef };
+        local *DateTime::TimeZone::Local::Unix::FromEtcLocaltime = sub { undef };
         $^W = 1;
 
         my $tz;
@@ -131,9 +131,9 @@ SKIP:
         # requires that /etc/default/init contain
         # TZ=Australia/Melbourne to work.
         $^W = 0;
-        local *DateTime::TimeZone::Local::Unix::_EtcLocaltime = sub { undef };
-        local *DateTime::TimeZone::Local::Unix::_EtcTimezone = sub { undef };
-        local *DateTime::TimeZone::Local::Unix::_EtcTIMEZONE = sub { undef };
+        local *DateTime::TimeZone::Local::Unix::FromEtcLocaltime = sub { undef };
+        local *DateTime::TimeZone::Local::Unix::FromEtcTimezone = sub { undef };
+        local *DateTime::TimeZone::Local::Unix::FromEtcTIMEZONE = sub { undef };
         $^W = 1;
 
         my $tz;

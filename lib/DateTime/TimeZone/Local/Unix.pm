@@ -6,24 +6,20 @@ use warnings;
 use base 'DateTime::TimeZone::Local';
 
 
-sub Methods { return qw( FromEnv FromEtc ) }
+sub Methods
+{
+    return qw( FromEnv
+               FromEtcLocaltime
+               FromEtcTimezone
+               FromEtcTIMEZONE
+               FromEtcSysconfigClock
+               FromEtcDefaultInit
+             );
+}
 
 sub EnvVars { return 'TZ' }
 
-sub FromEtc
-{
-    my $class = shift;
-
-    for my $meth ( qw( _EtcLocaltime _EtcTimezone _EtcTIMEZONE
-                       _EtcSysconfigClock _EtcDefaultInit) )
-    {
-        my $tz = $class->$meth();
-
-        return $tz if $tz;
-    }
-}
-
-sub _EtcLocaltime
+sub FromEtcLocaltime
 {
     my $class = shift;
 
@@ -121,7 +117,7 @@ sub _FindMatchingZoneinfoFile
     }
 }
 
-sub _EtcTimezone
+sub FromEtcTimezone
 {
     my $class = shift;
 
@@ -137,10 +133,12 @@ sub _EtcTimezone
 
     $name =~ s/^\s+|\s+$//g;
 
+    return unless $class->_IsValidName($name);
+
     return eval { DateTime::TimeZone->new( name => $name ) };
 }
 
-sub _EtcTIMEZONE
+sub FromEtcTIMEZONE
 {
     my $class = shift;
 
@@ -164,11 +162,13 @@ sub _EtcTIMEZONE
 
     close TZ;
 
+    return unless $class->_IsValidName($name);
+
     return $name && eval { DateTime::TimeZone->new( name => $name ) };
 }
 
 # RedHat uses this
-sub _EtcSysconfigClock
+sub FromEtcSysconfigClock
 {
     my $class = shift;
 
@@ -176,10 +176,9 @@ sub _EtcSysconfigClock
 
     my $name = $class->_ReadEtcSysconfigClock();
 
-    if ( $class->_IsValidName($name) )
-    {
-        return eval { DateTime::TimeZone->new( name => $name ) };
-    }
+    return unless $class->_IsValidName($name);
+
+    return eval { DateTime::TimeZone->new( name => $name ) };
 }
 
 # this is a sparate function so that it can be overridden in the test
@@ -199,7 +198,7 @@ sub _ReadEtcSysconfigClock
     }
 }
 
-sub _EtcDefaultInit
+sub FromEtcDefaultInit
 {
     my $class = shift;
 
@@ -207,13 +206,12 @@ sub _EtcDefaultInit
 
     my $name = $class->_ReadEtcDefaultInit();
 
-    if ( $class->_IsValidName($name) )
-    {
-        return eval { DateTime::TimeZone->new( name => $name ) };
-    }
+    return unless $class->_IsValidName($name);
+
+    return eval { DateTime::TimeZone->new( name => $name ) };
 }
 
-# this is a sparate function so that it can be overridden in the test
+# this is a separate function so that it can be overridden in the test
 # suite
 sub _ReadEtcDefaultInit
 {
@@ -232,3 +230,79 @@ sub _ReadEtcDefaultInit
 
 
 1;
+
+__END__
+
+=head1 NAME
+
+DateTime::TimeZone::Local::Unix - Determine the local system's time zone on Unix
+
+=head1 SYNOPSIS
+
+  my $tz = DateTime::TimeZone->new( name => 'local' );
+
+  my $tz = DateTime::TimeZone::Local->TimeZone();
+
+=head1 DESCRIPTION
+
+This module provides methods for determining the local time zone on a
+Unix platform.
+
+=head1 HOW THE TIME ZONE IS DETERMINED
+
+This class tries the following methods of determining the local time
+zone:
+
+=over 4
+
+=item * $ENV{TZ}
+
+It checks C<< $ENV{TZ} >> for a valid time zone name.
+
+=item * F</etc/localtime>
+
+If this file is a symlink to an Olson database time zone file (usually
+in F</usr/share/zoneinfo>) then it uses the target file's path to
+determine the time zone name.
+
+If this file is a copy of a zoneinfo file, it looks for a file that
+matches this file in F</usr/share/zoneinfo>. If it finds one, it uses
+that file's path to determine the time zone name.
+
+=item * F</etc/timezone>
+
+If this file exists, it is read and its contents are used as a time
+zone name.
+
+=item * F</etc/TIMEZONE>
+
+If this file exists, it is opened and we look for a line starting like
+"TZ = ...". If this is found, it should indicate a time zone name.
+
+=item * F</etc/sysconfig/clock>
+
+If this file exists, it is opened and we look for a line starting like
+"TIMEZONE = ..." or "ZONE = ...". If this is found, it should indicate
+a time zone name.
+
+=item * F</etc/default/init>
+
+If this file exists, it is opened and we look for a line starting like
+"TZ=...". If this is found, it should indicate a time zone name.
+
+=back
+
+=head1 AUTHOR
+
+Dave Rolsky, <autarch@urth.org>
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright (c) 2003-2007 David Rolsky.  All rights reserved.  This
+program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+The full text of the license can be found in the LICENSE file included
+with this module.
+
+=cut
