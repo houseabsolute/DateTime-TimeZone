@@ -1,3 +1,13 @@
+0.61
+
+- Lots of internal changes in the code used to determine a system's
+  local time zone.
+
+- As a result, we now have a much better method for doing this on
+  Windows systems, by looking at the registry. See
+  DateTime::TimeZone::Local::Win32 for details.
+
+
 0.60     2007-02-13
 
 - This release is based on version 2007b of the Olson database.

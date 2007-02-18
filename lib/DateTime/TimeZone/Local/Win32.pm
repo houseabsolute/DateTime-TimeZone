@@ -228,6 +228,9 @@ We check for a registry key called
 If this exists, it contains a Windows name for the time zone. We use a
 lookup table to translate this into an equivalent time zone name.
 
+This lookup table was borrowed from the Chronos Smalltalk
+library.
+
 =back
 
 =head1 AUTHOR

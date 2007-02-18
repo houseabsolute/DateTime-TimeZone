@@ -130,6 +130,10 @@ time zone name to C<< DateTime:TimeZone->new() >>.
 If an appropriate subclass does not exist, we fall back to using the
 Unix subclass.
 
+See L<DateTime::TimeZone::Local::Unix>,
+L<DateTime::TimeZone::Local::Win32>, and
+L<DateTime::TimeZone::Local::VMS> for OS-specific details.
+
 =head1 SUBCLASSING
 
 If you want to make a new OS-specific subclass, there are several
