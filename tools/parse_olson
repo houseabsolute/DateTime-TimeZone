@@ -394,11 +394,6 @@ sub clean_links
 
     delete $links{UTC};
 
-    # This links to America/Indiana in the "backward" file
-    delete $links{EST};
-    # And this one is for America/Phoenix
-    delete $links{MST};
-
     # Some links resolve to other links - chase them down until they point
     # to a real zone.
     while ( my @k = grep { $links{ $links{$_} } } keys %links )
