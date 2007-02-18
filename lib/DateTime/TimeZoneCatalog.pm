@@ -1875,5 +1875,18 @@ See DateTime::TimeZone for usage details.
 This module contains an enumerated list of all known system timezones,
 so that applications can easily present a list of timezones.
 
+=head1 AUTHOR
+
+Dave Rolsky, <autarch@urth.org>
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright (c) 2003-2007 David Rolsky.  All rights reserved.  This
+program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+The full text of the license can be found in the LICENSE file included
+with this module.
+
 =cut
 

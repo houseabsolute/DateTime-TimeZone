@@ -519,9 +519,7 @@ methods.
 
 This class has the following methods:
 
-=over 4
-
-=item * new( name => $tz_name )
+=head2 DateTime::TimeZone->new( name => $tz_name )
 
 Given a valid time zone name, this method returns a new time zone
 blessed into the appropriate subclass.  Subclasses are named for the
@@ -546,8 +544,6 @@ object is returned.
 
 If the "name" is an offset string, it is converted to a number, and a
 C<DateTime::TimeZone::OffsetOnly> object is returned.
-
-=back
 
 =head3 The "local" time zone
 
@@ -583,20 +579,14 @@ value as a time zone name.
 
 If none of these methods work, it gives up and dies.
 
-=head2 Object Methods
-
-C<DateTime::TimeZone> objects provide the following methods:
-
-=over 4
-
-=item * offset_for_datetime( $dt )
+=head2 $tz->offset_for_datetime( $dt )
 
 Given a C<DateTime> object, this method returns the offset in seconds
 for the given datetime.  This takes into account historical time zone
 information, as well as Daylight Saving Time.  The offset is
 determined by looking at the object's UTC Rata Die days and seconds.
 
-=item * offset_for_local_datetime( $dt )
+=head2 $tz->offset_for_local_datetime( $dt )
 
 Given a C<DateTime> object, this method returns the offset in seconds
 for the given datetime.  Unlike the previous method, this method uses
@@ -604,12 +594,12 @@ the local time's Rata Die days and seconds.  This should only be done
 when the corresponding UTC time is not yet known, because local times
 can be ambiguous due to Daylight Saving Time rules.
 
-=item * name
+=head2 $tz->name
 
 Returns the name of the time zone.  If this value is passed to the
 C<new()> method, it is guaranteed to create the same object.
 
-=item * short_name_for_datetime( $dt )
+=head2 $tz->short_name_for_datetime( $dt )
 
 Given a C<DateTime> object, this method returns the "short name" for
 the current observance and rule this datetime is in.  These are names
@@ -621,84 +611,57 @@ of them are simply the invention of the Olson database maintainers.
 Moreover, these names are not unique.  For example, there is an "EST"
 at both -0500 and +1000/+1100.
 
-=item * is_floating
+=head2 $tz->is_floating
 
 Returns a boolean indicating whether or not this object represents a
 floating time zone, as defined by RFC 2445.
 
-=item * is_utc
+=head2 $tz->is_utc
 
 Indicates whether or not this object represents the UTC (GMT) time
 zone.
 
-=item * has_dst_changes
+=head2 $tz->has_dst_changes
 
 Indicates whether or not this zone has I<ever> had a change to and
 from DST, either in the past or future.
 
-=item * is_olson
+=head2 $tz->is_olson
 
 Returns true if the time zone is a named time zone from the Olson
 database.
 
-=item * category
+=head2 $tz->category
 
 Returns the part of the time zone name before the first slash.  For
 example, the "America/Chicago" time zone would return "America".
 
-=back
-
-=head2 Class Methods
-
-This class provides one class method:
-
-=over 4
-
-=item * is_valid_name ($name)
+=head2 DateTime::TimeZone->is_valid_name($name)
 
 Given a string, this method returns a boolean value indicating whether
 or not the string is a valid time zone name.  If you are using
 C<DateTime::TimeZone::Alias>, any aliases you've created will be valid.
 
-=back
-
-=head2 Storable Hooks
-
-This module provides freeze and thaw hooks for C<Storable> so that the
-huge data structures for Olson time zones are not actually stored in
-the serialized structure.
-
-If you subclass C<DateTime::TimeZone>, you will inherit its hooks,
-which may not work for your module, so please test the interaction of
-your module with Storable.
-
-=head2 Catalog Functions
-
-This class provides several functions for examining the catalog of
-time zones. Calling these as class methods will also work.
-
-=over 4
-
-=item * all_names
+=head2 DateTime::TimeZone->all_names
 
 This returns a pre-sorted list of all the time zone names.  This list
 does not include link names.  In scalar context, it returns an array
 reference, while in list context it returns an array.
 
-=item * categories
+=head2 DateTime::TimeZone->categories
 
 This returns a list of all time zone categories.  In scalar context,
 it returns an array reference, while in list context it returns an
 array.
 
-=item * links
+=head2 DateTime::TimeZone->links
 
 This returns a hash of all time zone links, where the keys are the
 old, deprecated names, and the values are the new names.  In scalar
 context, it returns a hash reference, while in list context it returns
 a hash.
 
-=item * names_in_category( $category )
+=head2 DateTime::TimeZone->names_in_category( $category )
 
 Given a valid category, this method returns a list of the names in
 that category, without the category portion.  So the list for the
@@ -709,7 +672,7 @@ an array reference, while in list context it returns an array.
 The list is returned in order of population by zone, which should mean
 that this order will be the best to use for most UIs.
 
-=item * countries()
+=head2 DateTime::TimeZone->countries()
 
 Returns a sorted list of all the valid country codes (in lower-case)
 which can be passed to C<names_in_country()>. In scalar context, it
@@ -718,23 +681,14 @@ returns an array reference, while in list context it returns an array.
 If you need to convert country codes to names or vice versa you can
 use C<Locale::Country> to do so.
 
-=item * names_in_country( $country_code )
+=head2 DateTime::TimeZone->names_in_country( $country_code )
 
 Given a two-letter ISO3066 country code, this method returns a list of
 time zones used in that country. The country code may be of any
 case. In scalar context, it returns an array reference, while in list
 context it returns an array.
 
-=back
-
-=head2 Other Functions
-
-This class also contains several functions, none of which are
-exported.  Calling these as class methods will also work.
-
-=over 4
-
-=item * offset_as_seconds( $offset )
+=head2 DateTime::TimeZone->offset_as_seconds( $offset )
 
 Given an offset as a string, this returns the number of seconds
 represented by the offset as a positive or negative number.  Returns
@@ -748,12 +702,20 @@ these, C<undef> will be returned.
 This means that if you want to specify hours as a single digit, then
 each element of the offset must be separated by a colon (:).
 
-=item * offset_as_string( $offset )
+=head2 DateTime::TimeZone->offset_as_string( $offset )
 
 Given an offset as a number, this returns the offset as a string.
 Returns C<undef> if $offset is not in the range C<-359999> to C<359999>.
 
-=back
+=head2 Storable Hooks
+
+This module provides freeze and thaw hooks for C<Storable> so that the
+huge data structures for Olson time zones are not actually stored in
+the serialized structure.
+
+If you subclass C<DateTime::TimeZone>, you will inherit its hooks,
+which may not work for your module, so please test the interaction of
+your module with Storable.
 
 =head1 SUPPORT
 
