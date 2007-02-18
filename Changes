@@ -1,3 +1,9 @@
+0.6101     2007-02-18
+
+- Fixes a major bug in 0.61. Passing "local" as a time zone new to
+  DateTime::TimeZone->new() caused a fatal error.
+
+
 0.61     2007-02-18
 
 - Lots of internal changes in the code used to determine a system's

@@ -15,7 +15,7 @@ BEGIN { require 'check_datetime_version.pl' }
 my @aliases = sort keys %{ DateTime::TimeZone::links() };
 my @names = DateTime::TimeZone::all_names;
 
-plan tests => @aliases + @names + 20;
+plan tests => @aliases + @names + 21;
 
 
 {
@@ -188,6 +188,12 @@ SKIP:
     unlink '/etc/localtime' or die "Cannot unlink /etc/localtime: $!";
     symlink $tz_file, '/etc/localtime'
         or die "Cannot symlink $tz_file to '/etc/localtime': $!";
+}
+
+{
+    local $ENV{TZ} = 'Australia/Melbourne';
+    my $tz = eval { DateTime::TimeZone->new( name => 'local' ) };
+    isa_ok( $tz, 'DateTime::TimeZone::Australia::Melbourne' );
 }
 
 SKIP:

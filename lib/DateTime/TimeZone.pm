@@ -3,7 +3,7 @@ package DateTime::TimeZone;
 use strict;
 
 use vars qw( $VERSION );
-$VERSION = '0.61';
+$VERSION = '0.6101';
 
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
@@ -53,7 +53,7 @@ sub new
 
         if ( $p{name} eq 'local' )
         {
-            return DateTime::TimeZone::Local::local_time_zone();
+            return DateTime::TimeZone::Local->TimeZone();
         }
 
         if ( $p{name} eq 'UTC' || $p{name} eq 'Z' )
