@@ -8,6 +8,9 @@ lib/DateTime/TimeZone.pm
 lib/DateTime/TimeZoneCatalog.pm
 lib/DateTime/TimeZone/Floating.pm
 lib/DateTime/TimeZone/Local.pm
+lib/DateTime/TimeZone/Local/Unix.pm
+lib/DateTime/TimeZone/Local/VMS.pm
+lib/DateTime/TimeZone/Local/Win32.pm
 lib/DateTime/TimeZone/OffsetOnly.pm
 lib/DateTime/TimeZone/OlsonDB.pm
 lib/DateTime/TimeZone/UTC.pm
