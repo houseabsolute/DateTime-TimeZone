@@ -1,3 +1,10 @@
+0.63
+
+- Fix determination of local time zone on systems where /etc/localtime
+  is a symlink. This broke in 0.61. Reported by Bradley C Bailey. RT
+  #25348.
+
+
 0.62     2007-02-26
 
 - This release is based on version 2007c of the Olson database.
