@@ -60,7 +60,7 @@ sub FromEtcLocaltime
     }
 }
 
-sub _Readlink { readlink $_[0] }
+sub _Readlink { readlink $_[1] }
 
 # for systems where /etc/localtime is a copy of a zoneinfo file
 sub _FindMatchingZoneinfoFile
