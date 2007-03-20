@@ -170,6 +170,7 @@ qw(
   America/Rankin_Inlet
   America/Recife
   America/Regina
+  America/Resolute
   America/Rio_Branco
   America/Santiago
   America/Santo_Domingo
@@ -576,6 +577,7 @@ qw(
     Rankin_Inlet
     Recife
     Regina
+    Resolute
     Rio_Branco
     Santiago
     Santo_Domingo
@@ -975,8 +977,9 @@ qw(
     America/Toronto
     America/Nipigon
     America/Thunder_Bay
-    America/Pangnirtung
     America/Iqaluit
+    America/Pangnirtung
+    America/Resolute
     America/Atikokan
     America/Rankin_Inlet
     America/Winnipeg
