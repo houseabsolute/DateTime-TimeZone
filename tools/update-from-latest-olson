@@ -12,7 +12,7 @@ my $tempdir = File::Temp::tempdir( CLEANUP => 1 );
 {
     local $CWD = $tempdir;
 
-    my $ftp = Net::FTP->new('elsie.nci.nih.gov')
+    my $ftp = Net::FTP->new( 'elsie.nci.nih.gov', Passive => 1 )
         or die "Cannot connect to elsie.nci.nih.gov: $@";
     $ftp->login()
         or die 'Cannot login: ', $ftp->message;
@@ -31,6 +31,9 @@ my $tempdir = File::Temp::tempdir( CLEANUP => 1 );
             ($olson_version) = $f =~ /(\d\d\d\d\w)/;
         }
     }
+
+    die "Did not retrieve anything from elsie"
+        unless $olson_version;
 
     system( 'make' )
         and die "Cannot run make: $!";
