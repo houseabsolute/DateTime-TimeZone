@@ -1841,6 +1841,8 @@ qw(
 
 ;
 
+sub catalog_olson_version { '2007e' }
+
 sub all_names { wantarray ? @DateTime::TimeZone::ALL : [ @DateTime::TimeZone::ALL ] }
 sub categories { wantarray ? @DateTime::TimeZone::CATEGORY_NAMES : [ @DateTime::TimeZone::CATEGORY_NAMES ] }
 sub links { wantarray ? %DateTime::TimeZone::LINKS : { %DateTime::TimeZone::LINKS } }

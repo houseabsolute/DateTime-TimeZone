@@ -219,6 +219,8 @@ use DateTime::TimeZone::OlsonDB;
 my \$spans =
 $spans;
 
+sub olson_version { '$opts{version}' }
+
 sub has_dst_changes { $has_dst_changes }
 
 sub _max_year { $max_year }
@@ -467,6 +469,8 @@ $countries
 \%DateTime::TimeZone::LINKS =
 $links
 ;
+
+sub catalog_olson_version { '$opts{version}' }
 
 sub all_names { wantarray ? \@DateTime::TimeZone::ALL : [ \@DateTime::TimeZone::ALL ] }
 sub categories { wantarray ? \@DateTime::TimeZone::CATEGORY_NAMES : [ \@DateTime::TimeZone::CATEGORY_NAMES ] }

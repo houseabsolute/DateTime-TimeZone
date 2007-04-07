@@ -92,7 +92,23 @@ sub new
         }
     }
 
-    return $real_class->instance( name => $p{name}, is_olson => 1 );
+    my $zone = $real_class->instance( name => $p{name}, is_olson => 1 );
+
+    if ( $zone->is_olson() )
+    {
+        my $object_version =
+            $zone->can('olson_version')
+            ? $zone->olson_version()
+            : 'unknown';
+        my $catalog_version = __PACKAGE__->catalog_olson_version();
+
+        if ( $object_version ne $catalog_version )
+        {
+            warn "Loaded $real_class, which is from an older version ($object_version) of the Olson database than this installation, of DateTime::TimeZone, which is based on $catalog_version.\n";
+        }
+    }
+
+    return $zone;
 }
 
 sub _init

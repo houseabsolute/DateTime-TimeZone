@@ -1,3 +1,12 @@
+0.65     2007-04-07
+
+- When creating an Olson time zone object, DT::TZ will now check to
+  see if the object being loaded is from an older version of the Olson
+  catalog than the current version of DT::TZ and issue warning if this
+  is the case. This is useful because obsolete module files may exist
+  when a zone name is replaced by a link, or just retired entirely.
+
+
 0.64     2007-04-02
 
 - This release is based on version 2007e of the Olson database
