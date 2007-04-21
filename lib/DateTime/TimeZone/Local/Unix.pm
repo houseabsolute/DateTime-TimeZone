@@ -60,7 +60,15 @@ sub FromEtcLocaltime
     }
 }
 
-sub _Readlink { readlink $_[1] }
+sub _Readlink
+{
+    my $link = $_[1];
+
+    require Cwd;
+    # Using abs_path will resolve multiple levels of link indirection,
+    # whereas readlink just follows the link to the next target.
+    return Cwd::abs_path($link);
+}
 
 # for systems where /etc/localtime is a copy of a zoneinfo file
 sub _FindMatchingZoneinfoFile

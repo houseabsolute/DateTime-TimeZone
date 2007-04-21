@@ -15,7 +15,7 @@ BEGIN { require 'check_datetime_version.pl' }
 my @aliases = sort keys %{ DateTime::TimeZone::links() };
 my @names = DateTime::TimeZone::all_names;
 
-plan tests => @aliases + @names + 21;
+plan tests => @aliases + @names + 22;
 
 
 {
@@ -214,3 +214,29 @@ SKIP:
     isa_ok( $tz, 'DateTime::TimeZone::America::New_York' );
 }
 
+
+SKIP:
+{
+    skip "These tests require File::Temp", 1
+        unless require File::Temp;
+    skip "These tests require a filesystem which support symlinks", 1
+        unless eval { symlink '', '' ; 1 };
+
+    my $tempdir = File::Temp::tempdir( CLEANUP => 1 );
+
+    my $first = File::Spec->catfile( $tempdir, 'first' );
+    open my $fh, '>', $first
+        or die "Cannot open $first: $!";
+    close $fh;
+
+    my $second = File::Spec->catfile( $tempdir, 'second' );
+    symlink $first => $second
+        or die "Cannot symlink $first => $second: $!";
+
+    my $third = File::Spec->catfile( $tempdir, 'third' );
+    symlink $second => $third
+        or die "Cannot symlink $first => $second: $!";
+
+    is( DateTime::TimeZone::Local::Unix->_Readlink( $third ), $first,
+        '_Readlink follows multiple levels of symlinking' );
+}
