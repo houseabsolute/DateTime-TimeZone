@@ -23,18 +23,18 @@ plan tests => 2;
 
 {
     Test::Output::stderr_like
-            ( sub { DateTime::TimeZone->new( name => 'Fake/TZ' ) },
-              qr/\Qfrom an older version (unknown)/,
-              'loading timezone where olson version is not defined'
-            );
+        ( sub { DateTime::TimeZone->new( name => 'Fake/TZ' ) },
+          qr/\Qfrom an older version (unknown)/,
+          'loading timezone where olson version is not defined'
+        );
 }
 
 {
     Test::Output::stderr_like
-            ( sub { DateTime::TimeZone->new( name => 'Fake/TZ2' ) },
-              qr/\Qfrom an older version (2000a)/,
-              'loading timezone where olson version is older than current'
-            );
+        ( sub { DateTime::TimeZone->new( name => 'Fake/TZ2' ) },
+          qr/\Qfrom an older version (2000a)/,
+          'loading timezone where olson version is older than current'
+        );
 }
 
 
