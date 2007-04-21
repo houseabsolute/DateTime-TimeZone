@@ -1,4 +1,8 @@
-0.65     2007-04-07
+0.65     2007-04-21
+
+- Handle cases where /etc/localtime is a symlink pointing to another
+  symlink (and so forth) by using Cwd::abs_path() instead of
+  readlink(). Fixes RT #26438.
 
 - When creating an Olson time zone object, DT::TZ will now check to
   see if the object being loaded is from an older version of the Olson

@@ -3,7 +3,7 @@ package DateTime::TimeZone;
 use strict;
 
 use vars qw( $VERSION );
-$VERSION = '0.64';
+$VERSION = '0.65';
 
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
@@ -104,7 +104,7 @@ sub new
 
         if ( $object_version ne $catalog_version )
         {
-            warn "Loaded $real_class, which is from an older version ($object_version) of the Olson database than this installation, of DateTime::TimeZone, which is based on $catalog_version.\n";
+            warn "Loaded $real_class, which is from an older version ($object_version) of the Olson database than this installation of DateTime::TimeZone ($catalog_version).\n";
         }
     }
 
