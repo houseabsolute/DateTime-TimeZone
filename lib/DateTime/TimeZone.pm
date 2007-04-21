@@ -546,6 +546,13 @@ If the name given is a "link" name in the Olson database, the object
 created may have a different name.  For example, there is a link from
 the old "EST5EDT" name to "America/New_York".
 
+When loading a time zone from the Olson database, the constructor
+checks the version of the loaded class to make sure it matches the
+version of the current DateTime::TimeZone installation. If they do not
+match it will issue a warning. This is useful because time zone names
+may fall out of use, but you may have an old module file installed for
+that time zone.
+
 There are also several special values that can be given as names.
 
 If the "name" parameter is "floating", then a
