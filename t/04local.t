@@ -4,6 +4,7 @@ use strict;
 
 use DateTime::TimeZone::Local;
 use DateTime::TimeZone::Local::Unix;
+use File::Basename qw( basename );
 use File::Spec;
 use Sys::Hostname;
 use Test::More;
@@ -237,6 +238,11 @@ SKIP:
     symlink $second => $third
         or die "Cannot symlink $first => $second: $!";
 
-    is( DateTime::TimeZone::Local::Unix->_Readlink( $third ), $first,
+    # It seems that on some systems (OSX, others?) the temp directory
+    # returned by File::Temp may be a symlink (/tmp is a link to
+    # /private/tmp), so when abs_path folows that link, we end up with
+    # a different path to the "first" file.
+    is( basename( DateTime::TimeZone::Local::Unix->_Readlink( $third ) ),
+        basename( $first ),
         '_Readlink follows multiple levels of symlinking' );
 }
