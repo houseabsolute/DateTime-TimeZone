@@ -1,3 +1,16 @@
+0.66     2007-05-07
+
+- This release is based on version 2007f of the Olson database, which
+  includes Haiti, Turks and Caicos Islands, and New Zealand.
+
+- If /etc/localtime is a symlink, but trying to follow that link does
+  not find a zone name, fall back to trying to find a matching file in
+  /usr/share/zoneinfo. RT #26438.
+
+- Require Cwd 3.0+, since Cwd;:abs_path() in older versions does not
+  following a chain of symlinks.
+
+
 0.6501   2007-04-22
 
 - The test for the new symlink handling could fail on some systems
