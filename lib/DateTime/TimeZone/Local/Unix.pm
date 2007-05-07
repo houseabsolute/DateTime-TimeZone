@@ -33,10 +33,8 @@ sub FromEtcLocaltime
 	# The _Readlink sub exists so the test suite can mock it.
 	$real_name = $class->_Readlink( $lt_file );
     }
-    else
-    {
-        $real_name = $class->_FindMatchingZoneinfoFile( $lt_file );
-    }
+
+    $real_name ||= $class->_FindMatchingZoneinfoFile( $lt_file );
 
     if ( defined $real_name )
     {

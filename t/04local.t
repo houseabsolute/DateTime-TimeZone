@@ -6,17 +6,20 @@ use DateTime::TimeZone::Local;
 use DateTime::TimeZone::Local::Unix;
 use File::Basename qw( basename );
 use File::Spec;
-use Sys::Hostname;
+use Sys::Hostname qw( hostname );
 use Test::More;
 
 use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
 
+my $IsMaintainer = hostname() =~ /houseabsolute|quasar/ && -d '.svn';
+my $CanWriteEtcLocaltime = -w '/etc/localtime' && -l '/etc/localtime';
+
 my @aliases = sort keys %{ DateTime::TimeZone::links() };
 my @names = DateTime::TimeZone::all_names;
 
-plan tests => @aliases + @names + 22;
+plan tests => @aliases + @names + 24;
 
 
 {
@@ -73,6 +76,16 @@ SKIP:
     eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcLocaltime() };
     is( $@, '', 'valid time zone name in /etc/localtime symlink should not die' );
     isa_ok( $tz, 'DateTime::TimeZone::America::New_York' );
+
+
+    $^W = 0;
+    local *DateTime::TimeZone::Local::Unix::_Readlink = sub { undef };
+    local *DateTime::TimeZone::Local::Unix::_FindMatchingZoneinfoFile = sub { 'America/Los_Angeles' };
+    $^W = 1;
+
+    eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcLocaltime() };
+    is( $@, '', 'fall back to _FindMatchZoneinfoFlie if _Readlink finds nothing' );
+    isa_ok( $tz, 'DateTime::TimeZone::America::Los_Angeles' );
 }
 
 SKIP:
@@ -106,7 +119,7 @@ SKIP:
 SKIP:
 {
     skip "Cannot run these tests without explicitly knowing local time zone first (only runs on developers' machine)", 6
-        unless hostname =~ /houseabsolute/ && -d '.svn';
+        unless $IsMaintainer;
 
     {
         local $ENV{TZ} = '';
@@ -147,10 +160,10 @@ SKIP:
 SKIP:
 {
     skip "These tests are too dangerous to run on someone else's machine ;)", 4
-        unless hostname =~ /houseabsolute|quasar/ && -d '.svn';
+        unless $IsMaintainer;
 
     skip "These tests can only be run if we can overwrite /etc/localtime", 4
-        unless -w '/etc/localtime' && -l '/etc/localtime';
+        unless $CanWriteEtcLocaltime;
 
     my $tz_file = readlink '/etc/localtime';
 
