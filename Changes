@@ -1,3 +1,9 @@
+0.6601   2007-05-08
+
+- 0.66 screwed up the test count in 04local.t if certain tests were
+  skipped. Reported by David Precious.
+
+
 0.66     2007-05-07
 
 - This release is based on version 2007f of the Olson database, which
