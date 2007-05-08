@@ -65,7 +65,7 @@ plan tests => @aliases + @names + 24;
 
 SKIP:
 {
-    skip "/etc/localtime is not a symlink", 2
+    skip "/etc/localtime is not a symlink", 4
         unless -l '/etc/localtime';
 
     $^W = 0;
