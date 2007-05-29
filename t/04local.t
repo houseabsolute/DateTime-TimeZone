@@ -115,7 +115,9 @@ SKIP:
     skip "cannot read /etc/default/init", 2
         unless -r '/etc/default/init' && -f _;
 
+    $^W = 0;
     local *DateTime::TimeZone::Local::Unix::_ReadEtcDefaultInit = sub { 'Asia/Tokyo' };
+    $^W = 1;
 
     my $tz;
     eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcDefaultInit() };
