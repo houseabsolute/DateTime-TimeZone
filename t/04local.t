@@ -23,11 +23,14 @@ plan tests => @aliases + @names + 24;
 
 
 {
+    my %links = DateTime::TimeZone->links();
+
     for my $alias ( sort @aliases )
     {
         local $ENV{TZ} = $alias;
         my $tz = eval { DateTime::TimeZone::Local->TimeZone() };
-        isa_ok( $tz, 'DateTime::TimeZone' );
+        is( $tz->name(), $links{$alias},
+            "$alias in \$ENV{TZ} for Local->TimeZone()" );
     }
 }
 
@@ -36,7 +39,8 @@ plan tests => @aliases + @names + 24;
     {
         local $ENV{TZ} = $name;
         my $tz = eval { DateTime::TimeZone::Local->TimeZone() };
-        isa_ok( $tz, 'DateTime::TimeZone' );
+        is( $tz->name(), $name,
+            "$name in \$ENV{TZ} for Local->TimeZone()" );
     }
 }
 
@@ -75,7 +79,8 @@ SKIP:
     my $tz;
     eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcLocaltime() };
     is( $@, '', 'valid time zone name in /etc/localtime symlink should not die' );
-    isa_ok( $tz, 'DateTime::TimeZone::America::New_York' );
+    is( $tz->name(), 'America/New_York',
+        'FromEtchLocaltime() with _Readlink returning /usr/share/zoneinfo/US/Eastern' );
 
 
     $^W = 0;
@@ -85,7 +90,8 @@ SKIP:
 
     eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcLocaltime() };
     is( $@, '', 'fall back to _FindMatchZoneinfoFlie if _Readlink finds nothing' );
-    isa_ok( $tz, 'DateTime::TimeZone::America::Los_Angeles' );
+    is( $tz->name(), 'America/Los_Angeles',
+        'FromEtchLocaltime() with _FindMatchingZoneinfoFile returning America/Los_Angeles' );
 }
 
 SKIP:
@@ -100,7 +106,8 @@ SKIP:
     my $tz;
     eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcSysconfigClock() };
     is( $@, '', 'valid time zone name in /etc/sysconfig/clock should not die' );
-    isa_ok( $tz, 'DateTime::TimeZone::America::New_York' );
+    is( $tz->name(), 'America/New_York',
+        'FromEtcSysConfigClock() with _ReadEtcSysconfigClock returning US/Eastern' );
 }
 
 SKIP:
@@ -108,12 +115,13 @@ SKIP:
     skip "cannot read /etc/default/init", 2
         unless -r '/etc/default/init' && -f _;
 
-    local *DateTime::TimeZone::Local::_read_etc_default_init = sub { 'US/Eastern' };
+    local *DateTime::TimeZone::Local::Unix::_ReadEtcDefaultInit = sub { 'Asia/Tokyo' };
 
     my $tz;
     eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcDefaultInit() };
     is( $@, '', 'valid time zone name in /etc/default/init should not die' );
-    isa_ok( $tz, 'DateTime::TimeZone::Australia::Melbourne' );
+    is( $tz->name(), 'Asia/Tokyo',
+      'FromEtcDefaultInit with _ReadEtcDefaultInit returning Asia/Tokyo');
 }
 
 SKIP:
@@ -127,7 +135,8 @@ SKIP:
         my $tz;
         eval { $tz = DateTime::TimeZone::Local->TimeZone() };
         is( $@, '', 'valid time zone name in /etc/localtime should not die' );
-        isa_ok( $tz, 'DateTime::TimeZone::America::Chicago' );
+        is( $tz->name(), 'America/Chicago',
+            '/etc/localtime should link to America/Chicago' );
     }
 
     {
@@ -138,7 +147,8 @@ SKIP:
         my $tz;
         eval { $tz = DateTime::TimeZone::Local->TimeZone() };
         is( $@, '', 'valid time zone name in /etc/timezone should not die' );
-        isa_ok( $tz, 'DateTime::TimeZone::America::Chicago' );
+        is( $tz->name(), 'America/Chicago',
+            '/etc/timezone should contain America/Chicago' );
     }
 
     {
@@ -153,7 +163,8 @@ SKIP:
         my $tz;
         eval { $tz = DateTime::TimeZone::Local->TimeZone() };
         is( $@, '', '/etc/default/init contains TZ=Australia/Melbourne' );
-        isa_ok( $tz, 'DateTime::TimeZone::Australia::Melbourne' );
+        is( $tz->name(), 'Australia/Melbourne',
+            '/etc/default/init should contain Australia/Melbourne' );
     }
 }
 
@@ -182,7 +193,8 @@ SKIP:
         my $tz;
         eval { $tz = DateTime::TimeZone::Local->TimeZone() };
         is( $@, '', 'copy of zoneinfo file at /etc/localtime' );
-        isa_ok( $tz, 'DateTime::TimeZone::Asia::Calcutta' );
+        is( $tz->name(), 'Asia/Calcutta',
+            '/etc/localtime should be a copy of Asia/Calcutta' );
 
         is( Cwd::cwd(), $cwd, 'cwd should not change after finding local time zone' );
     }
@@ -196,7 +208,8 @@ SKIP:
 
         my $tz;
         eval { $tz = DateTime::TimeZone::Local->TimeZone() };
-        isa_ok( $tz, 'DateTime::TimeZone::Asia::Calcutta' );
+        is( $tz->name(), 'Asia/Calcutta',
+            'a __DIE__ handler did not interfere with our use of File::Find' );
     }
 
     unlink '/etc/localtime' or die "Cannot unlink /etc/localtime: $!";
@@ -207,7 +220,8 @@ SKIP:
 {
     local $ENV{TZ} = 'Australia/Melbourne';
     my $tz = eval { DateTime::TimeZone->new( name => 'local' ) };
-    isa_ok( $tz, 'DateTime::TimeZone::Australia::Melbourne' );
+    is( $tz->name(), 'Australia/Melbourne',
+        q|DT::TZ->new( name => 'local' )| );
 }
 
 SKIP:
@@ -225,7 +239,8 @@ SKIP:
 
     my $tz;
     eval { $tz = DateTime::TimeZone::Local::Win32->FromRegistry() };
-    isa_ok( $tz, 'DateTime::TimeZone::America::New_York' );
+    is( $tz->name(), 'America/New_York',
+        'check registry on Win32' );
 }
 
 

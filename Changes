@@ -1,3 +1,10 @@
+0.6602   2007-05-29
+
+- There was a bug in the 04local.t tests that did not manifest itself
+  on my dev machine, but would've been seen on any machine with an
+  /etc/default/init file. Reported by Jonathan Leffler.
+
+
 0.6601   2007-05-08
 
 - 0.66 screwed up the test count in 04local.t if certain tests were
