@@ -87,6 +87,9 @@ foreach my $tz_name (@names)
 
     foreach my $line (@lines)
     {
+        # This seems to happen on 64-bit systems.
+        next if $line =~ /= NULL$/;
+
         my ( $utc_mon_name, $utc_day, $utc_hour, $utc_min, $utc_sec, $utc_year,
              $loc_mon_name, $loc_day, $loc_hour, $loc_min, $loc_sec, $loc_year,
              $short_name, $is_dst, $offset_from_utc ) =
