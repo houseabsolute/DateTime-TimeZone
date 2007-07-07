@@ -31,7 +31,7 @@ t/15catalog.t
 t/16has-dst-changes.t
 t/17special-names.t
 t/18olson-version-check.t
-t/99-pod.t
+t/pod.t
 t/check_datetime_version.pl
 tools/compile-all-zones
 tools/parse_olson
