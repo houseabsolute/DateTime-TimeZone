@@ -5,10 +5,11 @@ use strict;
 use File::Spec;
 use Test::More;
 
+use DateTime::TimeZone;
 use DateTime::TimeZoneCatalog;
 
 
-plan tests => 30;
+plan tests => 31;
 
 {
     my @all = DateTime::TimeZone::all_names();
@@ -105,4 +106,10 @@ plan tests => 30;
     my @zones = DateTime::TimeZone::names_in_country('us');
     is( $zones[0], 'America/New_York',
         'First timezone by country in US is America/New_York' );
+}
+
+{
+    my $zones = DateTime::TimeZone::names_in_country('us');
+    is( $zones->[0], 'America/New_York',
+        'First timezone by country in US is America/New_York - scalar context' );
 }

@@ -3,7 +3,7 @@ package DateTime::TimeZone;
 use strict;
 
 use vars qw( $VERSION );
-$VERSION = '0.6602';
+$VERSION = '0.6603';
 
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
@@ -499,6 +499,56 @@ sub offset_as_string
              sprintf( '%s%02d%02d%02d', $sign, $hours, $mins, $secs ) :
              sprintf( '%s%02d%02d', $sign, $hours, $mins )
            );
+}
+
+# These methods all operate on data contained in the DateTime/TimeZoneCatalog.pm file.
+
+sub all_names
+{
+    return wantarray ? @DateTime::TimeZone::ALL : [@DateTime::TimeZone::ALL];
+}
+
+sub categories
+{
+    return wantarray
+        ? @DateTime::TimeZone::CATEGORY_NAMES
+        : [@DateTime::TimeZone::CATEGORY_NAMES];
+}
+
+sub links
+{
+    return
+        wantarray ? %DateTime::TimeZone::LINKS : {%DateTime::TimeZone::LINKS};
+}
+
+sub names_in_category
+{
+    shift if $_[0]->isa('DateTime::TimeZone');
+    return unless exists $DateTime::TimeZone::CATEGORIES{ $_[0] };
+
+    return
+        wantarray
+        ? @{ $DateTime::TimeZone::CATEGORIES{ $_[0] } }
+        : [ $DateTime::TimeZone::CATEGORIES{ $_[0] } ];
+}
+
+sub countries
+{
+    wantarray
+        ? ( sort keys %DateTime::TimeZone::ZONES_BY_COUNTRY )
+        : [ sort keys %DateTime::TimeZone::ZONES_BY_COUNTRY ];
+}
+
+sub names_in_country
+{
+    shift if $_[0]->isa('DateTime::TimeZone');
+
+    return unless exists $DateTime::TimeZone::ZONES_BY_COUNTRY{ lc $_[0] };
+
+    return
+        wantarray
+        ? @{ $DateTime::TimeZone::ZONES_BY_COUNTRY{ lc $_[0] } }
+        : $DateTime::TimeZone::ZONES_BY_COUNTRY{ lc $_[0] };
 }
 
 

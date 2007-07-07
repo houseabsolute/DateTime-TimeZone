@@ -472,28 +472,6 @@ $links
 
 sub catalog_olson_version { '$opts{version}' }
 
-sub all_names { wantarray ? \@DateTime::TimeZone::ALL : [ \@DateTime::TimeZone::ALL ] }
-sub categories { wantarray ? \@DateTime::TimeZone::CATEGORY_NAMES : [ \@DateTime::TimeZone::CATEGORY_NAMES ] }
-sub links { wantarray ? %DateTime::TimeZone::LINKS : { %DateTime::TimeZone::LINKS } }
-
-sub names_in_category
-{
-    shift if \$_[0]->isa('DateTime::TimeZone');
-    return unless exists \$DateTime::TimeZone::CATEGORIES{ \$_[0] };
-
-    return wantarray ? \@{ \$DateTime::TimeZone::CATEGORIES{ \$_[0] } } : [ \$DateTime::TimeZone::CATEGORIES{ \$_[0] } ];
-}
-
-sub countries { wantarray ? ( sort keys \%DateTime::TimeZone::ZONES_BY_COUNTRY ) :  [ sort keys \%DateTime::TimeZone::ZONES_BY_COUNTRY ] }
-
-sub names_in_country
-{
-    shift if \$_[0]->isa('DateTime::TimeZone');
-    return unless exists \$DateTime::TimeZone::ZONES_BY_COUNTRY{ lc \$_[0] };
-
-    return wantarray ? \@{ \$DateTime::TimeZone::ZONES_BY_COUNTRY{ lc \$_[0] } } : [ \$DateTime::TimeZone::ZONES_BY_COUNTRY{ lc \$_[0] } ];
-}
-
 
 1;
 

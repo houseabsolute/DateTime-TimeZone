@@ -1,3 +1,11 @@
+0.6603   2007-07-07
+
+- The DateTime::TimeZone->names_in_country() method returned the wrong
+  thing in scalar context. Instead of a simple array reference, it
+  returned a reference to an array reference. Reported by John
+  O'Rourke. RT #27843.
+
+
 0.6602   2007-05-29
 
 - There was a bug in the 04local.t tests that did not manifest itself
