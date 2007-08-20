@@ -125,6 +125,7 @@ qw(
   America/Indiana/Knox
   America/Indiana/Marengo
   America/Indiana/Petersburg
+  America/Indiana/Tell_City
   America/Indiana/Vevay
   America/Indiana/Vincennes
   America/Indiana/Winamac
@@ -532,6 +533,7 @@ qw(
     Indiana/Knox
     Indiana/Marengo
     Indiana/Petersburg
+    Indiana/Tell_City
     Indiana/Vevay
     Indiana/Vincennes
     Indiana/Winamac
@@ -984,10 +986,10 @@ qw(
     America/Rankin_Inlet
     America/Winnipeg
     America/Rainy_River
-    America/Cambridge_Bay
     America/Regina
     America/Swift_Current
     America/Edmonton
+    America/Cambridge_Bay
     America/Yellowknife
     America/Inuvik
     America/Dawson_Creek
@@ -1630,12 +1632,13 @@ qw(
     America/Kentucky/Louisville
     America/Kentucky/Monticello
     America/Indiana/Indianapolis
+    America/Indiana/Vincennes
     America/Indiana/Knox
     America/Indiana/Winamac
     America/Indiana/Marengo
     America/Indiana/Vevay
     America/Chicago
-    America/Indiana/Vincennes
+    America/Indiana/Tell_City
     America/Indiana/Petersburg
     America/Menominee
     America/North_Dakota/Center
@@ -1841,7 +1844,7 @@ qw(
 
 ;
 
-sub catalog_olson_version { '2007f' }
+sub catalog_olson_version { '2007g' }
 
 
 1;

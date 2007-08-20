@@ -1,3 +1,10 @@
+0.67     2007-08-20
+
+- This release is based on version 2007g of the Olson database, which
+  includes changes to Egypt, Antarctica, Australia, and Indiana (Perry
+  County).
+
+
 0.6603   2007-07-07
 
 - The DateTime::TimeZone->names_in_country() method returned the wrong
@@ -22,7 +29,8 @@
 0.66     2007-05-07
 
 - This release is based on version 2007f of the Olson database, which
-  includes Haiti, Turks and Caicos Islands, and New Zealand.
+  includes changes to Haiti, Turks and Caicos Islands, and New
+  Zealand.
 
 - If /etc/localtime is a symlink, but trying to follow that link does
   not find a zone name, fall back to trying to find a matching file in
