@@ -21,14 +21,20 @@ EOF
     exit;
 }
 
+my %requires = ( 'Class::Singleton' => 1.03,
+                 'Cwd'              => 3,
+                 'Params::Validate' => 0.72,
+                 'Pod::Man'    => 1.14,
+               );
+
+my %IsWin32 = map { $_ => 1 } qw( MSWin32 NetWare symbian );
+$requires{'Win32::TieRegistry'} = 1
+    if $IsWin32{ $^O };
+
 Module::Build->new( module_name => 'DateTime::TimeZone',
                     dist_author => 'Dave Rolsky <autarch@urth.org>',
                     license     => 'perl',
-                    requires    => { 'Class::Singleton' => 1.03,
-                                     'Cwd'              => 3,
-                                     'Params::Validate' => 0.72,
-                                     'Pod::Man'    => 1.14,
-                                   },
+                    requires    => \%requires,
                     build_requires => { 'Module::Build' => 0 },
 		    sign        => 1,
                     create_makefile_pl => 'passthrough',

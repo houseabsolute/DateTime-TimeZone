@@ -1,3 +1,9 @@
+0.6901   2007-11-02
+
+- Add Win32::TieRegistry to our prereqs if we're on Win32. Reported by
+  Ruud H.G. van Tol.
+
+
 0.69     2007-11-01
 
 - This release is based on version 2007i of the Olson database, which
