@@ -19,7 +19,7 @@ my $CanWriteEtcLocaltime = -w '/etc/localtime' && -l '/etc/localtime';
 my @aliases = sort keys %{ DateTime::TimeZone::links() };
 my @names = DateTime::TimeZone::all_names;
 
-plan tests => @aliases + @names + 24;
+plan tests => @aliases + @names + 30;
 
 
 {
@@ -47,14 +47,13 @@ plan tests => @aliases + @names + 24;
 {
     local $ENV{TZ} = 'this will not work';
 
-    my $tz;
-    eval { $tz = DateTime::TimeZone::Local::Unix->FromEnv() };
+    my $tz = DateTime::TimeZone::Local::Unix->FromEnv();
     is( $tz, undef,
         'invalid time zone name in $ENV{TZ} fails' );
 
     local $ENV{TZ} = '123/456';
 
-    eval { $tz = DateTime::TimeZone::Local::Unix->FromEnv() };
+    $tz = DateTime::TimeZone::Local::Unix->FromEnv();
     is( $tz, undef,
         'invalid time zone name in $ENV{TZ} fails' );
 }
@@ -62,14 +61,29 @@ plan tests => @aliases + @names + 24;
 {
     local $ENV{TZ} = 'Africa/Kinshasa';
 
-    my $tz;
-    eval { $tz = DateTime::TimeZone::Local::Unix->FromEnv() };
+    my $tz = DateTime::TimeZone::Local::Unix->FromEnv();
     is( $tz->name(), 'Africa/Kinshasa', 'tz object name() is Africa::Kinshasa' );
 }
 
+
+{
+    # This passes the _IsValidName() check but when passed to
+    # DT::TZ->new() will throw an exception.
+    {
+        package Foo;
+        use overload '""' => sub { "Foo" },
+                     'eq' => sub { "$_[0]" eq "$_[1]" };
+    }
+    local $ENV{TZ} = bless [], 'Foo';
+
+    DateTime::TimeZone::Local::Unix->FromEnv();
+    is( $@, '', 'FromEnv does not leave $@ set' );
+}
+
+
 SKIP:
 {
-    skip "/etc/localtime is not a symlink", 4
+    skip "/etc/localtime is not a symlink", 6
         unless -l '/etc/localtime';
 
     $^W = 0;
@@ -82,6 +96,14 @@ SKIP:
     is( $tz->name(), 'America/New_York',
         'FromEtchLocaltime() with _Readlink returning /usr/share/zoneinfo/US/Eastern' );
 
+    $^W = 0;
+    local *DateTime::TimeZone::Local::Unix::_Readlink = sub { '/usr/share/zoneinfo/Foo/Bar' };
+    $^W = 1;
+
+    my $tz = DateTime::TimeZone::Local::Unix->FromEtcLocaltime() ;
+    is( $@, '', 'valid time zone name in /etc/localtime symlink should not leave $@ set' );
+    ok( ! $tz, 'no time zone was found' );
+
 
     $^W = 0;
     local *DateTime::TimeZone::Local::Unix::_Readlink = sub { undef };
@@ -89,7 +111,7 @@ SKIP:
     $^W = 1;
 
     eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcLocaltime() };
-    is( $@, '', 'fall back to _FindMatchZoneinfoFlie if _Readlink finds nothing' );
+    is( $@, '', 'fall back to _FindMatchZoneinfoFile if _Readlink finds nothing' );
     is( $tz->name(), 'America/Los_Angeles',
         'FromEtchLocaltime() with _FindMatchingZoneinfoFile returning America/Los_Angeles' );
 }
@@ -128,7 +150,7 @@ SKIP:
 
 SKIP:
 {
-    skip "Cannot run these tests without explicitly knowing local time zone first (only runs on developers' machine)", 6
+    skip "Cannot run these tests without explicitly knowing local time zone first (only runs on developers' machine)", 7
         unless $IsMaintainer;
 
     {
@@ -172,10 +194,50 @@ SKIP:
 
 SKIP:
 {
-    skip "These tests are too dangerous to run on someone else's machine ;)", 4
+    my $file = '/etc/timezone';
+
+    skip "Cannot write this test unless we can write to /etc/timezone", 1
+        unless $IsMaintainer && -w $file;
+
+    open my $fh, '>', $file
+        or die "Cannot write to $file: $!";
+    print $fh 'Foo/Bar';
+    close $fh;
+
+    DateTime::TimeZone::Local::Unix->FromEtcTimezone();
+    is( $@, '', 'calling FromEtcTimezone when it contains a bad name should not leave $@ set' );
+
+    open my $fh, '>', $file
+        or die "Cannot write to $file: $!";
+    print $fh 'America/Chicago';
+    close $fh;
+}
+
+SKIP:
+{
+    my $file = '/etc/TIMEZONE';
+
+    skip "Cannot write this test unless we can write to /etc/TIMEZONE", 1
+        unless $IsMaintainer && -w '/etc';
+
+    open my $fh, '>', $file
+        or die "Cannot write to $file: $!";
+    print $fh "TZ = Foo/Bar\n";
+    close $fh;
+
+    DateTime::TimeZone::Local::Unix->FromEtcTIMEZONE();
+    is( $@, '', 'calling FromEtcTIMEZONE when it contains a bad name should not leave $@ set' );
+
+    unlink $file
+        or die "Cannot unlink $file: $!";
+}
+
+SKIP:
+{
+    skip "These tests are too dangerous to run on someone else's machine ;)", 5
         unless $IsMaintainer;
 
-    skip "These tests can only be run if we can overwrite /etc/localtime", 4
+    skip "These tests can only be run if we can overwrite /etc/localtime", 5
         unless $CanWriteEtcLocaltime;
 
     my $tz_file = readlink '/etc/localtime';
@@ -199,6 +261,9 @@ SKIP:
             '/etc/localtime should be a copy of Asia/Calcutta' );
 
         is( Cwd::cwd(), $cwd, 'cwd should not change after finding local time zone' );
+
+        $tz = DateTime::TimeZone::Local->TimeZone();
+        is( $@, '', 'calling _FindMatchZoneinfoFile does not leave $@ set' );
     }
 
     {

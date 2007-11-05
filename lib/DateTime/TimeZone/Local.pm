@@ -77,7 +77,11 @@ sub FromEnv
     {
 	if ( $class->_IsValidName( $ENV{$var} ) )
 	{
-	    my $tz = eval { DateTime::TimeZone->new( name => $ENV{$var} ) };
+	    my $tz;
+            {
+                local $@;
+                $tz = eval { DateTime::TimeZone->new( name => $ENV{$var} ) };
+            }
             return $tz if $tz;
 	}
     }

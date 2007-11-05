@@ -51,7 +51,11 @@ sub FromEtcLocaltime
                   $parts[$x]
                 );
 
-            my $tz = eval { DateTime::TimeZone->new( name => $name ) };
+            my $tz;
+            {
+                local $@;
+                $tz = eval { DateTime::TimeZone->new( name => $name ) };
+            }
 
             return $tz if $tz;
         }
@@ -83,7 +87,7 @@ sub _FindMatchingZoneinfoFile
     my $size = -s $file_to_match;
 
     my $real_name;
-
+    local $@;
     local $_;
     eval
     {
@@ -141,6 +145,7 @@ sub FromEtcTimezone
 
     return unless $class->_IsValidName($name);
 
+    local $@;
     return eval { DateTime::TimeZone->new( name => $name ) };
 }
 
@@ -157,20 +162,21 @@ sub FromEtcTIMEZONE
         or die "Cannot read $tz_file: $!";
 
     my $name;
-    while ($name = <TZ>)
+    while ( defined( $name = <TZ> ) )
     {
-       if ($name =~ /\A\s*TZ=\s*(\S+)/)
-       {
-          $name = $1;
-          last;
-       }
+        if ( $name =~ /\A\s*TZ\s*=\s*(\S+)/ )
+        {
+            $name = $1;
+            last;
+        }
     }
 
     close TZ;
 
     return unless $class->_IsValidName($name);
 
-    return $name && eval { DateTime::TimeZone->new( name => $name ) };
+    local $@;
+    return eval { DateTime::TimeZone->new( name => $name ) };
 }
 
 # RedHat uses this
@@ -184,6 +190,7 @@ sub FromEtcSysconfigClock
 
     return unless $class->_IsValidName($name);
 
+    local $@;
     return eval { DateTime::TimeZone->new( name => $name ) };
 }
 
@@ -214,6 +221,7 @@ sub FromEtcDefaultInit
 
     return unless $class->_IsValidName($name);
 
+    local $@;
     return eval { DateTime::TimeZone->new( name => $name ) };
 }
 

@@ -185,6 +185,7 @@ sub EnvVars { return 'TZ' }
 
         return unless $class->_IsValidName($olson);
 
+        local $@;
         return eval { DateTime::TimeZone->new( name => $olson ) };
     }
 }

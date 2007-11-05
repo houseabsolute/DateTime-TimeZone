@@ -404,9 +404,13 @@ sub category  { (split /\//, $_[0]->{name}, 2)[0] }
 
 sub is_valid_name
 {
-    my $tz = eval { $_[0]->new( name => $_[1] ) };
+    my $tz;
+    {
+        local $@;
+        $tz = eval { $_[0]->new( name => $_[1] ) };
+    }
 
-    return $tz && UNIVERSAL::isa( $tz, 'DateTime::TimeZone') ? 1 : 0
+    return $tz && $tz->isa('DateTime::TimeZone') ? 1 : 0
 }
 
 sub STORABLE_freeze
@@ -444,7 +448,11 @@ sub STORABLE_thaw
 #
 sub offset_as_seconds
 {
-    shift if eval { $_[0]->isa('DateTime::TimeZone') };
+    {
+        local $@;
+        shift if eval { $_[0]->isa('DateTime::TimeZone') };
+    }
+
     my $offset = shift;
 
     return undef unless defined $offset;
@@ -479,7 +487,11 @@ sub offset_as_seconds
 
 sub offset_as_string
 {
-    shift if eval { $_[0]->isa('DateTime::TimeZone') };
+    {
+        local $@;
+        shift if eval { $_[0]->isa('DateTime::TimeZone') };
+    }
+
     my $offset = shift;
 
     return undef unless defined $offset;

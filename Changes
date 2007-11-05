@@ -1,3 +1,11 @@
+0.6902   2007-11-05
+
+- Fixed many sloppy uses of eval blocks which would leave $@ set after
+  calling various DT::TZ methods/functions. This could cause unrelated
+  error checking to find $@ set to something and log an error or
+  die. Reported by Kat.
+
+
 0.6901   2007-11-02
 
 - Add Win32::TieRegistry to our prereqs if we're on Win32. Reported by
