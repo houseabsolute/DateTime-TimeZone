@@ -100,7 +100,7 @@ SKIP:
     local *DateTime::TimeZone::Local::Unix::_Readlink = sub { '/usr/share/zoneinfo/Foo/Bar' };
     $^W = 1;
 
-    my $tz = DateTime::TimeZone::Local::Unix->FromEtcLocaltime() ;
+    $tz = DateTime::TimeZone::Local::Unix->FromEtcLocaltime() ;
     is( $@, '', 'valid time zone name in /etc/localtime symlink should not leave $@ set' );
     ok( ! $tz, 'no time zone was found' );
 
@@ -150,7 +150,7 @@ SKIP:
 
 SKIP:
 {
-    skip "Cannot run these tests without explicitly knowing local time zone first (only runs on developers' machine)", 7
+    skip "Cannot run these tests without explicitly knowing local time zone first (only runs on developers' machine)", 6
         unless $IsMaintainer;
 
     {
@@ -207,7 +207,7 @@ SKIP:
     DateTime::TimeZone::Local::Unix->FromEtcTimezone();
     is( $@, '', 'calling FromEtcTimezone when it contains a bad name should not leave $@ set' );
 
-    open my $fh, '>', $file
+    open $fh, '>', $file
         or die "Cannot write to $file: $!";
     print $fh 'America/Chicago';
     close $fh;
