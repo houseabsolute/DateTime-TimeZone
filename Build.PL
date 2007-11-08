@@ -28,7 +28,7 @@ my %requires = ( 'Class::Singleton' => 1.03,
                );
 
 my %IsWin32 = map { $_ => 1 } qw( MSWin32 NetWare symbian );
-$requires{'Win32::TieRegistry'} = 1
+$requires{'Win32::TieRegistry'} = 0
     if $IsWin32{ $^O };
 
 Module::Build->new( module_name => 'DateTime::TimeZone',
