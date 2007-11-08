@@ -1,3 +1,12 @@
+0.6903   2007-11-08
+
+- The Win32::TieRegistry prereq was requiring version 1.0, which
+  doesn't exist. I meant to require just any version. Reported by
+  CJM. RT #30580.
+
+- No code changes in this release.
+
+
 0.6902   2007-11-05
 
 - Fixed many sloppy uses of eval blocks which would leave $@ set after
