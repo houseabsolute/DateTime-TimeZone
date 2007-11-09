@@ -19,7 +19,7 @@ my $CanWriteEtcLocaltime = -w '/etc/localtime' && -l '/etc/localtime';
 my @aliases = sort keys %{ DateTime::TimeZone::links() };
 my @names = DateTime::TimeZone::all_names;
 
-plan tests => @aliases + @names + 30;
+plan tests => @aliases + @names + 33;
 
 
 {
@@ -293,7 +293,7 @@ SKIP:
 
 SKIP:
 {
-    skip "These tests only run on Win32", 1
+    skip "These tests only run on Win32", 4
         unless $^O =~ /win32/i;
 
     require DateTime::TimeZone::Local::Win32;
@@ -301,13 +301,23 @@ SKIP:
     my %Reg;
     Win32::TieRegistry->import( TiedHash => \%Reg );
 
-    local $Reg{'HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation\\StandardName'}
-        = 'Eastern Standard Time';
+    my $key =
+        'HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation\\StandardName';
+
+    local $Reg{$key} = 'Eastern Standard Time';
 
     my $tz;
     eval { $tz = DateTime::TimeZone::Local::Win32->FromRegistry() };
+    is( $@, '', 'no error getting time zone from registry' );
     is( $tz->name(), 'America/New_York',
-        'check registry on Win32' );
+        'check registry on Win32 - Eastern Standard Time' );
+
+    local $Reg{$key} = 'Dateline';
+
+    eval { $tz = DateTime::TimeZone::Local::Win32->FromRegistry() };
+    is( $@, '', 'no error getting time zone from registry' );
+    is( $tz->name(), 'Pacific/Majuro',
+        'check registry on Win32 - Dateline' );
 }
 
 

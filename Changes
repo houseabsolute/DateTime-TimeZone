@@ -1,3 +1,10 @@
+0.6904   2007-11-09
+
+- Updated the Windows -> Olson conversion table, though it's still
+  English-only. Added some more Win32 tests to hopefully help diagnose
+  a test failure report from a Win32 tester.
+
+
 0.6903   2007-11-08
 
 - The Win32::TieRegistry prereq was requiring version 1.0, which
