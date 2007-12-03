@@ -927,6 +927,9 @@ qw(
   'bj' => [ qw(
     Africa/Porto-Novo
 ) ],
+  'bl' => [ qw(
+    America/St_Barthelemy
+) ],
   'bm' => [ qw(
     Atlantic/Bermuda
 ) ],
@@ -1319,6 +1322,9 @@ qw(
 ) ],
   'me' => [ qw(
     Europe/Podgorica
+) ],
+  'mf' => [ qw(
+    America/Marigot
 ) ],
   'mg' => [ qw(
     Indian/Antananarivo
@@ -1724,10 +1730,12 @@ qw(
   'America/Jujuy' => 'America/Argentina/Jujuy',
   'America/Knox_IN' => 'America/Indiana/Knox',
   'America/Louisville' => 'America/Kentucky/Louisville',
+  'America/Marigot' => 'America/Guadeloupe',
   'America/Mendoza' => 'America/Argentina/Mendoza',
   'America/Porto_Acre' => 'America/Rio_Branco',
   'America/Rosario' => 'America/Argentina/Cordoba',
   'America/Shiprock' => 'America/Denver',
+  'America/St_Barthelemy' => 'America/Guadeloupe',
   'America/Virgin' => 'America/St_Thomas',
   'Antarctica/South_Pole' => 'Antarctica/McMurdo',
   'Arctic/Longyearbyen' => 'Europe/Oslo',
@@ -1844,7 +1852,7 @@ qw(
 
 ;
 
-sub catalog_olson_version { '2007i' }
+sub catalog_olson_version { '2007j' }
 
 
 1;

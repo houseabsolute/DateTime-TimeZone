@@ -1,3 +1,10 @@
+0.70     2007-12-03
+
+- This release is based on version 2007j of the Olson database. There
+  is one major change in this release, for the new Venezuelan time
+  zone.
+
+
 0.6904   2007-11-09
 
 - Updated the Windows -> Olson conversion table, though it's still
