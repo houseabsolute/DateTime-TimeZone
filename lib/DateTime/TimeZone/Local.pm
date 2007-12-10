@@ -16,7 +16,7 @@ sub TimeZone
 
     my $subclass = $class->_load_subclass();
 
-    for my $ meth ( $subclass->Methods() )
+    for my $meth ( $subclass->Methods() )
     {
 	my $tz = $subclass->$meth();
 
