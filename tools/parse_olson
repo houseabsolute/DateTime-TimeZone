@@ -37,6 +37,8 @@ $opts{help} = 1
 $opts{help} = 1
     unless defined $opts{version} || $opts{file} || $opts{name};
 
+$opts{version} ||= 'test';
+
 if ( $opts{help} )
 {
     print <<'EOF';
