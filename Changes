@@ -1,3 +1,13 @@
+0.71     2007-12-28
+
+- Fixes a major bug in the generation of time zone data. This bug
+  affected any time zone that has more than one rule (most of them)
+  and currently has no DST changes (many of them). An example would be
+  America/Caracas. The symptom would either be mistakes about the
+  current time zone or bogus exceptions when trying to create a local
+  date. Reported by Éric Cholet.
+
+
 0.70     2007-12-03
 
 - This release is based on version 2007j of the Olson database. There
