@@ -202,7 +202,7 @@ EOF
         print T <<"EOF";
 {
     my \$dt = DateTime->new( $utc_new,
-                             time_zone => 'UTC',
+                            time_zone => 'UTC',
                            );
     \$dt->set_time_zone( '$t->{time_zone}' );
 
