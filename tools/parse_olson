@@ -286,19 +286,36 @@ sub zone_as_spans
 
     unless ( $zone->infinite_rules )
     {
-        my $last_observance = $changes[-1]->observance;
+        my $last_change = $changes[-1];
 
-        my $utc_start =
-            @spans ? $spans[-1]{utc_end} : -1 * $INFINITY;
+        my $last_observance = $last_change->observance;
 
-        push @spans, { utc_start   => $utc_start,
-                       utc_end     => $INFINITY,
-                       local_start => $utc_start - $last_observance->total_offset,
-                       local_end   => $INFINITY,
-                       short_name  => sprintf( $last_observance->format, '' ),
-                       offset      => $last_observance->total_offset,
-                       is_dst      => 0,
-                     };
+        if ( $last_change->utc_start_datetime )
+        {
+            push @spans, { utc_start   => $last_change->utc_start_datetime->utc_rd_as_seconds,
+                           utc_end     => $INFINITY,
+                           local_start => $last_change->local_start_datetime->utc_rd_as_seconds,
+                           local_end   => $INFINITY,
+                           short_name  => $last_change->short_name,
+                           offset      => $last_change->total_offset,
+                       is_dst      => $last_change->is_dst,
+                         };
+        }
+        # This happens with zones that have only one rule and no real changes (Pacific/Johnston)
+        else
+        {
+            my $utc_start =
+                @spans ? $spans[-1]{utc_end} : -1 * $INFINITY;
+
+            push @spans, { utc_start   => $utc_start,
+                           utc_end     => $INFINITY,
+                           local_start => $utc_start - $last_observance->total_offset,
+                           local_end   => $INFINITY,
+                           short_name  => sprintf( $last_observance->format, '' ),
+                           offset      => $last_observance->total_offset,
+                           is_dst      => 0,
+                         };
+        }
     }
 
     return \@spans;
