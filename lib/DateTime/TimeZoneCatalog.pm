@@ -1535,7 +1535,6 @@ qw(
 ) ],
   'sj' => [ qw(
     Arctic/Longyearbyen
-    Atlantic/Jan_Mayen
 ) ],
   'sk' => [ qw(
     Europe/Bratislava
@@ -1852,7 +1851,7 @@ qw(
 
 ;
 
-sub catalog_olson_version { '2007j' }
+sub catalog_olson_version { '2007k' }
 
 
 1;
