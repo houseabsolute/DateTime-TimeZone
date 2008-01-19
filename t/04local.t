@@ -19,7 +19,7 @@ my $CanWriteEtcLocaltime = -w '/etc/localtime' && -l '/etc/localtime';
 my @aliases = sort keys %{ DateTime::TimeZone::links() };
 my @names = DateTime::TimeZone::all_names;
 
-plan tests => @aliases + @names + 33;
+plan tests => @aliases + @names + 34;
 
 
 {
@@ -63,6 +63,11 @@ plan tests => @aliases + @names + 33;
 
     my $tz = DateTime::TimeZone::Local::Unix->FromEnv();
     is( $tz->name(), 'Africa/Kinshasa', 'tz object name() is Africa::Kinshasa' );
+
+    local $ENV{TZ} = 0;
+    $tz = eval { DateTime::TimeZone::Local->TimeZone() };
+    is( $tz->name(), 'UTC',
+        "\$ENV{TZ} set to 0 returns UTC" );
 }
 
 
