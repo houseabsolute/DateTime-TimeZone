@@ -1,3 +1,10 @@
+0.73
+
+- The DT::TZ::Local::VMS module declared its package as
+  DateTime::TimeZone::Local::Win32, which clearly is not
+  right. Patched by Peter Prymmer.
+
+
 0.72     2007-12-31
 
 - This release is based on version 2007j of the Olson database. The
