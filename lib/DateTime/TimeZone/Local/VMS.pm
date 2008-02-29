@@ -1,4 +1,4 @@
-package DateTime::TimeZone::Local::Win32;
+package DateTime::TimeZone::Local::VMS;
 
 use strict;
 use warnings;
