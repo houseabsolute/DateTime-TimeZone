@@ -1,26 +1,29 @@
-^blib/
-^Makefile$
-^Makefile\.[a-z]+$
-^pm_to_blib$
-CVS/.*
+# Avoid version control files.
+\bRCS\b
+\bCVS\b
 ,v$
-^tmp/
+\B\.svn\b
+
+# Avoid Makemaker generated and utility files.
+\bMakefile$
+\bblib
+\bMakeMaker-\d
+\bpm_to_blib$
+\bblibdirs$
+^MANIFEST\.SKIP$
+
+# Avoid Module::Build generated and utility files.
+\bBuild$
+\b_build
+
+# Avoid temp and backup files.
+~$
 \.old$
 \.bak$
-~$
-^#
-\.shar$
-\.tar$
-\.tgz$
-\.tar\.gz$
-\.zip$
-_uu$
-\.cvsignore
-MANIFEST\.SKIP
-^t/zd_
-^Build$
-^_build
-secs_to_dt
-OlsonDB\.pm\.new
-tools/update-from-latest-olson
-.*\.svn
+\#$
+\b\.#
+
+# Avoid tarballs
+\.(?:tar|tgz|tar\.gz)$
+
+\.shipit
