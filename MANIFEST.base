@@ -39,3 +39,4 @@ tools/compile-all-zones
 tools/parse_olson
 tools/tests_from_zdump
 tools/tz-num-to-date
+tools/update-from-latest-olson

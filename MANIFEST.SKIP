@@ -26,4 +26,6 @@
 # Avoid tarballs
 \.(?:tar|tgz|tar\.gz)$
 
+t/zd.+
+
 \.shipit
