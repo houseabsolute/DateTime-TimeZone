@@ -1,6 +1,0 @@
-MANIFEST
-lib/DateTime/TimeZoneCatalog.pm
-META.yml
-Makefile.PL
-t/zz_*
-DateTime-TimeZone-*.tar.gz
