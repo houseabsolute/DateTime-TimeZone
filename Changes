@@ -1,4 +1,4 @@
-0.73
+0.73     2007-03-08
 
 - The DT::TZ::Local::VMS module declared its package as
   DateTime::TimeZone::Local::Win32, which clearly is not
