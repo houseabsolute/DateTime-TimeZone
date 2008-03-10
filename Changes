@@ -4,7 +4,7 @@
   DateTime::TimeZone::Local::Win32, which clearly is not
   right. Patched by Peter Prymmer.
 
-- This release is based on version 2007j of the Olson database. The
+- This release is based on version 2008a of the Olson database. The
   major changes in this release are for Argentina and Chile,
 
 
