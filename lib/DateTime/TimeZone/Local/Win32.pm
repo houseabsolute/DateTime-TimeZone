@@ -6,7 +6,7 @@ use warnings;
 use base 'DateTime::TimeZone::Local';
 
 my %Registry;
-use Win32::TieRegistry ( TiedHash => \%Registry );
+use Win32::TieRegistry ( 'KEY_READ', Delimiter => q{/} );
 
 
 sub Methods { return qw( FromEnv FromRegistry ) }
@@ -180,13 +180,14 @@ sub EnvVars { return 'TZ' }
         );
 
     my $Key =
-        'HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation\\StandardName';
+        'LMachine/SYSTEM/CurrentControlSet/Control/TimeZoneInformation';
 
     sub FromRegistry
     {
         my $class = shift;
 
-        my $win_name = $Registry{$Key};
+        my $keyObject = $Registry->Open( $Key, { Access => KEY_READ } );
+        my $win_name = $keyObject->{'/StandardName'};
 
         return unless $win_name;
 

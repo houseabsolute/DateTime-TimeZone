@@ -1,3 +1,13 @@
+0.75     2008-04-25
+
+- A stray STORABLE_attach method in DT::TZ::Floating caused freezing
+  and thawing a floating timezone with Storable to fail
+  badly. Reported by Kostas Chatzikokolakis.
+
+- Changed the local time zone detection on Win32 to only require read
+  access to the registry. Patch by David Pinkowitz. RT #35273.
+
+
 0.74     2008-03-24
 
 - This release is based on version 2008b of the Olson database. The

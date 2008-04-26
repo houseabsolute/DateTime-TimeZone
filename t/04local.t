@@ -304,10 +304,10 @@ SKIP:
     require DateTime::TimeZone::Local::Win32;
 
     my %Reg;
-    Win32::TieRegistry->import( TiedHash => \%Reg );
+    Win32::TieRegistry->import( TiedHash => \%Reg, Delimiter => q{/} );
 
     my $key =
-        'HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation\\StandardName';
+        'LMachine/SYSTEM/CurrentControlSet/Control/TimeZoneInformation/StandardName';
 
     local $Reg{$key} = 'Eastern Standard Time';
 
