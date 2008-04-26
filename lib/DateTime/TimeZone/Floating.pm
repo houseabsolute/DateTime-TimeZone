@@ -18,15 +18,6 @@ sub new
 
 sub is_floating { 1 }
 
-sub STORABLE_attach
-{
-    my $class = shift;
-    my $cloning = shift;
-    my $serialized = shift;
-
-    return $class->new();
-}
-
 sub STORABLE_thaw
 {
     my $self = shift;
