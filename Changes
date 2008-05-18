@@ -1,5 +1,7 @@
 0.76     2008-05-18
 
+* Dropped support for Perl 5.005.
+
 - Made the Win32 local time zone bits work on Vista and Server
   2008. Patch by David Pinkowitz. RT #35733.
 
