@@ -1,3 +1,9 @@
+0.76     2008-05-18
+
+- Made the Win32 local time zone bits work on Vista and Server
+  2008. Patch by David Pinkowitz. RT #35733.
+
+
 0.75     2008-04-25
 
 - A stray STORABLE_attach method in DT::TZ::Floating caused freezing

@@ -1,9 +1,11 @@
 package DateTime::TimeZone;
 
-use strict;
+use 5.006;
 
-use vars qw( $VERSION );
-$VERSION = '0.75';
+use strict;
+use warnings;
+
+our $VERSION = '0.76';
 
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;

@@ -5,7 +5,6 @@ use warnings;
 
 use base 'DateTime::TimeZone::Local';
 
-my %Registry;
 use Win32::TieRegistry ( 'KEY_READ', Delimiter => q{/} );
 
 
@@ -187,7 +186,15 @@ sub EnvVars { return 'TZ' }
         my $class = shift;
 
         my $keyObject = $Registry->Open( $Key, { Access => KEY_READ } );
-        my $win_name = $keyObject->{'/StandardName'};
+
+        my $win_name =
+            defined $keyObject->{'/TimeZoneKeyName'} && $keyObject->{'/TimeZoneKeyName'} ne ''
+            ? $keyObject->{'/TimeZoneKeyName'}
+            : $keyObject->{'/StandardName'};
+
+        # On Windows 2008 Server, there is additional junk after a
+        # null character.
+        $win_name =~ s/\0.*$//;
 
         return unless $win_name;
 
