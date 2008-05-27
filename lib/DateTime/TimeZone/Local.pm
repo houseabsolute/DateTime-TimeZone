@@ -50,9 +50,9 @@ sub TimeZone
         return $subclass if $subclass->can('Methods');
 
         eval "use $subclass";
-        if ($@)
+        if ( my $e = $@ )
         {
-            if ( $@ =~ /locate/ )
+            if ( $e =~ /locate/ )
             {
                 $subclass = $class . '::' . 'Unix';
 
@@ -61,7 +61,7 @@ sub TimeZone
             }
             else
             {
-                die $@;
+                die $e;
             }
         }
 
@@ -200,7 +200,7 @@ Dave Rolsky, <autarch@urth.org>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright (c) 2003-2007 David Rolsky.  All rights reserved.  This
+Copyright (c) 2003-2008 David Rolsky.  All rights reserved.  This
 program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
