@@ -22,6 +22,10 @@ my @names = DateTime::TimeZone::all_names;
 plan tests => @aliases + @names + 34;
 
 
+# Ensures that we can load our OS-specific subclass. Otherwise this
+# might happen later in an eval, and the error will get lost.
+DateTime::TimeZone::Local->_load_subclass();
+
 {
     my %links = DateTime::TimeZone->links();
 
@@ -301,8 +305,6 @@ SKIP:
     skip "These tests only run on Win32", 4
         unless $^O =~ /win32/i;
 
-    require DateTime::TimeZone::Local::Win32;
-
     my %Reg;
     Win32::TieRegistry->import( TiedHash => \%Reg, Delimiter => q{/} );
 
@@ -317,7 +319,7 @@ SKIP:
     is( $tz->name(), 'America/New_York',
         'check registry on Win32 - Eastern Standard Time' );
 
-    local $Reg{$key} = 'Dateline';
+    local $Reg{$key} = 'Dateline Standard Time';
 
     eval { $tz = DateTime::TimeZone::Local::Win32->FromRegistry() };
     is( $@, '', 'no error getting time zone from registry' );
