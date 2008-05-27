@@ -13,8 +13,8 @@ sub Methods { return qw( FromEnv FromRegistry ) }
 sub EnvVars { return 'TZ' }
 
 {
-    # This list was found as part of the zipball from downloading the
-    # Chronos project - a Smalltalk datetime library. Thanks, Chronos!
+    # This list comes (mostly) in the zipball for the Chronos project
+    # - a Smalltalk datetime library. Thanks, Chronos!
     my %WinToOlson =
         ( 'Afghanistan'                     => 'Asia/Kabul',
           'Afghanistan Standard Time'       => 'Asia/Kabul',
@@ -25,6 +25,7 @@ sub EnvVars { return 'TZ' }
           'Arabian'                         => 'Asia/Muscat',
           'Arabian Standard Time'           => 'Asia/Muscat',
           'Arabic Standard Time'            => 'Asia/Baghdad',
+          'Armenian Standard Time'          => 'Asia/Yerevan',
           'Atlantic'                        => 'America/Halifax',
           'Atlantic Standard Time'          => 'America/Halifax',
           'AUS Central'                     => 'Australia/Darwin',
@@ -84,7 +85,6 @@ sub EnvVars { return 'TZ' }
           'GFT Standard Time'               => 'Europe/Athens',
           'GMT'                             => 'Europe/London',
           'GMT Standard Time'               => 'Europe/London',
-          'GMT Standard Time'               => 'GMT',
           'Greenland Standard Time'         => 'America/Godthab',
           'Greenwich'                       => 'GMT',
           'Greenwich Standard Time'         => 'GMT',
@@ -107,6 +107,7 @@ sub EnvVars { return 'TZ' }
           'Mid-Atlantic'                    => 'Atlantic/South_Georgia',
           'Mid-Atlantic Standard Time'      => 'Atlantic/South_Georgia',
           'Middle East Standard Time'       => 'Asia/Beirut',
+          'Montevideo Standard Time'        => 'America/Montevideo',
           'Mountain'                        => 'America/Denver',
           'Mountain Standard Time'          => 'America/Denver',
           'Mountain Standard Time (Mexico)' => 'America/Chihuahua',
@@ -153,7 +154,6 @@ sub EnvVars { return 'TZ' }
           'Taipei Standard Time'            => 'Asia/Taipei',
           'Tasmania'                        => 'Australia/Hobart',
           'Tasmania Standard Time'          => 'Australia/Hobart',
-          'Tasmania Standard Time'          => 'Australia/Hobart',
           'Tokyo'                           => 'Asia/Tokyo',
           'Tokyo Standard Time'             => 'Asia/Tokyo',
           'Tonga Standard Time'             => 'Pacific/Tongatapu',
@@ -161,6 +161,7 @@ sub EnvVars { return 'TZ' }
           'US Eastern Standard Time'        => 'America/Indianapolis',
           'US Mountain'                     => 'America/Phoenix',
           'US Mountain Standard Time'       => 'America/Phoenix',
+          'Venezuela Standard Time'         => 'America/Caracas',
           'Vladivostok'                     => 'Asia/Vladivostok',
           'Vladivostok Standard Time'       => 'Asia/Vladivostok',
           'W. Australia'                    => 'Australia/Perth',
@@ -178,25 +179,18 @@ sub EnvVars { return 'TZ' }
           'Yakutsk Standard Time'           => 'Asia/Yakutsk',
         );
 
-    my $Key =
-        'LMachine/SYSTEM/CurrentControlSet/Control/TimeZoneInformation';
-
     sub FromRegistry
     {
         my $class = shift;
 
-        my $keyObject = $Registry->Open( $Key, { Access => KEY_READ } );
-
-        my $win_name =
-            defined $keyObject->{'/TimeZoneKeyName'} && $keyObject->{'/TimeZoneKeyName'} ne ''
-            ? $keyObject->{'/TimeZoneKeyName'}
-            : $keyObject->{'/StandardName'};
+        my $win_name = $class->_FindWindowsTZName();
 
         # On Windows 2008 Server, there is additional junk after a
         # null character.
-        $win_name =~ s/\0.*$//;
+        $win_name =~ s/\0.*$//
+            if defined $win_name;
 
-        return unless $win_name;
+        return unless defined $win_name;
 
         my $olson = $WinToOlson{$win_name};
 
@@ -207,6 +201,42 @@ sub EnvVars { return 'TZ' }
         local $@;
         return eval { DateTime::TimeZone->new( name => $olson ) };
     }
+}
+
+sub _FindWindowsTZName
+{
+    my $class = shift;
+
+    my $LMachine = $Registry->Open( 'LMachine/', { Access => KEY_READ } );
+
+    my $TimeZoneInfo =
+        $LMachine->{'SYSTEM/CurrentControlSet/Control/TimeZoneInformation/'};
+
+    # Windows Vista, Windows 2008 Server
+    if ( defined $TimeZoneInfo->{'/TimeZoneKeyName'} &&
+         $TimeZoneInfo->{'/TimeZoneKeyName'} ne '' )
+    {
+        return $TimeZoneInfo->{'/TimeZoneKeyName'};
+    }
+    else
+    {
+        my $AllTimeZones =
+            $LMachine->{'SOFTWARE/Microsoft/Windows NT/CurrentVersion/Time Zones/'}
+            # Windows NT, Windows 2000, Windows XP, Windows 2003 Server
+            ? $LMachine->{'SOFTWARE/Microsoft/Windows NT/CurrentVersion/Time Zones/'}
+            # Windows 95, Windows 98, Windows Millenium Edition
+            : $LMachine->{'SOFTWARE/Microsoft/Windows/CurrentVersion/Time Zones/'};
+
+        foreach my $zone ( $AllTimeZones->SubKeyNames() )
+        {
+            if ( $AllTimeZones->{ $zone . '/Std' } eq $TimeZoneInfo->{'/StandardName'} )
+            {
+                return $zone;
+            }
+        }
+    }
+
+    return;
 }
 
 
@@ -243,13 +273,14 @@ It checks C<< $ENV{TZ} >> for a valid time zone name.
 =item * Windows Registry
 
 We check for a registry key called
-"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\TimeZoneInformation\StandardName".
+"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\TimeZoneInformation".
 
-If this exists, it contains a Windows name for the time zone. We use a
-lookup table to translate this into an equivalent time zone name.
+If this exists, we use its values to determine the currently selected
+time zone key from the registry. The name of this key is the Windows
+name for the time zone. We use a lookup table to translate this into
+an equivalent time zone name.
 
-This lookup table was borrowed from the Chronos Smalltalk
-library.
+This lookup table was borrowed from the Chronos Smalltalk library.
 
 =back
 
@@ -259,7 +290,7 @@ Dave Rolsky, <autarch@urth.org>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright (c) 2003-2007 David Rolsky.  All rights reserved.  This
+Copyright (c) 2003-2008 David Rolsky.  All rights reserved.  This
 program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
