@@ -5,7 +5,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.76';
+our $VERSION = '0.77';
 
 use DateTime::TimeZoneCatalog;
 use DateTime::TimeZone::Floating;
@@ -825,7 +825,7 @@ datetime@perl.org list.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2003-2007 David Rolsky.  All rights reserved.  This
+Copyright (c) 2003-2008 David Rolsky.  All rights reserved.  This
 program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 

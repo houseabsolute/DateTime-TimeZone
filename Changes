@@ -1,3 +1,15 @@
+0.77     2008-05-27
+
+- This release is based on version 2008b of the Olson database. The
+  major changes in this release are for Morocco, Mongolia, and
+  Pakistan.
+
+- More Windows changes from David Pinkowitz. Determining the local
+  time zone on a Win32 system should now work regardless of the
+  system's locale. Previously it only worked for English language
+  systems. RT #36201.
+
+
 0.76     2008-05-18
 
 * Dropped support for Perl 5.005.
