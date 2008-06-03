@@ -1,3 +1,9 @@
+0.78     2008-06-03
+
+- Many fixes and improvements to the tests for local time zone
+  handling on Windows. Based on a patch from David Pinkowitz.
+
+
 0.77     2008-05-27
 
 - This release is based on version 2008c of the Olson database. The
