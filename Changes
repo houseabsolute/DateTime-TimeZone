@@ -1,4 +1,4 @@
-0.77701  2008-06-03
+0.7701  2008-06-03
 
 - Many fixes and improvements to the tests for local time zone
   handling on Windows. Based on a patch from David Pinkowitz.
