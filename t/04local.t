@@ -1,6 +1,5 @@
-#!/usr/bin/perl -w
-
 use strict;
+use warnings;
 
 use DateTime::TimeZone::Local;
 use DateTime::TimeZone::Local::Unix;
@@ -94,15 +93,14 @@ DateTime::TimeZone::Local->_load_subclass();
     is( $@, '', 'FromEnv does not leave $@ set' );
 }
 
+no warnings 'redefine';
 
 SKIP:
 {
     skip "/etc/localtime is not a symlink", 6
         unless -l '/etc/localtime';
 
-    $^W = 0;
     local *DateTime::TimeZone::Local::Unix::_Readlink = sub { '/usr/share/zoneinfo/US/Eastern' };
-    $^W = 1;
 
     my $tz;
     eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcLocaltime() };
@@ -110,19 +108,15 @@ SKIP:
     is( $tz->name(), 'America/New_York',
         'FromEtchLocaltime() with _Readlink returning /usr/share/zoneinfo/US/Eastern' );
 
-    $^W = 0;
     local *DateTime::TimeZone::Local::Unix::_Readlink = sub { '/usr/share/zoneinfo/Foo/Bar' };
-    $^W = 1;
 
     $tz = DateTime::TimeZone::Local::Unix->FromEtcLocaltime() ;
     is( $@, '', 'valid time zone name in /etc/localtime symlink should not leave $@ set' );
     ok( ! $tz, 'no time zone was found' );
 
 
-    $^W = 0;
     local *DateTime::TimeZone::Local::Unix::_Readlink = sub { undef };
     local *DateTime::TimeZone::Local::Unix::_FindMatchingZoneinfoFile = sub { 'America/Los_Angeles' };
-    $^W = 1;
 
     eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcLocaltime() };
     is( $@, '', 'fall back to _FindMatchZoneinfoFile if _Readlink finds nothing' );
@@ -135,9 +129,7 @@ SKIP:
     skip "cannot read /etc/sysconfig/clock", 2
         unless -r '/etc/sysconfig/clock' && -f _;
 
-    $^W = 0;
     local *DateTime::TimeZone::Local::Unix::_ReadEtcSysconfigClock = sub { 'US/Eastern' };
-    $^W = 1;
 
     my $tz;
     eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcSysconfigClock() };
@@ -151,9 +143,7 @@ SKIP:
     skip "cannot read /etc/default/init", 2
         unless -r '/etc/default/init' && -f _;
 
-    $^W = 0;
     local *DateTime::TimeZone::Local::Unix::_ReadEtcDefaultInit = sub { 'Asia/Tokyo' };
-    $^W = 1;
 
     my $tz;
     eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcDefaultInit() };
@@ -178,9 +168,7 @@ SKIP:
     }
 
     {
-        $^W = 0;
         local *DateTime::TimeZone::Local::Unix::FromEtcLocaltime = sub { undef };
-        $^W = 1;
 
         my $tz;
         eval { $tz = DateTime::TimeZone::Local->TimeZone() };
@@ -192,11 +180,9 @@ SKIP:
     {
         # requires that /etc/default/init contain
         # TZ=Australia/Melbourne to work.
-        $^W = 0;
         local *DateTime::TimeZone::Local::Unix::FromEtcLocaltime = sub { undef };
         local *DateTime::TimeZone::Local::Unix::FromEtcTimezone = sub { undef };
         local *DateTime::TimeZone::Local::Unix::FromEtcTIMEZONE = sub { undef };
-        $^W = 1;
 
         my $tz;
         eval { $tz = DateTime::TimeZone::Local->TimeZone() };
