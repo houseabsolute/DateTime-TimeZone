@@ -1,3 +1,10 @@
+0.78    2008-07-12
+
+- This release is based on version 2008d of the Olson database. The
+  major changes in this release are for Mauritius and Brazil (which
+  now has a new America/Santarem zone).
+
+
 0.7701  2008-06-03
 
 - Many fixes and improvements to the tests for local time zone

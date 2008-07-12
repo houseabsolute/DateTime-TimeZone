@@ -424,6 +424,16 @@ sub add_change
              && $self->{changes}[-1]->utc_start_datetime == $change->utc_start_datetime
            )
         {
+            if ( $self->{changes}[-1]->rule && $change->observance )
+            {
+                warn " Ignoring previous rule change, that starts the same time as current observance change\n\n"
+                    if DateTime::TimeZone::OlsonDB::DEBUG;
+
+                $self->{changes}[-1] = $change;
+
+                return;
+            }
+
             die "Cannot add two different changes that have the same UTC start datetime!\n";
         }
 
