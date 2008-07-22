@@ -125,7 +125,7 @@ subclasses.
 
 This class provides the following methods:
 
-=head2 DateTime::TimeZone::Locale->TimeZone()
+=head2 DateTime::TimeZone::Local->TimeZone()
 
 This attempts to load an appropriate subclass and asks it to find the
 local time zone. This method is called by when you pass "local" as the
