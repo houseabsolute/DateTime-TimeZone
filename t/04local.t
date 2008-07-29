@@ -18,12 +18,7 @@ my $CanWriteEtcLocaltime = -w '/etc/localtime' && -l '/etc/localtime';
 my @aliases = sort keys %{ DateTime::TimeZone::links() };
 my @names = DateTime::TimeZone::all_names();
 
-# Needs to be in scope here in order to get used later
-my $Registry;
-my $WindowsTZKey;
-my @win_tz_names = windows_tz_names();
-
-plan tests => @aliases + @names + @win_tz_names + 33;
+plan tests => @aliases + @names + 30;
 
 
 # Ensures that we can load our OS-specific subclass. Otherwise this
@@ -293,38 +288,6 @@ SKIP:
 
 SKIP:
 {
-    skip "These tests only run on Windows", @win_tz_names + 3
-        unless $^O =~ /win32/i;
-
-    my $tzi_key =
-        $Registry->Open
-            ( 'LMachine/SYSTEM/CurrentControlSet/Control/TimeZoneInformation/',
-              { Access => Win32::TieRegistry::KEY_READ() | Win32::TieRegistry::KEY_WRITE() }
-            );
-
-    skip "No write access to TimeZoneInformation registry key", @win_tz_names + 3
-        unless $tzi_key;
-
-    foreach my $win_tz_name (@win_tz_names)
-    {
-        set_and_test_windows_tz( $win_tz_name, $tzi_key, $WindowsTZKey );
-    }
-
-    # We test these explicitly because we want to make sure that at
-    # least a few known names do work, rather than just relying on
-    # looping through a list.
-    for my $name ( 'Eastern Standard Time',
-                   'Dateline Standard Time',
-                   'Israel Standard Time',
-                 )
-    {
-        set_and_test_windows_tz($name);
-    }
-}
-
-
-SKIP:
-{
     skip "These tests require File::Temp", 1
         unless require File::Temp;
     skip "These tests require a filesystem which support symlinks", 1
@@ -352,61 +315,4 @@ SKIP:
     is( basename( DateTime::TimeZone::Local::Unix->_Readlink( $third ) ),
         basename( $first ),
         '_Readlink follows multiple levels of symlinking' );
-}
-
-sub windows_tz_names
-{
-    return unless $^O =~ /win32/i;
-
-    eval 'use Win32::TieRegistry ( TiedRef => \$Registry, Delimiter => q{/} );';
-    return if $@;
-
-    $WindowsTZKey =
-        $Registry->Open( 'LMachine/SOFTWARE/Microsoft/Windows NT/CurrentVersion/Time Zones/',
-                         { Access => Win32::TieRegistry::KEY_READ() }
-                       );
-
-    $WindowsTZKey ||=
-        $Registry->Open( 'LMachine/SOFTWARE/Microsoft/Windows/CurrentVersion/Time Zones/',
-                         { Access => Win32::TieRegistry::KEY_READ() }
-                       );
-
-    return unless $WindowsTZKey;
-
-    return $WindowsTZKey->SubKeyNames()
-}
-
-sub set_and_test_windows_tz
-{
-    my $windows_tz_name = shift;
-    my $tzi_key         = shift;
-
-    if ( defined $tzi_key->{'/TimeZoneKeyName'}
-         && $tzi_key->{'/TimeZoneKeyName'} ne '' )
-    {
-        local $tzi_key->{'/TimeZoneKeyName'} = $windows_tz_name;
-
-        test_windows_zone($windows_tz_name);
-    }
-    else
-    {
-        local $tzi_key->{'/StandardName'} =
-            ( $WindowsTZKey->{ $windows_tz_name . q{/} }
-              ? $WindowsTZKey->{ $windows_tz_name . '/Std' }
-              : 'MAKE BELIEVE VALUE'
-            );
-
-        test_windows_zone($windows_tz_name);
-    }
-}
-
-sub test_windows_zone
-{
-    my $windows_tz_name = shift;
-
-    my $tz;
-    eval { $tz = DateTime::TimeZone::Local::Win32->FromRegistry() };
-
-    ok( $tz && DateTime::TimeZone->is_valid_name( $tz->name() ),
-        "$windows_tz_name - found valid Olson time zone from Windows" );
 }
