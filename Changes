@@ -1,3 +1,13 @@
+0.79    2008-07-29
+
+- This release is based on version 2008e of the Olson database. The
+  major changes in this release are for Mauritius and Central Europe
+  (historical changes only).
+
+- Fixes for the local TZ tests on Win32. Thanks to David Pinkowitz for
+  pointing out my mistake.
+
+
 0.78    2008-07-12
 
 - This release is based on version 2008d of the Olson database. The
