@@ -7,7 +7,7 @@ use warnings;
 
 our $VERSION = '0.79';
 
-use DateTime::TimeZoneCatalog;
+use DateTime::TimeZone::Catalog;
 use DateTime::TimeZone::Floating;
 use DateTime::TimeZone::Local;
 use DateTime::TimeZone::OffsetOnly;
@@ -26,7 +26,7 @@ use constant OFFSET      => 4;
 use constant IS_DST      => 5;
 use constant SHORT_NAME  => 6;
 
-my %SpecialName = map { $_ => 1 } qw( EST MST HST EST5EDT CST6CDT MST7MDT PST8PDT );
+my %SpecialName = map { $_ => 1 } qw( EST MST HST CET EET MET WET EST5EDT CST6CDT MST7MDT PST8PDT );
 
 sub new
 {
@@ -35,13 +35,13 @@ sub new
                       { name => { type => SCALAR } },
                     );
 
-    if ( exists $DateTime::TimeZone::LINKS{ $p{name} } )
+    if ( exists $DateTime::TimeZone::Catalog::LINKS{ $p{name} } )
     {
-        $p{name} = $DateTime::TimeZone::LINKS{ $p{name} };
+        $p{name} = $DateTime::TimeZone::Catalog::LINKS{ $p{name} };
     }
-    elsif ( exists $DateTime::TimeZone::LINKS{ uc $p{name} } )
+    elsif ( exists $DateTime::TimeZone::Catalog::LINKS{ uc $p{name} } )
     {
-        $p{name} = $DateTime::TimeZone::LINKS{ uc $p{name} };
+        $p{name} = $DateTime::TimeZone::Catalog::LINKS{ uc $p{name} };
     }
 
     unless ( $p{name} =~ m,/,
@@ -102,7 +102,7 @@ sub new
             $zone->can('olson_version')
             ? $zone->olson_version()
             : 'unknown';
-        my $catalog_version = __PACKAGE__->catalog_olson_version();
+        my $catalog_version = DateTime::TimeZone::Catalog->OlsonVersion();
 
         if ( $object_version ne $catalog_version )
         {
@@ -519,50 +519,50 @@ sub offset_as_string
 
 sub all_names
 {
-    return wantarray ? @DateTime::TimeZone::ALL : [@DateTime::TimeZone::ALL];
+    return wantarray ? @DateTime::TimeZone::Catalog::ALL : [@DateTime::TimeZone::Catalog::ALL];
 }
 
 sub categories
 {
     return wantarray
-        ? @DateTime::TimeZone::CATEGORY_NAMES
-        : [@DateTime::TimeZone::CATEGORY_NAMES];
+        ? @DateTime::TimeZone::Catalog::CATEGORY_NAMES
+        : [@DateTime::TimeZone::Catalog::CATEGORY_NAMES];
 }
 
 sub links
 {
     return
-        wantarray ? %DateTime::TimeZone::LINKS : {%DateTime::TimeZone::LINKS};
+        wantarray ? %DateTime::TimeZone::Catalog::LINKS : {%DateTime::TimeZone::Catalog::LINKS};
 }
 
 sub names_in_category
 {
     shift if $_[0]->isa('DateTime::TimeZone');
-    return unless exists $DateTime::TimeZone::CATEGORIES{ $_[0] };
+    return unless exists $DateTime::TimeZone::Catalog::CATEGORIES{ $_[0] };
 
     return
         wantarray
-        ? @{ $DateTime::TimeZone::CATEGORIES{ $_[0] } }
-        : [ $DateTime::TimeZone::CATEGORIES{ $_[0] } ];
+        ? @{ $DateTime::TimeZone::Catalog::CATEGORIES{ $_[0] } }
+        : [ $DateTime::TimeZone::Catalog::CATEGORIES{ $_[0] } ];
 }
 
 sub countries
 {
     wantarray
-        ? ( sort keys %DateTime::TimeZone::ZONES_BY_COUNTRY )
-        : [ sort keys %DateTime::TimeZone::ZONES_BY_COUNTRY ];
+        ? ( sort keys %DateTime::TimeZone::Catalog::ZONES_BY_COUNTRY )
+        : [ sort keys %DateTime::TimeZone::Catalog::ZONES_BY_COUNTRY ];
 }
 
 sub names_in_country
 {
-    shift if $_[0]->isa('DateTime::TimeZone');
+    shift if $_[0]->isa('DateTime::TimeZone::Catalog');
 
-    return unless exists $DateTime::TimeZone::ZONES_BY_COUNTRY{ lc $_[0] };
+    return unless exists $DateTime::TimeZone::Catalog::ZONES_BY_COUNTRY{ lc $_[0] };
 
     return
         wantarray
-        ? @{ $DateTime::TimeZone::ZONES_BY_COUNTRY{ lc $_[0] } }
-        : $DateTime::TimeZone::ZONES_BY_COUNTRY{ lc $_[0] };
+        ? @{ $DateTime::TimeZone::Catalog::ZONES_BY_COUNTRY{ lc $_[0] } }
+        : $DateTime::TimeZone::Catalog::ZONES_BY_COUNTRY{ lc $_[0] };
 }
 
 

@@ -1,3 +1,14 @@
+0.7901  2008-08-18
+
+- This distro now provides the CET, EET, MET, and WET zones. These are
+  provided by the Olson database for backwards compatibility. It's
+  probably a bad idea to use them, but it's best if this package
+  matches what a Unix system provides.
+
+- Moved the catalog to DateTime::TimeZone::Catalog, which now has some
+  POD that lists all the available zones.
+
+
 0.79    2008-07-29
 
 - This release is based on version 2008e of the Olson database. The

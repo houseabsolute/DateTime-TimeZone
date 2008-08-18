@@ -9,7 +9,7 @@ lib/DateTime/TimeZone/Local/Win32.pm
 lib/DateTime/TimeZone/OffsetOnly.pm
 lib/DateTime/TimeZone/OlsonDB.pm
 lib/DateTime/TimeZone/UTC.pm
-lib/DateTime/TimeZoneCatalog.pm
+lib/DateTime/TimeZone/Catalog.pm
 LICENSE
 Makefile.PL
 MANIFEST			This list of files

@@ -111,8 +111,6 @@ sub _parse_zone
         $name = shift @items;
     }
 
-    return if $name =~ /[WCME]ET/ && ! $self->{backwards_compat};
-
     @obs{ qw( gmtoff rules format until ) } = @items;
 
     if ( $obs{rules} =~ /\d\d?:\d\d/ )
