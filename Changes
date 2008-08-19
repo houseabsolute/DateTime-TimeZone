@@ -1,3 +1,9 @@
+0.7902  2008-08-18
+
+- Fixed a lingering reference to DT::TimeZoneCatalog, which broke
+  t/15catalog.t on fresh installs.
+
+
 0.7901  2008-08-18
 
 - This distro now provides the CET, EET, MET, and WET zones. These are
