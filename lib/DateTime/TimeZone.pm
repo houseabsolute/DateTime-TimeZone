@@ -515,7 +515,7 @@ sub offset_as_string
            );
 }
 
-# These methods all operate on data contained in the DateTime/TimeZoneCatalog.pm file.
+# These methods all operate on data contained in the DateTime/TimeZone/Catalog.pm file.
 
 sub all_names
 {

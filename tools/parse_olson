@@ -45,7 +45,7 @@ if ( $opts{help} )
 
 This script parses the Olson time zone database files and turns them
 into a set of Perl modules.  It also generates the MANIFEST and the
-DateTime::TimeZoneCatalog module, which contains a list of all the
+DateTime::TimeZone::Catalog module, which contains a list of all the
 available time zone names.
 
 By default, it looks for files named africa, antarctica, asia,
@@ -71,7 +71,7 @@ It takes the following arguments:
   --help     What you are reading
 
 If the --file or --name options are specified, the MANIFEST and
-DateTime::TimeZoneCatalog files will not be generated.
+DateTime::TimeZone::Catalog files will not be generated.
 
 EOF
 

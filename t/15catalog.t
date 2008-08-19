@@ -5,7 +5,6 @@ use File::Spec;
 use Test::More;
 
 use DateTime::TimeZone;
-use DateTime::TimeZoneCatalog;
 
 
 plan tests => 31;
