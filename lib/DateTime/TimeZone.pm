@@ -555,7 +555,7 @@ sub countries
 
 sub names_in_country
 {
-    shift if $_[0]->isa('DateTime::TimeZone::Catalog');
+    shift if $_[0]->isa('DateTime::TimeZone');
 
     return unless exists $DateTime::TimeZone::Catalog::ZONES_BY_COUNTRY{ lc $_[0] };
 
