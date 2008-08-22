@@ -93,7 +93,7 @@ plan tests => 31;
 }
 
 {
-    my @zones = DateTime::TimeZone::names_in_country('cl');
+    my @zones = DateTime::TimeZone->names_in_country('cl');
     is( @zones, 2, 'two zones for Chile' );
     is_deeply( [ sort @zones ],
                [ 'America/Santiago', 'Pacific/Easter' ],
