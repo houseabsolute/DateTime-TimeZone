@@ -1,3 +1,10 @@
+0.7904  2008-08-30
+
+- Added three more Windows time zone names to the Windows -> Olson
+  mapping. This should fix test failures on up-to-date Windows
+  boxes. Patch by David Pinkowitz. RT #38735.
+
+
 0.7903  2008-08-22
 
 - The DateTime::TimeZone->names_in_country() method was broken when

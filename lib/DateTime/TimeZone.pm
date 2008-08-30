@@ -5,7 +5,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.7903';
+our $VERSION = '0.7904';
 
 use DateTime::TimeZone::Catalog;
 use DateTime::TimeZone::Floating;
