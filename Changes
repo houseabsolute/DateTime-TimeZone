@@ -1,3 +1,10 @@
+0.80    2008-09-15
+
+- This release is based on version 2008g of the Olson database. The
+  major changes in this release are for Mauritius, Morocco, Pakistan,
+  Argentina, and Brazil.
+
+
 0.7904  2008-08-30
 
 - Added three more Windows time zone names to the Windows -> Olson
