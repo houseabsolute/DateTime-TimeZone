@@ -275,15 +275,34 @@ It checks C<< $ENV{TZ} >> for a valid time zone name.
 
 =item * Windows Registry
 
-We check for a registry key called
-"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\TimeZoneInformation".
+When using the registry, we look for the Windows time zone and use a
+mapping to translate this to an Olson time zone name.
 
-If this exists, we use its values to determine the currently selected
-time zone key from the registry. The name of this key is the Windows
-name for the time zone. We use a lookup table to translate this into
-an equivalent time zone name.
+=over 8
 
-This lookup table was borrowed from the Chronos Smalltalk library.
+=item * Windows Vista and 2008
+
+We look in "SYSTEM/CurrentControlSet/Control/TimeZoneInformation/" for
+a node named "/TimeZoneKeyName". If this exists, we use this key to
+look up the Olson time zone name in our mapping.
+
+=item * Windows NT, Windows 2000, Windows XP, Windows 2003 Server
+
+We look in "SOFTWARE/Microsoft/Windows NT/CurrentVersion/Time Zones/"
+and loop through all of its sub keys.
+
+For each sub key, we compare the value of the key with "/Std" appended
+to the end to the value of
+"SYSTEM/CurrentControlSet/Control/TimeZoneInformation/StandardName". This
+gives us the I<English> name of the Windows time zone, which we use to
+look up the Olson time zone name.
+
+=item Windows 95, Windows 98, Windows Millenium Edition
+
+The algorithm is the same as for NT, but we loop through the sub keys
+of "SOFTWARE/Microsoft/Windows/CurrentVersion/Time Zones/"
+
+=back
 
 =back
 

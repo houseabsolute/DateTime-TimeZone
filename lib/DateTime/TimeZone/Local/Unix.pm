@@ -276,13 +276,15 @@ It checks C<< $ENV{TZ} >> for a valid time zone name.
 =item * F</etc/localtime>
 
 If this file is a symlink to an Olson database time zone file (usually
-in F</usr/share/zoneinfo>) then it uses the target file's path to
-determine the time zone name.
+in F</usr/share/zoneinfo>) then it uses the target file's path name to
+determine the time zone name. For example, if the path is
+F</usr/share/zoneinfo/America/Chicago>, the time zone is
+"America/Chicago".
 
-If reading the symlink fails for some reason, or if this file is not a
-symlink, it looks for a file that matches this file in
-F</usr/share/zoneinfo>. If it finds one, it uses that file's path to
-determine the time zone name.
+Some systems just copy the relevant file to F</etc/localtime> instead
+of making a symlink.  In this case, we look in F</usr/share/zoneinfo>
+for a file that has the same size and content as F</etc/localtime> to
+determine the local time zone.
 
 =item * F</etc/timezone>
 

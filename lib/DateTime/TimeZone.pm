@@ -637,34 +637,21 @@ C<DateTime::TimeZone::OffsetOnly> object is returned.
 If the "name" parameter is "local", then the module attempts to
 determine the local time zone for the system.
 
-First it checks C<$ENV> for keys named "TZ", "SYS$TIMEZONE_RULE",
-"SYS$TIMEZONE_NAME", "UCX$TZ", or "TCPIP$TZC" (the last 4 are for
-VMS).  If this is defined, and it is not the string "local", then it
-is treated as any other valid name (including "floating"), and the
-constructor tries to create a time zone based on that name.
+The method for finding the local zone varies by operating system. See
+the appropriate module for details of how we check for the local time
+zone.
 
-Next, it checks for the existence of a symlink at F</etc/localtime>.
-It follows this link to the real file and figures out what the file's
-name is.  It then tries to turn this name into a valid time zone.  For
-example, if this file is linked to F</usr/share/zoneinfo/US/Central>,
-it will end up trying "US/Central", which will then be converted to
-"America/Chicago" internally.
+=over 4
 
-Some systems just copy the relevant file to F</etc/localtime> instead
-of making a symlink.  In this case, we look in F</usr/share/zoneinfo>
-for a file that has the same size and content as F</etc/localtime> to
-determine the local time zone.
+=item * L<DateTime::TimeZone::Local::Unix>
 
-Then it checks for a file called F</etc/timezone> or F</etc/TIMEZONE>.
-If one of these exists, it is read and it tries to create a time zone
-with the name contained in the file.
+=item * L<DateTime::TimeZone::Local::Win32>
 
-Finally, it checks for a file called F</etc/sysconfig/clock>.  If this
-file exists, it looks for a line inside the file matching
-C</^(?:TIME)?ZONE="([^"]+)"/>.  If this line exists, it tries the
-value as a time zone name.
+=item * L<DateTime::TimeZone::Local::VMS>
 
-If none of these methods work, it gives up and dies.
+=back
+
+If a local time zone is not found, then an exception will be thrown.
 
 =head2 $tz->offset_for_datetime( $dt )
 
