@@ -297,7 +297,7 @@ to the end to the value of
 gives us the I<English> name of the Windows time zone, which we use to
 look up the Olson time zone name.
 
-=item Windows 95, Windows 98, Windows Millenium Edition
+=item * Windows 95, Windows 98, Windows Millenium Edition
 
 The algorithm is the same as for NT, but we loop through the sub keys
 of "SOFTWARE/Microsoft/Windows/CurrentVersion/Time Zones/"
