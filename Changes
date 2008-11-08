@@ -1,4 +1,4 @@
-0.8031  2008-11-07
+0.8301  2008-11-07
 
 - Test fixes only. The 19local-win32 tried to skip tests when they're
   run without write access to the registry, but this was done in a
