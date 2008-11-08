@@ -36,11 +36,12 @@ my $tzi_key =
 plan skip_all => 'These tests require write access to TimeZoneInformation registry key'
     unless $tzi_key;
 
-my $WindowsTZKey;
 my @win_tz_names = windows_tz_names();
 
 plan tests => @win_tz_names + 6;
 
+
+my $WindowsTZKey;
 
 {
     foreach my $win_tz_name (@win_tz_names)
