@@ -1,3 +1,10 @@
+0.8031  2008-11-07
+
+- Test fixes only. The 19local-win32 tried to skip tests when they're
+  run without write access to the registry, but this was done in a
+  very broken way.
+
+
 0.83    2008-10-27
 
 - This release is based on version 2008h of the Olson database. The
