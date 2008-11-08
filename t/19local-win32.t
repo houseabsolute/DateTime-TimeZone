@@ -27,17 +27,17 @@ if ($@)
     plan skip_all => 'These tests require Win32::TieRegistry';
 }
 
-my $WindowsTZKey;
-my @win_tz_names = windows_tz_names();
-
 my $tzi_key =
     $Registry->Open
         ( 'LMachine/SYSTEM/CurrentControlSet/Control/TimeZoneInformation/',
           { Access => Win32::TieRegistry::KEY_READ() | Win32::TieRegistry::KEY_WRITE() }
         );
 
-plan skip_all 'These tests require write access to TimeZoneInformation registry key'
+plan skip_all => 'These tests require write access to TimeZoneInformation registry key'
     unless $tzi_key;
+
+my $WindowsTZKey;
+my @win_tz_names = windows_tz_names();
 
 plan tests => @win_tz_names + 6;
 
