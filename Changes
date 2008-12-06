@@ -1,3 +1,10 @@
+0.84
+
+- If DateTime::TimeZone::Local could not load its OS-specific subclass
+  because of a missing dependency, it would silently fall back on
+  loading the Unix subclass, rather than throwing an error. RT #41305.
+
+
 0.8301  2008-11-07
 
 - Test fixes only. The 19local-win32 tried to skip tests when they're

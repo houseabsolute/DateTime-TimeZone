@@ -45,14 +45,15 @@ sub TimeZone
     {
         my $class = shift;
 
-        my $subclass = $class . '::' . ( shift || $subclass{ $^O } || 'Unix' );
+        my $os_name = shift || $subclass{ $^O } || 'Unix';
+        my $subclass = $class . '::' . $os_name;
 
         return $subclass if $subclass->can('Methods');
 
         eval "use $subclass";
         if ( my $e = $@ )
         {
-            if ( $e =~ /locate/ )
+            if ( $e =~ /locate.+$os_name/ )
             {
                 $subclass = $class . '::' . 'Unix';
 
