@@ -757,7 +757,7 @@ use C<Locale::Country> to do so.
 
 =head2 DateTime::TimeZone->names_in_country( $country_code )
 
-Given a two-letter ISO3066 country code, this method returns a list of
+Given a two-letter ISO3166 country code, this method returns a list of
 time zones used in that country. The country code may be of any
 case. In scalar context, it returns an array reference, while in list
 context it returns an array.
