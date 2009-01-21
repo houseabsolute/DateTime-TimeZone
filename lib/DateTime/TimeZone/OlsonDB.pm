@@ -6,7 +6,6 @@ use vars qw( %MONTHS %DAYS $PLUS_ONE_DAY_DUR $MINUS_ONE_DAY_DUR );
 
 use Params::Validate qw( validate SCALAR );
 
-sub DEBUG () { 0 }
 
 my $x = 1;
 %MONTHS = map { $_ => $x++ }
@@ -318,6 +317,7 @@ use strict;
 
 use DateTime::TimeZone;
 
+use List::Util qw( first );
 use Params::Validate qw( validate SCALAR ARRAYREF );
 
 sub new
@@ -350,6 +350,7 @@ sub expand_observances
     for ( my $x = 0; $x < @{ $self->{observances} }; $x++ )
     {
         my %p = %{ $self->{observances}[$x] };
+
         my $rules_name = delete $p{rules};
 
         my $last_offset_from_std =
@@ -379,9 +380,9 @@ sub expand_observances
                   $rule ? ( rule => $rule ) : (),
                 );
 
-        if (DateTime::TimeZone::OlsonDB::DEBUG)
+        if ($DateTime::TimeZone::OlsonDB::DEBUG)
         {
-            warn "Adding observance change ...\n";
+            print "Adding observance change ...\n";
 
             $change->_debug_output;
         }
@@ -424,8 +425,8 @@ sub add_change
         {
             if ( $self->{changes}[-1]->rule && $change->observance )
             {
-                warn " Ignoring previous rule change, that starts the same time as current observance change\n\n"
-                    if DateTime::TimeZone::OlsonDB::DEBUG;
+                print " Ignoring previous rule change, that starts the same time as current observance change\n\n"
+                    if $DateTime::TimeZone::OlsonDB::DEBUG;
 
                 $self->{changes}[-1] = $change;
 
@@ -448,7 +449,7 @@ sub add_change
 
             if ( $last_rule eq $new_rule )
             {
-                warn "Skipping identical change\n" if DateTime::TimeZone::OlsonDB::DEBUG;
+                print "Skipping identical change\n" if $DateTime::TimeZone::OlsonDB::DEBUG;
 
                 return;
             }
@@ -492,6 +493,7 @@ use strict;
 
 use DateTime;
 
+use List::Util qw( first );
 use Params::Validate qw( validate SCALAR ARRAYREF UNDEF OBJECT );
 
 sub new
@@ -520,15 +522,14 @@ sub new
                        until => [ split /\s+/, $p{until} ],
                      }, $class;
 
-    my $local_start_datetime;
+    $self->{first_rule} =
+        $self->_first_rule( $last_offset_from_utc, $last_offset_from_std );
+
     if ( $p{utc_start_datetime} )
     {
-        $self->{first_rule} =
-            $self->_first_rule( $last_offset_from_utc, $last_offset_from_std );
-
         $offset_from_std += $self->{first_rule}->offset_from_std if $self->{first_rule};
 
-        $local_start_datetime = $p{utc_start_datetime}->clone;
+        my $local_start_datetime = $p{utc_start_datetime}->clone;
 
         $local_start_datetime +=
             DateTime::Duration->new( seconds => $offset_from_utc + $offset_from_std );
@@ -623,9 +624,9 @@ sub expand_from_rules
                       rule       => $rule,
                     );
 
-            if (DateTime::TimeZone::OlsonDB::DEBUG)
+            if ($DateTime::TimeZone::OlsonDB::DEBUG)
             {
-                warn "Adding rule change ...\n";
+                print "Adding rule change ...\n";
 
                 $change->_debug_output;
             }
@@ -700,10 +701,10 @@ sub _first_rule
     my $last_offset_from_utc = shift;
     my $last_offset_from_std = shift;
 
-    return unless $self->utc_start_datetime;
     return unless $self->rules;
 
-    my $date = $self->utc_start_datetime;
+    my $date = $self->utc_start_datetime
+        or return $self->_first_no_dst_rule;
 
     my @rules = $self->rules;
 
@@ -727,8 +728,6 @@ sub _first_rule
 
         $possible_rules{$rule} = $rule;
     }
-
-    return unless keys %possible_rules;
 
     my $earliest_year = $year - 1;
     foreach my $rule (@rules)
@@ -754,16 +753,16 @@ sub _first_rule
             # observance started.
             if ( $rule->min_year > $y )
             {
-                warn "Skipping rule beginning in ", $rule->min_year, ".  Year is $y.\n"
-                    if DateTime::TimeZone::OlsonDB::DEBUG;
+                print "Skipping rule beginning in ", $rule->min_year, ".  Year is $y.\n"
+                    if $DateTime::TimeZone::OlsonDB::DEBUG;
 
                 next RULE;
             }
 
             if ( $rule->max_year && $rule->max_year < $y )
             {
-                warn "Skipping rule ending in ", $rule->max_year, ".     Year is $y.\n"
-                    if DateTime::TimeZone::OlsonDB::DEBUG;
+                print "Skipping rule ending in ", $rule->max_year, ".     Year is $y.\n"
+                    if $DateTime::TimeZone::OlsonDB::DEBUG;
 
                 next RULE;
             }
@@ -776,13 +775,11 @@ sub _first_rule
         }
     }
 
-    return unless @rule_dates;
-
     @rule_dates = sort { $a->[0] <=> $b->[0] } @rule_dates;
 
-    warn "Looking for first rule ...\n" if DateTime::TimeZone::OlsonDB::DEBUG;
-    warn " Observance starts: ", $date->datetime, "\n\n"
-        if DateTime::TimeZone::OlsonDB::DEBUG;
+    print "Looking for first rule ...\n" if $DateTime::TimeZone::OlsonDB::DEBUG;
+    print " Observance starts: ", $date->datetime, "\n\n"
+        if $DateTime::TimeZone::OlsonDB::DEBUG;
 
     # ... look through the rules to see if any are still in
     # effect at the beginning of the observance
@@ -794,14 +791,14 @@ sub _first_rule
 
         next if $next_dt && $next_dt < $date;
 
-        warn " This rule starts:  ", $dt->datetime, "\n"
-            if DateTime::TimeZone::OlsonDB::DEBUG;
+        print " This rule starts:  ", $dt->datetime, "\n"
+            if $DateTime::TimeZone::OlsonDB::DEBUG;
 
-        warn " Next rule starts:  ", $next_dt->datetime, "\n"
-            if $next_dt && DateTime::TimeZone::OlsonDB::DEBUG;
+        print " Next rule starts:  ", $next_dt->datetime, "\n"
+            if $next_dt && $DateTime::TimeZone::OlsonDB::DEBUG;
 
-        warn " No next rule\n\n"
-            if ! $next_dt && DateTime::TimeZone::OlsonDB::DEBUG;
+        print " No next rule\n\n"
+            if ! $next_dt && $DateTime::TimeZone::OlsonDB::DEBUG;
 
         if ( $dt <= $date )
         {
@@ -817,9 +814,27 @@ sub _first_rule
         }
     }
 
-    return;
+    # If this observance has rules, but the rules don't have any
+    # defined changes until after the observance starts, we get the
+    # earliest standard time rule and use it. If there is none, shit
+    # blows up (but this is not the case for any time zones as of
+    # 2009a). I really, really hate the Olson database a lot of the
+    # time! Could this be more arbitrary?
+    my $std_time_rule = $self->_first_no_dst_rule;
+
+    die "Cannot find a rule that applies to the observance's date range and cannot find a rule without DST to apply"
+        unless $std_time_rule;
+
+    return $std_time_rule;
 }
 
+sub _first_no_dst_rule
+{
+    my $self = shift;
+
+    return
+        first { ! $_->offset_from_std } sort { $a->min_year <=> $b->min_year } $self->rules;
+}
 
 package DateTime::TimeZone::OlsonDB::Rule;
 
@@ -996,36 +1011,36 @@ sub _debug_output
 
     if ( $self->utc_start_datetime )
     {
-        warn " UTC:        ", $self->utc_start_datetime->datetime, "\n";
-        warn " Local:      ", $self->local_start_datetime->datetime, "\n";
+        print " UTC:        ", $self->utc_start_datetime->datetime, "\n";
+        print " Local:      ", $self->local_start_datetime->datetime, "\n";
     }
     else
     {
-        warn " First change (starts at -inf)\n";
+        print " First change (starts at -inf)\n";
     }
 
-    warn " Short name: ", $self->short_name, "\n";
-    warn " UTC offset: ", $obs->offset_from_utc, "\n";
+    print " Short name: ", $self->short_name, "\n";
+    print " UTC offset: ", $obs->offset_from_utc, "\n";
 
     if ( $obs->offset_from_std || $self->rule )
     {
         if ( $obs->offset_from_std )
         {
-            warn " Std offset: ", $obs->offset_from_std, "\n";
+            print " Std offset: ", $obs->offset_from_std, "\n";
         }
 
         if ( $self->rule )
         {
-            warn " Std offset: ", $self->rule->offset_from_std, ' - ',
+            print " Std offset: ", $self->rule->offset_from_std, ' - ',
                  $self->rule->name, " rule\n";
         }
     }
     else
     {
-        warn " Std offset: 0 - no rule\n";
+        print " Std offset: 0 - no rule\n";
     }
 
-    warn "\n";
+    print "\n";
 }
 
 1;

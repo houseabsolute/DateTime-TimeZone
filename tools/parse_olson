@@ -27,6 +27,7 @@ GetOptions( 'dir:s'     => \$opts{dir},
             'old'       => \$opts{old},
             'file:s'    => \$opts{file},
             'name:s'    => \$opts{name},
+            'debug'     => \$opts{debug},
             'help'      => \$opts{help},
           );
 
@@ -67,6 +68,8 @@ It takes the following arguments:
   --name     Only create the specified time zone.  For debugging.
 
   --old      Also look for files named etcetera, factory, and systemv
+
+  --debug    Turn on debugging in Olson parser
 
   --help     What you are reading
 
@@ -144,6 +147,9 @@ sub parse_file
     die "No such file $file\n" unless -e $file;
 
     print "Now parsing $file\n";
+
+    $DateTime::TimeZone::OlsonDB::DEBUG = 1
+        if $opts{debug};
 
     my $odb = DateTime::TimeZone::OlsonDB->new;
 

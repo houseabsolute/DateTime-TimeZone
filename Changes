@@ -1,8 +1,18 @@
-0.84
+0.84    2009-01-21
+
+- This release is based on version 2009a of the Olson
+  database. Changes include spelling "Katmandu" as "Kathmandu" (with a
+  link for the old spelling), fixes for historical rules in
+  Switzerland, and changes to America/Resolute and Cuba for the past
+  few years (but not present).
 
 - If DateTime::TimeZone::Local could not load its OS-specific subclass
   because of a missing dependency, it would silently fall back on
   loading the Unix subclass, rather than throwing an error. RT #41305.
+
+- Fixed a bug where the short names for some time zones were
+  wrong. This mostly (exclusively?) manifested in time zone rules for
+  the first half of the 20th century or so.
 
 
 0.8301  2008-11-07
@@ -14,7 +24,7 @@
 
 0.83    2008-10-27
 
-- This release is based on version 2008h of the Olson database. The
+- This release is based on version 2008i of the Olson database. The
   major changes in this release are for Argentina.
 
 - Updated the docs on how the local time zone is determined for
