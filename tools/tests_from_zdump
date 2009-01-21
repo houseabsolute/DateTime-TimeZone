@@ -233,12 +233,7 @@ EOF
 
     is( \$dt->is_dst, $t->{is_dst}, 'is_dst should be $t->{is_dst} ($local_datetime)' );
     is( \$dt->offset, $t->{offset}, 'offset should be $t->{offset} ($local_datetime)' );
-
-  TODO:
-    {
-        local \$TODO = 'zdump gives bogus short names for many zones';
-        is( \$dt->time_zone_short_name, '$t->{short_name}', 'short name should be $t->{short_name} ($local_datetime)' );
-    }
+    is( \$dt->time_zone_short_name, '$t->{short_name}', 'short name should be $t->{short_name} ($local_datetime)' );
 }
 
 EOF
