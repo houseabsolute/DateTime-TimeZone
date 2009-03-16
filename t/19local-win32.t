@@ -52,12 +52,12 @@ my $WindowsTZKey;
     # We test these explicitly because we want to make sure that at
     # least a few known names do work, rather than just relying on
     # looping through a list.
-    for my $name ( [ 'Eastern Standard Time', 'America/New_York' ],
+    for my $pair ( [ 'Eastern Standard Time', 'America/New_York' ],
                    [ 'Dateline Standard Time', 'Pacific/Majuro' ],
                    [ 'Israel Standard Time', 'Asia/Jerusalem' ],
                  )
     {
-        set_and_test_windows_tz( @{ $name }, $tzi_key );
+        set_and_test_windows_tz( @{ $pair }, $tzi_key );
     }
 }
 
