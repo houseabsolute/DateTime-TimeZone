@@ -42,4 +42,6 @@ Module::Build->new( module_name        => 'DateTime::TimeZone',
                     sign               => 1,
                     create_makefile_pl => 'traditional',
                     create_readme      => 1,
+                    # Hack for broken Module::Build::Compat
+                    PL_files           => {},
                   )->create_build_script;

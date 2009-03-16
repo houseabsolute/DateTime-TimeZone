@@ -8,6 +8,10 @@
   DateTime::TimeZone::Local::Win32 module. Reported by David
   Pinkowitz. RT #43535.
 
+- Added a hack to fix some brokenness with Module::Build::Compat that
+  causes the compatibility Makefile.PL to fail on really old
+  ExtUtils::MakeMaker versions (6.17 and older). RT #43605.
+
 
 0.84    2009-01-21
 
