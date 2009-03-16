@@ -1,3 +1,14 @@
+0.85    2009-03-16
+
+- This release is based on version 2009c of the Olson database. The
+  only changes in this release are for Cuba.
+
+- Fixes for Win32 with Microsoft's December time zone update. This
+  updated added a zone for Mauritius that wasn't accounted for in the
+  DateTime::TimeZone::Local::Win32 module. Reported by David
+  Pinkowitz. RT #43535.
+
+
 0.84    2009-01-21
 
 - This release is based on version 2009a of the Olson
