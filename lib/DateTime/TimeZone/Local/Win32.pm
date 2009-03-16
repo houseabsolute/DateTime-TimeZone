@@ -102,6 +102,7 @@ sub EnvVars { return 'TZ' }
           'Jordan Standard Time'            => 'Asia/Amman',
           'Korea'                           => 'Asia/Seoul',
           'Korea Standard Time'             => 'Asia/Seoul',
+          'Mauritius Standard Time'         => 'Indian/Mauritius',
           'Mexico'                          => 'America/Mexico_City',
           'Mexico Standard Time'            => 'America/Mexico_City',
           'Mexico Standard Time 2'          => 'America/Chihuahua',
