@@ -45,7 +45,7 @@ sub TimeZone
     {
         my $class = shift;
 
-        my $os_name = shift || $subclass{ $^O } || 'Unix';
+        my $os_name = $subclass{ $^O } || $^O;
         my $subclass = $class . '::' . $os_name;
 
         return $subclass if $subclass->can('Methods');
@@ -132,8 +132,12 @@ This attempts to load an appropriate subclass and asks it to find the
 local time zone. This method is called by when you pass "local" as the
 time zone name to C<< DateTime:TimeZone->new() >>.
 
-If an appropriate subclass does not exist, we fall back to using the
-Unix subclass.
+If your OS is not explicitly handled, you can create a module with a
+name of the form C<DateTime::TimeZone::Local::$^O>. If it exists, it
+will be used instead of falling back to the Unix subclass.
+
+If no OS-specific module exists, we fall back to using the Unix
+subclass.
 
 See L<DateTime::TimeZone::Local::Unix>,
 L<DateTime::TimeZone::Local::Win32>, and

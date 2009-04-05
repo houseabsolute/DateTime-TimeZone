@@ -1,3 +1,12 @@
+0.87    2009-04-05
+
+- The DateTime::TimeZone::Local module will now try to load a subclass
+  of the form DateTime::TimeZone::Local::$^O before falling back to
+  the Unix subclass. This allows you to provide a new subclass on
+  systems where the existing subclasses (Unix, Win32, and VMS) don't
+  get the right answer. Based on a patch from Olivier Mengué.
+
+
 0.86    2009-03-23
 
 - This release is based on version 2009d of the Olson database. This
