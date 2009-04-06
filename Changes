@@ -1,3 +1,9 @@
+0.88    2009-04-06
+
+- This release is based on version 2009e of the Olson database. This
+  release has changes for Jordan and Palestine.
+
+
 0.87    2009-04-05
 
 - The DateTime::TimeZone::Local module will now try to load a subclass
