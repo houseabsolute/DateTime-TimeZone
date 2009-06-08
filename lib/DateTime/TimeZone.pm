@@ -76,6 +76,7 @@ sub new
 
     unless ( $real_class->can('instance') )
     {
+        local $@;
         eval "require $real_class";
 
         if ($@)
