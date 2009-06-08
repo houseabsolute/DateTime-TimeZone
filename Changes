@@ -3,6 +3,9 @@
 - This release is based on version 2009i of the Olson database. This
   release has changes for Bangladesh.
 
+- Made sure to local-ize $@ before any eval, to prevent errors
+  accidentally propogating out to your code.
+
 
 0.91    2009-05-26
 
