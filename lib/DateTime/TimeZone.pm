@@ -259,6 +259,10 @@ sub _spans_binary_search
             # Russia by the US).  Always prefer latest span.
             if ( $current->[IS_DST] && $type eq 'local' )
             {
+                # Asia/Dhaka in 2009j goes into DST without any known
+                # end-of-DST date (wtf, Bangladesh).
+                return $current if $current->[UTC_END] == INFINITY;
+
                 my $next = $self->{spans}[$i + 1];
                 # Sometimes we will get here and the span we're
                 # looking at is the last that's been generated so far.
