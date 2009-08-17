@@ -18,7 +18,7 @@ my $CanWriteEtcLocaltime = -w '/etc/localtime' && -l '/etc/localtime';
 my @aliases = sort keys %{ DateTime::TimeZone::links() };
 my @names = DateTime::TimeZone::all_names();
 
-plan tests => @aliases + @names + 30;
+plan tests => @aliases + @names + 31;
 
 
 # Ensures that we can load our OS-specific subclass. Otherwise this
@@ -86,6 +86,16 @@ DateTime::TimeZone::Local->_load_subclass();
 
     DateTime::TimeZone::Local::Unix->FromEnv();
     is( $@, '', 'FromEnv does not leave $@ set' );
+}
+
+{
+    local $^O = 'DoesNotExist';
+    my @err;
+    local $SIG{__DIE__} = sub { push @err, shift };
+
+    eval { DateTime::TimeZone::Local->TimeZone() };
+
+    is( @err, 1, 'error loading local time zone module is not seen by __DIE__ handler' );
 }
 
 no warnings 'redefine';

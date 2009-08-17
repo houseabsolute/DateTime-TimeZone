@@ -51,6 +51,7 @@ sub TimeZone
         return $subclass if $subclass->can('Methods');
 
         local $@;
+        local $SIG{__DIE__};
         eval "use $subclass";
         if ( my $e = $@ )
         {
