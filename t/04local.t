@@ -95,7 +95,8 @@ DateTime::TimeZone::Local->_load_subclass();
 
     eval { DateTime::TimeZone::Local->TimeZone() };
 
-    is( @err, 0, 'error loading local time zone module is not seen by __DIE__ handler' );
+    is_deeply( \@err, [],
+               'error loading local time zone module is not seen by __DIE__ handler' );
 }
 
 no warnings 'redefine';
