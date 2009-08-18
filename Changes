@@ -1,3 +1,10 @@
+0.96    2009-08-18
+
+- A $SIG{__DIE__} related test in 04local.t behaved differently on different
+  platforms. The test has been narrowed so that it should work the same on all
+  platforms. Reported by Jens Rehsack.
+
+
 0.95    2009-08-18
 
 - Attempting to load an invalid Olson-style name like "Bad/Name" did throw an
