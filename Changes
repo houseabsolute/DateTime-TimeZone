@@ -1,3 +1,11 @@
+0.95    2009-08-18
+
+- Attempting to load an invalid Olson-style name like "Bad/Name" did throw an
+  error since 0.92. Reported by Florian Ragwitz.
+
+- Localized $SIG{__DIE__} for every eval.
+
+
 0.94    2009-08-17
 
 - This release is based on version 2009j of the Olson database. This
