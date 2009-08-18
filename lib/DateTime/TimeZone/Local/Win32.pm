@@ -203,6 +203,7 @@ sub EnvVars { return 'TZ' }
         return unless $class->_IsValidName($olson);
 
         local $@;
+        local $SIG{__DIE__};
         return eval { DateTime::TimeZone->new( name => $olson ) };
     }
 }

@@ -76,21 +76,24 @@ sub new
 
     unless ( $real_class->can('instance') )
     {
-        local $@;
-        eval "require $real_class";
+        my $e = do { local $@;
+                     local $SIG{__DIE__};
+                     eval "require $real_class";
+                     $@;
+                   };
 
-        if ($@)
+        if ($e)
         {
             my $regex = join '.', split /::/, $real_class;
             $regex .= '\\.pm';
 
-            if ( $@ =~ /^Can't locate $regex/i )
+            if ( $e =~ /^Can't locate $regex/i )
             {
                 die "The timezone '$p{name}' could not be loaded, or is an invalid name.\n";
             }
             else
             {
-                die $@;
+                die $e;
             }
         }
     }
@@ -414,6 +417,7 @@ sub is_valid_name
     my $tz;
     {
         local $@;
+        local $SIG{__DIE__};
         $tz = eval { $_[0]->new( name => $_[1] ) };
     }
 
@@ -457,6 +461,7 @@ sub offset_as_seconds
 {
     {
         local $@;
+        local $SIG{__DIE__};
         shift if eval { $_[0]->isa('DateTime::TimeZone') };
     }
 
@@ -496,6 +501,7 @@ sub offset_as_string
 {
     {
         local $@;
+        local $SIG{__DIE__};
         shift if eval { $_[0]->isa('DateTime::TimeZone') };
     }
 

@@ -83,6 +83,7 @@ sub FromEnv
 	    my $tz;
             {
                 local $@;
+                local $SIG{__DIE__};
                 $tz = eval { DateTime::TimeZone->new( name => $ENV{$var} ) };
             }
             return $tz if $tz;
