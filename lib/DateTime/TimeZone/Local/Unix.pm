@@ -89,10 +89,10 @@ sub _FindMatchingZoneinfoFile
 
     my $real_name;
     local $@;
+    local $SIG{__DIE__};
     local $_;
     eval
     {
-        local $SIG{__DIE__};
         File::Find::find
             ( { wanted =>
                 sub

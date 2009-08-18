@@ -60,7 +60,8 @@ sub TimeZone
                 $subclass = $class . '::' . 'Unix';
 
                 eval "use $subclass";
-                die $@ if $@;
+                my $e2 = $@;
+                die $e2 if $e2;
             }
             else
             {
