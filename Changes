@@ -1,3 +1,9 @@
+0.98    2009-09-11
+
+- Fixes for Win32 time zones. Added handling for new Windows time zones,
+  thanks to Jim Brunette. This should fix test failures on some Win32 systems.
+
+
 0.97    2009-09-08
 
 - This release is based on version 2009m of the Olson database. This
