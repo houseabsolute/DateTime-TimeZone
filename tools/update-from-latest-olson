@@ -5,35 +5,53 @@ use warnings;
 
 use File::chdir;
 use File::Temp ();
+use Getopt::Long;
 use Net::FTP;
 
+my %opts = ( download => 1,
+             dir      => undef,
+           );
+
+GetOptions( 'download!' => \$opts{download},
+            'dir:s'     => \$opts{dir},
+          );
+
 my $olson_version;
-my $tempdir = File::Temp::tempdir( CLEANUP => 1 );
+my $dir = $opts{dir} ? $opts{dir} : File::Temp::tempdir( CLEANUP => 1 );
+
 {
-    local $CWD = $tempdir;
+    local $CWD = $dir;
 
-    my $ftp = Net::FTP->new( 'elsie.nci.nih.gov', Passive => 1 )
-        or die "Cannot connect to elsie.nci.nih.gov: $@";
-    $ftp->login()
-        or die 'Cannot login: ', $ftp->message;
-    $ftp->cwd('/pub')
-        or die 'Cannot cwd to /pub: ', $ftp->message;
-
-    for my $f ( $ftp->ls )
+    if ( $opts{download} )
     {
-        if ( $f =~ /^tz(?:code|data)/ )
+        my $ftp = Net::FTP->new( 'elsie.nci.nih.gov', Passive => 1 )
+            or die "Cannot connect to elsie.nci.nih.gov: $@";
+        $ftp->login()
+            or die 'Cannot login: ', $ftp->message;
+        $ftp->cwd('/pub')
+            or die 'Cannot cwd to /pub: ', $ftp->message;
+
+        for my $f ( $ftp->ls )
         {
-            print "Getting $f\n";
-            $ftp->get($f);
+            if ( $f =~ /^tz(?:code|data)/ )
+            {
+                print "Getting $f\n";
+                $ftp->get($f);
 
-            system( 'tar', 'xzf', $f );
+                system( 'tar', 'xzf', $f );
 
-            ($olson_version) = $f =~ /(\d\d\d\d\w)/;
+                ($olson_version) = $f =~ /(\d\d\d\d\w)/;
+            }
         }
-    }
 
-    die "Did not retrieve anything from elsie"
-        unless $olson_version;
+        die "Did not retrieve anything from elsie"
+            unless $olson_version;
+    }
+    else
+    {
+        $dir =~ s{/$}{};
+        ($olson_version) = $dir =~ m{/([^/]+)$};
+    }
 
     system( 'make' )
         and die "Cannot run make: $!";
@@ -53,7 +71,7 @@ my $tempdir = File::Temp::tempdir( CLEANUP => 1 );
     system( './tools/parse_olson',
             '--clean',
             '--version', $olson_version,
-            '--dir', $tempdir,
+            '--dir', $dir,
           )
         and die "Cannot run parse_olson: $!";
 
