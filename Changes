@@ -1,8 +1,8 @@
 1.00    2009-10-17
 
-- This release adds a patch from Debian (http://bugs.debian.org/551195) to
-  account for Argentina's idiotic decision to change its DST policy with two
-  days notice.
+- This release adds a patch from Debian (http://bugs.debian.org/551195) for
+  Argentina. Argentina's idiotic government decided to change their DST rules
+  with two days notice.
 
 
 0.99    2009-09-28
