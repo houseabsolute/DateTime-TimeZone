@@ -34,6 +34,9 @@ my %IsWin32 = map { $_ => 1 } qw( MSWin32 NetWare symbian );
 $requires{'Win32::TieRegistry'} = 0
     if $IsWin32{ $^O };
 
+$requires{'DateTime::TimeZone::HPUX'} = 0
+    if $^O eq 'hpux';
+
 Module::Build->new( module_name        => 'DateTime::TimeZone',
                     dist_author        => 'Dave Rolsky <autarch@urth.org>',
                     license            => 'perl',
