@@ -42,4 +42,5 @@ Module::Build->new( module_name        => 'DateTime::TimeZone',
                     sign               => 1,
                     create_makefile_pl => 'traditional',
                     create_readme      => 1,
+                    dynamic_config     => 1,
                   )->create_build_script;
