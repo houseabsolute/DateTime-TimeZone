@@ -1,3 +1,17 @@
+1.01    2009-10-19
+
+- This release is based on version 2009o of the Olson database. This release
+  has changes for Pakistan and Bangladesh. In addition, I have also applied
+  the Argentina patch again, as this has not been incorporated into the
+  official Olson data yet.
+
+- The t/04local.t test file will be skipped on HPUX, which is a very weird
+  system.
+
+- When installing this module on HPUX, it now adds DateTime::TimeZone::HPUX to
+  its prereqs so you can determine the local time zone.
+
+
 1.00    2009-10-17
 
 - This release adds a patch from Debian (http://bugs.debian.org/551195) for

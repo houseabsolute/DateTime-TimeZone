@@ -8,6 +8,9 @@ use File::Spec;
 use Sys::Hostname qw( hostname );
 use Test::More;
 
+plan skip_all => 'HPUX is weird'
+    if $^O eq 'hpux';
+
 use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
