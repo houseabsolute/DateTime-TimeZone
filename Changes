@@ -1,3 +1,18 @@
+1.03    2009-11-02
+
+- This release is based on version 2009q of the Olson database. It includes
+  historical changes for Hong Kong, updates for Syria, and a new zone,
+  Asia/Novokuznetsk.
+
+
+1.02    2009-10-28
+
+- This release is based on version 2009p of the Olson database. The only
+  changes in this release are for Argentina. This release should produce the
+  same results as 1.01, but I did a new release just to keep up to date with
+  the Olson versions.
+
+
 1.01    2009-10-19
 
 - This release is based on version 2009o of the Olson database. This release
