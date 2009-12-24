@@ -1,3 +1,10 @@
+1.07    2009-12-24
+
+- Fixed for local time zone determination on Win32. Our tests broke after the
+  December 2009 Cumulative Time Zone Update from Microsoft. Patch by David
+  Pinkowitz. RT #52978.
+
+
 1.06    2009-12-21
 
 - This release is based on version 2009t of the Olson database. This release
