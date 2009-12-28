@@ -1,3 +1,9 @@
+1.08    2009-12-28
+
+- This release is based on version 2009u of the Olson database. This release
+  has changes for Bangladesh.
+
+
 1.07    2009-12-24
 
 - Fixed for local time zone determination on Win32. Our tests broke after the
