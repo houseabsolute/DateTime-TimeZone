@@ -26,9 +26,18 @@ sub new
 
     my $save = $p{save};
 
-    if ($save)
+    # The handling of q{-} and q{1} are to account for new syntax introduced
+    # in 2009u (and hopefully gone in future versions).
+    if ( $save && $save ne q{-} )
     {
-        $p{offset_from_std} = DateTime::TimeZone::offset_as_seconds($save);
+        if ( $save =~ /^\d+$/ )
+        {
+            $p{offset_from_std} = 3600 * $save;
+        }
+        else
+        {
+            $p{offset_from_std} = DateTime::TimeZone::offset_as_seconds($save);
+        }
     }
     else
     {
