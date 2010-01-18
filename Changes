@@ -126,9 +126,9 @@
 - This release is based on version 2009j of the Olson database. This
   release has changes for Bangladesh.
 
-  I skipped the 2009i because I was confused about how to handle the
-  weird rules for Bangladesh (which has a change _to_ DST without any
-  future change _from_ DST, but that's governments for you).
+  I skipped the 2009i release because I was confused about how to handle the
+  weird rules for Bangladesh (which has a change _to_ DST without any future
+  change _from_ DST, but that's governments for you).
 
 - Made sure to local-ize $@ before any eval, to prevent errors
   accidentally propogating out to your code.
