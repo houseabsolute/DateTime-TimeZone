@@ -557,6 +557,19 @@ EOF
         $zonecatalog .= "\n";
     }
 
+    $zonecatalog .= <<'EOF';
+=head2 Linked Zones
+
+A linked zone is an alias from one name to another.
+
+EOF
+
+    for my $from ( sort keys %links ) {
+        $zonecatalog .= "  $from => $links{$from}\n";
+    }
+
+    $zonecatalog .= "\n";
+
     $zonecatalog .= "=cut\n";
 
     open my $fh, ">lib/DateTime/TimeZone/Catalog.pm" or die $!;
