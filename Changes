@@ -1,4 +1,7 @@
-1.11
+1.11    2010-03-01
+
+- This release is based on version 2010b of the Olson database. This release
+  has changes for Paraguay.
 
 - Added a list of zones by country, and a list of zone links (aliases) to the
   docs for DateTime::TimeZone::Catalog.
