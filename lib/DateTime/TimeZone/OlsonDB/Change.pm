@@ -71,62 +71,56 @@ sub two_changes_as_span
         $utc_start = $c1->utc_start_datetime->utc_rd_as_seconds;
         $local_start = $c1->local_start_datetime->utc_rd_as_seconds;
     }
-    else
-    {
-        $utc_start = $local_start = '-inf';
+    else {
+            $utc_start = $local_start = '-inf';
     }
 
-    my $utc_end = $c2->utc_start_datetime->utc_rd_as_seconds;
+    my $utc_end   = $c2->utc_start_datetime->utc_rd_as_seconds;
     my $local_end = $utc_end + $c1->total_offset;
 
-    return { utc_start   => $utc_start,
-             utc_end     => $utc_end,
-             local_start => $local_start,
-             local_end   => $local_end,
-             short_name  => $c1->short_name,
-             offset      => $c1->total_offset,
-             is_dst      => $c1->is_dst,
-           };
+    return {
+            utc_start   => $utc_start,
+            utc_end     => $utc_end,
+            local_start => $local_start,
+            local_end   => $local_end,
+            short_name  => $c1->short_name,
+            offset      => $c1->total_offset,
+            is_dst      => $c1->is_dst,
+    };
 }
 
-sub _debug_output
-{
-    my $self = shift;
+sub _debug_output {
+        my $self = shift;
 
-    my $obs = $self->observance;
+        my $obs = $self->observance;
 
-    if ( $self->utc_start_datetime )
-    {
-        print " UTC:        ", $self->utc_start_datetime->datetime, "\n";
-        print " Local:      ", $self->local_start_datetime->datetime, "\n";
-    }
-    else
-    {
-        print " First change (starts at -inf)\n";
-    }
-
-    print " Short name: ", $self->short_name, "\n";
-    print " UTC offset: ", $obs->offset_from_utc, "\n";
-
-    if ( $obs->offset_from_std || $self->rule )
-    {
-        if ( $obs->offset_from_std )
-        {
-            print " Std offset: ", $obs->offset_from_std, "\n";
+        if ( $self->utc_start_datetime ) {
+            print " UTC:        ", $self->utc_start_datetime->datetime, "\n";
+            print " Local:      ", $self->local_start_datetime->datetime,
+                "\n";
+        }
+        else {
+            print " First change (starts at -inf)\n";
         }
 
-        if ( $self->rule )
-        {
-            print " Std offset: ", $self->rule->offset_from_std, ' - ',
-                 $self->rule->name, " rule\n";
-        }
-    }
-    else
-    {
-        print " Std offset: 0 - no rule\n";
-    }
+        print " Short name: ", $self->short_name,     "\n";
+        print " UTC offset: ", $obs->offset_from_utc, "\n";
 
-    print "\n";
+        if ( $obs->offset_from_std || $self->rule ) {
+            if ( $obs->offset_from_std ) {
+                print " Std offset: ", $obs->offset_from_std, "\n";
+            }
+
+            if ( $self->rule ) {
+                print " Std offset: ", $self->rule->offset_from_std, ' - ',
+                    $self->rule->name, " rule\n";
+            }
+        }
+        else {
+            print " Std offset: 0 - no rule\n";
+        }
+
+        print "\n";
 }
 
 1;

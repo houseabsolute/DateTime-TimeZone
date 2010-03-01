@@ -8,24 +8,22 @@ $VERSION = 0.01;
 use DateTime::TimeZone;
 use base 'DateTime::TimeZone';
 
-sub new
-{
+sub new {
     my $class = shift;
 
     return bless { name => 'UTC' }, $class;
 }
 
-sub is_dst_for_datetime { 0 }
+sub is_dst_for_datetime {0}
 
-sub offset_for_datetime { 0 }
-sub offset_for_local_datetime { 0 }
+sub offset_for_datetime       {0}
+sub offset_for_local_datetime {0}
 
-sub short_name_for_datetime { 'UTC' }
+sub short_name_for_datetime {'UTC'}
 
-sub category { undef }
+sub category {undef}
 
-sub is_utc { 1 }
-
+sub is_utc {1}
 
 1;
 

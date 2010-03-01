@@ -9,46 +9,40 @@ use DateTime::TimeZone::OlsonDB::Rule;
 use DateTime::TimeZone::OlsonDB::Zone;
 use Params::Validate qw( validate SCALAR );
 
-
 my $x = 1;
-%MONTHS = map { $_ => $x++ }
-          qw( Jan Feb Mar Apr May Jun
-	      Jul Aug Sep Oct Nov Dec);
+%MONTHS = map { $_ => $x++ } qw( Jan Feb Mar Apr May Jun
+    Jul Aug Sep Oct Nov Dec);
 
 $x = 1;
-%DAYS = map { $_ => $x++ }
-        qw( Mon Tue Wed Thu Fri Sat Sun );
+%DAYS = map { $_ => $x++ } qw( Mon Tue Wed Thu Fri Sat Sun );
 
-$PLUS_ONE_DAY_DUR =  DateTime::Duration->new( days => 1 );
+$PLUS_ONE_DAY_DUR  = DateTime::Duration->new( days => 1 );
 $MINUS_ONE_DAY_DUR = DateTime::Duration->new( days => -1 );
 
-sub new
-{
+sub new {
     my $class = shift;
 
-    return bless { rules => {},
-                   zones => {},
-                   links => {},
-                 }, $class;
+    return bless {
+        rules => {},
+        zones => {},
+        links => {},
+    }, $class;
 }
 
-sub parse_file
-{
+sub parse_file {
     my $self = shift;
     my $file = shift;
 
     open my $fh, "<$file"
         or die "Cannot read $file: $!";
 
-    while (<$fh>)
-    {
+    while (<$fh>) {
         chomp;
         $self->_parse_line($_);
     }
 }
 
-sub _parse_line
-{
+sub _parse_line {
     my $self = shift;
     my $line = shift;
 
@@ -58,24 +52,20 @@ sub _parse_line
     # remove any comments at the end of the line
     $line =~ s/\s*#.+$//;
 
-    if ( $self->{in_zone} && $line =~ /^\t/ )
-    {
+    if ( $self->{in_zone} && $line =~ /^\t/ ) {
         $self->_parse_zone( $line, $self->{in_zone} );
         return;
     }
 
-    foreach ( qw( Rule Zone Link ) )
-    {
-        if ( substr( $line, 0, 4 ) eq $_ )
-        {
+    foreach (qw( Rule Zone Link )) {
+        if ( substr( $line, 0, 4 ) eq $_ ) {
             my $m = '_parse_' . lc $_;
             $self->$m($line);
         }
     }
 }
 
-sub _parse_rule
-{
+sub _parse_rule {
     my $self = shift;
     my $rule = shift;
 
@@ -85,7 +75,7 @@ sub _parse_rule
     my $name = shift @items;
 
     my %rule;
-    @rule{ qw( from to type in on at save letter ) } = @items;
+    @rule{qw( from to type in on at save letter )} = @items;
     delete $rule{letter} if $rule{letter} eq '-';
 
     # As of the 2003a data, there are no rules with a type set
@@ -97,8 +87,7 @@ sub _parse_rule
     undef $self->{in_zone};
 }
 
-sub _parse_zone
-{
+sub _parse_zone {
     my $self = shift;
     my $zone = shift;
     my $name = shift;
@@ -107,20 +96,17 @@ sub _parse_zone
     my @items = grep { defined && length } split /\s+/, $zone, $expect;
 
     my %obs;
-    unless ($name)
-    {
-        shift @items; # remove "Zone"
+    unless ($name) {
+        shift @items;    # remove "Zone"
         $name = shift @items;
     }
 
-    @obs{ qw( gmtoff rules format until ) } = @items;
+    @obs{qw( gmtoff rules format until )} = @items;
 
-    if ( $obs{rules} =~ /\d\d?:\d\d/ )
-    {
+    if ( $obs{rules} =~ /\d\d?:\d\d/ ) {
         $obs{offset_from_std} = delete $obs{rules};
     }
-    else
-    {
+    else {
         delete $obs{rules} if $obs{rules} eq '-';
     }
 
@@ -131,8 +117,7 @@ sub _parse_zone
     $self->{in_zone} = $name;
 }
 
-sub _parse_link
-{
+sub _parse_link {
     my $self = shift;
     my $link = shift;
 
@@ -147,29 +132,31 @@ sub links { %{ $_[0]->{links} } }
 
 sub zone_names { keys %{ $_[0]->{zones} } }
 
-sub zone
-{
+sub zone {
     my $self = shift;
     my $name = shift;
 
     die "Invalid zone name $name"
         unless exists $self->{zones}{$name};
 
-    return
-        DateTime::TimeZone::OlsonDB::Zone->new
-            ( name => $name,
-              observances => $self->{zones}{$name},
-              olson_db => $self,
-            );
+    return DateTime::TimeZone::OlsonDB::Zone->new(
+        name        => $name,
+        observances => $self->{zones}{$name},
+        olson_db    => $self,
+    );
 }
 
-sub expanded_zone
-{
+sub expanded_zone {
     my $self = shift;
-    my %p = validate( @_, { name => { type => SCALAR },
-                            expand_to_year => { type => SCALAR,
-                                                default => (localtime)[5] + 1910 },
-                          } );
+    my %p    = validate(
+        @_, {
+            name           => { type => SCALAR },
+            expand_to_year => {
+                type    => SCALAR,
+                default => (localtime)[5] + 1910
+            },
+        }
+    );
 
     my $zone = $self->zone( $p{name} );
 
@@ -178,8 +165,7 @@ sub expanded_zone
     return $zone;
 }
 
-sub rules_by_name
-{
+sub rules_by_name {
     my $self = shift;
     my $name = shift;
 
@@ -191,70 +177,67 @@ sub rules_by_name
     return @{ $self->{rules}{$name} };
 }
 
-sub parse_day_spec
-{
+sub parse_day_spec {
     my ( $day, $month, $year ) = @_;
 
     return $day if $day =~ /^\d+$/;
 
-    if ( $day =~ /^last(\w\w\w)$/ )
-    {
+    if ( $day =~ /^last(\w\w\w)$/ ) {
         my $dow = $DAYS{$1};
 
-        my $last_day = DateTime->last_day_of_month( year  => $year,
-                                                    month => $month,
-                                                    time_zone => 'floating',
-                                                  );
+        my $last_day = DateTime->last_day_of_month(
+            year      => $year,
+            month     => $month,
+            time_zone => 'floating',
+        );
 
-        my $dt =
-            DateTime->new( year   => $year,
-                           month  => $month,
-                           day    => $last_day->day,
-                           time_zone => 'floating',
-                         );
+        my $dt = DateTime->new(
+            year      => $year,
+            month     => $month,
+            day       => $last_day->day,
+            time_zone => 'floating',
+        );
 
-        while ( $dt->day_of_week != $dow )
-        {
+        while ( $dt->day_of_week != $dow ) {
             $dt -= $PLUS_ONE_DAY_DUR;
         }
 
         return $dt->day;
     }
-    elsif ( $day =~ /^(\w\w\w)([><])=(\d\d?)$/ )
-    {
+    elsif ( $day =~ /^(\w\w\w)([><])=(\d\d?)$/ ) {
         my $dow = $DAYS{$1};
 
-        my $dt = DateTime->new( year   => $year,
-                                month  => $month,
-                                day    => $3,
-                                time_zone => 'floating',
-                              );
+        my $dt = DateTime->new(
+            year      => $year,
+            month     => $month,
+            day       => $3,
+            time_zone => 'floating',
+        );
 
         my $dur = $2 eq '<' ? $MINUS_ONE_DAY_DUR : $PLUS_ONE_DAY_DUR;
 
-        while ( $dt->day_of_week != $dow )
-        {
+        while ( $dt->day_of_week != $dow ) {
             $dt += $dur;
         }
 
         return $dt->day;
     }
-    else
-    {
+    else {
         die "Invalid on spec for rule: $day\n";
     }
 }
 
-sub utc_datetime_for_time_spec
-{
-    my %p = validate( @_, { spec  => { type => SCALAR },
-                            year  => { type => SCALAR },
-                            month => { type => SCALAR },
-                            day   => { type => SCALAR },
-                            offset_from_utc => { type => SCALAR },
-                            offset_from_std => { type => SCALAR },
-                          },
-                    );
+sub utc_datetime_for_time_spec {
+    my %p = validate(
+        @_, {
+            spec            => { type => SCALAR },
+            year            => { type => SCALAR },
+            month           => { type => SCALAR },
+            day             => { type => SCALAR },
+            offset_from_utc => { type => SCALAR },
+            offset_from_std => { type => SCALAR },
+        },
+    );
 
     # 'w'all - ignore it, because that's the default
     $p{spec} =~ s/w$//;
@@ -265,45 +248,43 @@ sub utc_datetime_for_time_spec
     # 's'tandard time - ignore DS offset
     my $is_std = $p{spec} =~ s/s$//;
 
-    my ($hour, $minute, $second) = split /:/, $p{spec};
+    my ( $hour, $minute, $second ) = split /:/, $p{spec};
     $minute = 0 unless defined $minute;
     $second = 0 unless defined $second;
 
     my $add_day = 0;
-    if ( $hour == 24 )
-    {
-        $hour = 0;
+    if ( $hour == 24 ) {
+        $hour    = 0;
         $add_day = 1;
     }
 
     my $utc;
-    if ($is_utc)
-    {
-        $utc = DateTime->new( year   => $p{year},
-                              month  => $p{month},
-                              day    => $p{day},
-                              hour   => $hour,
-                              minute => $minute,
-                              second => $second,
-                              time_zone => 'floating',
-                            );
+    if ($is_utc) {
+        $utc = DateTime->new(
+            year      => $p{year},
+            month     => $p{month},
+            day       => $p{day},
+            hour      => $hour,
+            minute    => $minute,
+            second    => $second,
+            time_zone => 'floating',
+        );
     }
-    else
-    {
-        my $local = DateTime->new( year   => $p{year},
-                                   month  => $p{month},
-                                   day    => $p{day},
-                                   hour   => $hour,
-                                   minute => $minute,
-                                   second => $second,
-                                   time_zone => 'floating',
-                                 );
+    else {
+        my $local = DateTime->new(
+            year      => $p{year},
+            month     => $p{month},
+            day       => $p{day},
+            hour      => $hour,
+            minute    => $minute,
+            second    => $second,
+            time_zone => 'floating',
+        );
 
         $p{offset_from_std} = 0 if $is_std;
 
-        my $dur =
-            DateTime::Duration->new
-                ( seconds => $p{offset_from_utc} + $p{offset_from_std} );
+        my $dur = DateTime::Duration->new(
+            seconds => $p{offset_from_utc} + $p{offset_from_std} );
 
         $utc = $local - $dur;
     }

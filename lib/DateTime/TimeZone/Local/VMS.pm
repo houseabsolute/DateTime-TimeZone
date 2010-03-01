@@ -5,11 +5,11 @@ use warnings;
 
 use base 'DateTime::TimeZone::Local';
 
-
 sub Methods { return qw( FromEnv ) }
 
-sub EnvVars { return qw( TZ SYS$TIMEZONE_RULE SYS$TIMEZONE_NAME UCX$TZ TCPIP$TZ ) }
-
+sub EnvVars {
+    return qw( TZ SYS$TIMEZONE_RULE SYS$TIMEZONE_NAME UCX$TZ TCPIP$TZ );
+}
 
 1;
 

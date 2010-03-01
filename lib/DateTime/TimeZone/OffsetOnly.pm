@@ -11,60 +11,57 @@ use base 'DateTime::TimeZone';
 use DateTime::TimeZone::UTC;
 use Params::Validate qw( validate SCALAR );
 
-sub new
-{
+sub new {
     my $class = shift;
-    my %p = validate( @_, { offset => { type => SCALAR },
-                          } );
+    my %p     = validate(
+        @_, {
+            offset => { type => SCALAR },
+        }
+    );
 
-    my $offset =
-        DateTime::TimeZone::offset_as_seconds( $p{offset} );
+    my $offset = DateTime::TimeZone::offset_as_seconds( $p{offset} );
 
     die "Invalid offset: $p{offset}\n" unless defined $offset;
 
     return DateTime::TimeZone::UTC->new unless $offset;
 
-    my $self = { name   => DateTime::TimeZone::offset_as_string( $offset ),
-                 offset => $offset,
-               };
+    my $self = {
+        name   => DateTime::TimeZone::offset_as_string($offset),
+        offset => $offset,
+    };
 
     return bless $self, $class;
 }
 
-sub is_dst_for_datetime { 0 }
+sub is_dst_for_datetime {0}
 
-sub offset_for_datetime { $_[0]->{offset} }
+sub offset_for_datetime       { $_[0]->{offset} }
 sub offset_for_local_datetime { $_[0]->{offset} }
 
-sub is_utc { 0 }
+sub is_utc {0}
 
 sub short_name_for_datetime { $_[0]->name }
 
-sub category { undef }
+sub category {undef}
 
-
-sub STORABLE_freeze
-{
+sub STORABLE_freeze {
     my $self = shift;
 
     return $self->name;
 }
 
-sub STORABLE_thaw
-{
-    my $self = shift;
-    my $cloning = shift;
+sub STORABLE_thaw {
+    my $self       = shift;
+    my $cloning    = shift;
     my $serialized = shift;
 
     my $class = ref $self || $self;
 
     my $obj;
-    if ( $class->isa(__PACKAGE__) )
-    {
+    if ( $class->isa(__PACKAGE__) ) {
         $obj = __PACKAGE__->new( offset => $serialized );
     }
-    else
-    {
+    else {
         $obj = $class->new( offset => $serialized );
     }
 
@@ -72,7 +69,6 @@ sub STORABLE_thaw
 
     return $self;
 }
-
 
 1;
 

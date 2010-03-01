@@ -5,22 +5,19 @@ use warnings;
 
 use base 'DateTime::TimeZone::Local';
 
-
-sub Methods
-{
+sub Methods {
     return qw( FromEnv
-               FromEtcLocaltime
-               FromEtcTimezone
-               FromEtcTIMEZONE
-               FromEtcSysconfigClock
-               FromEtcDefaultInit
-             );
+        FromEtcLocaltime
+        FromEtcTimezone
+        FromEtcTIMEZONE
+        FromEtcSysconfigClock
+        FromEtcDefaultInit
+    );
 }
 
 sub EnvVars { return 'TZ' }
 
-sub FromEtcLocaltime
-{
+sub FromEtcLocaltime {
     my $class = shift;
 
     my $lt_file = '/etc/localtime';
@@ -28,28 +25,26 @@ sub FromEtcLocaltime
     return unless -r $lt_file && -s _;
 
     my $real_name;
-    if ( -l $lt_file )
-    {
-	# The _Readlink sub exists so the test suite can mock it.
-	$real_name = $class->_Readlink( $lt_file );
+    if ( -l $lt_file ) {
+
+        # The _Readlink sub exists so the test suite can mock it.
+        $real_name = $class->_Readlink($lt_file);
     }
 
-    $real_name ||= $class->_FindMatchingZoneinfoFile( $lt_file );
+    $real_name ||= $class->_FindMatchingZoneinfoFile($lt_file);
 
-    if ( defined $real_name )
-    {
-	my ( $vol, $dirs, $file ) = File::Spec->splitpath( $real_name );
+    if ( defined $real_name ) {
+        my ( $vol, $dirs, $file ) = File::Spec->splitpath($real_name);
 
-	my @parts =
-	    grep { defined && length } File::Spec->splitdir( $dirs ), $file;
+        my @parts
+            = grep { defined && length } File::Spec->splitdir($dirs), $file;
 
-        foreach my $x ( reverse 0..$#parts )
-        {
-            my $name =
-                ( $x < $#parts ?
-                  join '/', @parts[$x..$#parts] :
-                  $parts[$x]
-                );
+        foreach my $x ( reverse 0 .. $#parts ) {
+            my $name = (
+                $x < $#parts
+                ? join '/', @parts[ $x .. $#parts ]
+                : $parts[$x]
+            );
 
             my $tz;
             {
@@ -63,19 +58,18 @@ sub FromEtcLocaltime
     }
 }
 
-sub _Readlink
-{
+sub _Readlink {
     my $link = $_[1];
 
     require Cwd;
+
     # Using abs_path will resolve multiple levels of link indirection,
     # whereas readlink just follows the link to the next target.
     return Cwd::abs_path($link);
 }
 
 # for systems where /etc/localtime is a copy of a zoneinfo file
-sub _FindMatchingZoneinfoFile
-{
+sub _FindMatchingZoneinfoFile {
     my $class         = shift;
     my $file_to_match = shift;
 
@@ -91,23 +85,22 @@ sub _FindMatchingZoneinfoFile
     local $@;
     local $SIG{__DIE__};
     local $_;
-    eval
-    {
-        File::Find::find
-            ( { wanted =>
-                sub
-                {
-                    if ( ! defined $real_name
-                         && -f $_
-                         && ! -l $_
-                         && $size == -s _
-                         # This fixes RT 24026 - apparently such a
-                         # file exists on FreeBSD and it can cause a
-                         # false positive
-                         && File::Basename::basename($_) ne 'posixrules'
-                         && File::Compare::compare( $_, $file_to_match ) == 0
-                       )
-                    {
+    eval {
+        File::Find::find(
+            {
+                wanted => sub {
+                    if (
+                           !defined $real_name
+                        && -f $_
+                        && !-l $_
+                        && $size == -s _
+
+                        # This fixes RT 24026 - apparently such a
+                        # file exists on FreeBSD and it can cause a
+                        # false positive
+                        && File::Basename::basename($_) ne 'posixrules'
+                        && File::Compare::compare( $_, $file_to_match ) == 0
+                        ) {
                         $real_name = $_;
 
                         # File::Find has no mechanism for bailing in the
@@ -116,20 +109,18 @@ sub _FindMatchingZoneinfoFile
                     }
                 },
                 no_chdir => 1,
-              },
-              '/usr/share/zoneinfo',
-            );
+            },
+            '/usr/share/zoneinfo',
+        );
     };
 
-    if ($@)
-    {
+    if ($@) {
         return $real_name if ref $@ && $@->{found};
         die $@;
     }
 }
 
-sub FromEtcTimezone
-{
+sub FromEtcTimezone {
     my $class = shift;
 
     my $tz_file = '/etc/timezone';
@@ -151,8 +142,7 @@ sub FromEtcTimezone
     return eval { DateTime::TimeZone->new( name => $name ) };
 }
 
-sub FromEtcTIMEZONE
-{
+sub FromEtcTIMEZONE {
     my $class = shift;
 
     my $tz_file = '/etc/TIMEZONE';
@@ -164,10 +154,8 @@ sub FromEtcTIMEZONE
         or die "Cannot read $tz_file: $!";
 
     my $name;
-    while ( defined( $name = <TZ> ) )
-    {
-        if ( $name =~ /\A\s*TZ\s*=\s*(\S+)/ )
-        {
+    while ( defined( $name = <TZ> ) ) {
+        if ( $name =~ /\A\s*TZ\s*=\s*(\S+)/ ) {
             $name = $1;
             last;
         }
@@ -183,8 +171,7 @@ sub FromEtcTIMEZONE
 }
 
 # RedHat uses this
-sub FromEtcSysconfigClock
-{
+sub FromEtcSysconfigClock {
     my $class = shift;
 
     return unless -r "/etc/sysconfig/clock" && -f _;
@@ -200,8 +187,7 @@ sub FromEtcSysconfigClock
 
 # this is a sparate function so that it can be overridden in the test
 # suite
-sub _ReadEtcSysconfigClock
-{
+sub _ReadEtcSysconfigClock {
     my $class = shift;
 
     local *CLOCK;
@@ -209,14 +195,12 @@ sub _ReadEtcSysconfigClock
         or die "Cannot read /etc/sysconfig/clock: $!";
 
     local $_;
-    while (<CLOCK>)
-    {
+    while (<CLOCK>) {
         return $1 if /^(?:TIME)?ZONE="([^"]+)"/;
     }
 }
 
-sub FromEtcDefaultInit
-{
+sub FromEtcDefaultInit {
     my $class = shift;
 
     return unless -r "/etc/default/init" && -f _;
@@ -232,8 +216,7 @@ sub FromEtcDefaultInit
 
 # this is a separate function so that it can be overridden in the test
 # suite
-sub _ReadEtcDefaultInit
-{
+sub _ReadEtcDefaultInit {
     my $class = shift;
 
     local *INIT;
@@ -241,12 +224,10 @@ sub _ReadEtcDefaultInit
         or die "Cannot read /etc/default/init: $!";
 
     local $_;
-    while (<INIT>)
-    {
+    while (<INIT>) {
         return $1 if /^TZ=(.+)/;
     }
 }
-
 
 1;
 

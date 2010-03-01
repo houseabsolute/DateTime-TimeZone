@@ -8,31 +8,29 @@ $VERSION = 0.01;
 use DateTime::TimeZone;
 use base 'DateTime::TimeZone::OffsetOnly';
 
-sub new
-{
+sub new {
     my $class = shift;
 
-    return bless { name => 'floating',
-                   offset => 0 }, $class;
+    return bless {
+        name   => 'floating',
+        offset => 0
+    }, $class;
 }
 
-sub is_floating { 1 }
+sub is_floating {1}
 
-sub STORABLE_thaw
-{
-    my $self = shift;
-    my $cloning = shift;
+sub STORABLE_thaw {
+    my $self       = shift;
+    my $cloning    = shift;
     my $serialized = shift;
 
     my $class = ref $self || $self;
 
     my $obj;
-    if ( $class->isa(__PACKAGE__) )
-    {
+    if ( $class->isa(__PACKAGE__) ) {
         $obj = __PACKAGE__->new();
     }
-    else
-    {
+    else {
         $obj = $class->new();
     }
 
@@ -41,6 +39,7 @@ sub STORABLE_thaw
     return $self;
 }
 
+1;
 
 __END__
 

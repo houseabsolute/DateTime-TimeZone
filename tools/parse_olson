@@ -13,25 +13,25 @@ use File::Spec;
 use Getopt::Long;
 use Locale::Country qw( code2country );
 
-$Data::Dumper::Indent = 1;
+$Data::Dumper::Indent   = 1;
 $Data::Dumper::Sortkeys = 1;
-$Data::Dumper::Terse = 1;
+$Data::Dumper::Terse    = 1;
 
 my $VERSION = "0.07";
 
-my $INFINITY  = 100 ** 100 ** 100;
+my $INFINITY = 100**100**100;
 
 my %opts;
-GetOptions( 'dir:s'     => \$opts{dir},
-            'clean'     => \$opts{clean},
-            'version:s' => \$opts{version},
-            'old'       => \$opts{old},
-            'file:s'    => \$opts{file},
-            'name:s'    => \$opts{name},
-            'debug'     => \$opts{debug},
-            'help'      => \$opts{help},
-          );
-
+GetOptions(
+    'dir:s'     => \$opts{dir},
+    'clean'     => \$opts{clean},
+    'version:s' => \$opts{version},
+    'old'       => \$opts{old},
+    'file:s'    => \$opts{file},
+    'name:s'    => \$opts{name},
+    'debug'     => \$opts{debug},
+    'help'      => \$opts{help},
+);
 
 $opts{help} = 1
     unless defined $opts{dir} && -d $opts{dir};
@@ -41,8 +41,7 @@ $opts{help} = 1
 
 $opts{version} ||= 'test';
 
-if ( $opts{help} )
-{
+if ( $opts{help} ) {
     print <<'EOF';
 
 This script parses the Olson time zone database files and turns them
@@ -86,24 +85,21 @@ clean() if $opts{clean};
 
 my @files;
 
-if ( $opts{file} )
-{
+if ( $opts{file} ) {
     @files = $opts{file};
 }
-else
-{
+else {
     @files = qw( africa antarctica asia australasia
-                 europe northamerica pacificnew
-                 southamerica backward
-               );
+        europe northamerica pacificnew
+        southamerica backward
+    );
 
     push @files, qw( etcetera factory systemv )
         if $opts{old};
 }
 
 my $man;
-unless ( $opts{name} || $opts{file} )
-{
+unless ( $opts{name} || $opts{file} ) {
     copy( 'MANIFEST.base', 'MANIFEST' );
     open $man, ">>MANIFEST" or die "Cannot write to MANIFEST: $!";
 }
@@ -124,25 +120,17 @@ clean_links();
 
 make_catalog_pm();
 
-sub clean
-{
-    for my $f ( File::Find::Rule
-                ->file
-                ->name('*.pm')
-                ->grep('This file is auto-generated' )
-                ->in('lib'),
-                File::Find::Rule
-                ->file
-                ->name('zd*.t')
-                ->in('t')
-              )
-    {
+sub clean {
+    for my $f (
+        File::Find::Rule->file->name('*.pm')
+        ->grep('This file is auto-generated')->in('lib'),
+        File::Find::Rule->file->name('zd*.t')->in('t')
+        ) {
         unlink $f or die "Cannot unlink $f: $!";
     }
 }
 
-sub parse_file
-{
+sub parse_file {
     my $file = File::Spec->catfile( $opts{dir}, shift );
 
     die "No such file $file\n" unless -e $file;
@@ -158,10 +146,8 @@ sub parse_file
 
     %links = ( %links, $odb->links );
 
-    foreach my $zone_name ( sort $odb->zone_names )
-    {
-        if ( $opts{name} )
-        {
+    foreach my $zone_name ( sort $odb->zone_names ) {
+        if ( $opts{name} ) {
             next unless $zone_name eq $opts{name};
         }
         print "  creating zone $zone_name\n";
@@ -170,30 +156,29 @@ sub parse_file
 
         my $name;
         my @dir;
-        if ( $zone_name =~ m{/} )
-        {
+        if ( $zone_name =~ m{/} ) {
             my $category;
             ( $category, $name ) = split /\//, $zone_name, 2;
             push @{ $categories{$category} }, $name;
 
-            ($dir[0] = $category) =~ tr/-/_/;
+            ( $dir[0] = $category ) =~ tr/-/_/;
         }
-        else
-        {
+        else {
             $name = $zone_name;
         }
 
-        (my $outfile1 = $name) =~ tr/-/_/;
+        ( my $outfile1 = $name ) =~ tr/-/_/;
 
-        (my $mod_name = $zone_name) =~ s/\//::/g;
+        ( my $mod_name = $zone_name ) =~ s/\//::/g;
         $mod_name =~ tr/-/_/;
 
         my $max_year = (localtime)[5] + 1910;
-        my $zone = $odb->expanded_zone( name => $zone_name,
-                                        expand_to_year => $max_year,
-                                      );
+        my $zone     = $odb->expanded_zone(
+            name           => $zone_name,
+            expand_to_year => $max_year,
+        );
 
-        my $spans = serialize_spans(zone_as_spans($zone));
+        my $spans = serialize_spans( zone_as_spans($zone) );
 
         $spans =~ s/-inf/DateTime::TimeZone::NEG_INFINITY/g;
         $spans =~ s/inf/DateTime::TimeZone::INFINITY/g;
@@ -246,10 +231,12 @@ $generator
 EOF
 
         my @name_pieces = split /\//, $outfile1;
-        my $filename = (pop @name_pieces) . '.pm';
+        my $filename = ( pop @name_pieces ) . '.pm';
 
-        my $outdir = File::Spec->catdir( qw( lib DateTime TimeZone ),
-                                         @dir, @name_pieces  );
+        my $outdir = File::Spec->catdir(
+            qw( lib DateTime TimeZone ),
+            @dir, @name_pieces
+        );
 
         mkpath( $outdir, 1, 0755 );
 
@@ -259,77 +246,73 @@ EOF
         print $fh $body or die "Cannot write to $outfile2: $!";
         close $fh or die "Cannot write to $outfile2: $!";
 
-        unless ( $opts{name} || $opts{file} )
-        {
-            print $man "$outfile2\n" or die "Cannot write to MANIFEST: $!"
+        unless ( $opts{name} || $opts{file} ) {
+            print $man "$outfile2\n" or die "Cannot write to MANIFEST: $!";
         }
     }
 }
 
-sub zone_as_spans
-{
+sub zone_as_spans {
     my $zone = shift;
 
     my @spans;
 
     my @changes = $zone->sorted_changes;
 
-    for ( my $x = 1; $x < @changes; $x++ )
-    {
-        my $last_total_offset = $x > 1 ? $changes[ $x - 2 ]->total_offset : undef;
+    for ( my $x = 1; $x < @changes; $x++ ) {
+        my $last_total_offset
+            = $x > 1 ? $changes[ $x - 2 ]->total_offset : undef;
 
-        my $span =
-            DateTime::TimeZone::OlsonDB::Change::two_changes_as_span
-                ( @changes[ $x - 1, $x ], $last_total_offset );
+        my $span = DateTime::TimeZone::OlsonDB::Change::two_changes_as_span(
+            @changes[ $x - 1, $x ], $last_total_offset );
 
         push @spans, $span;
 
-        if (@spans > 2)
-        {
+        if ( @spans > 2 ) {
             die "Gap in UTC end/start datetime for " . $zone->name
                 unless $spans[-2]{utc_end} == $spans[-1]{utc_start};
         }
     }
 
-    unless ( $zone->infinite_rules )
-    {
+    unless ( $zone->infinite_rules ) {
         my $last_change = $changes[-1];
 
         my $last_observance = $last_change->observance;
 
-        if ( $last_change->utc_start_datetime )
-        {
-            push @spans, { utc_start   => $last_change->utc_start_datetime->utc_rd_as_seconds,
-                           utc_end     => $INFINITY,
-                           local_start => $last_change->local_start_datetime->utc_rd_as_seconds,
-                           local_end   => $INFINITY,
-                           short_name  => $last_change->short_name,
-                           offset      => $last_change->total_offset,
-                       is_dst      => $last_change->is_dst,
-                         };
+        if ( $last_change->utc_start_datetime ) {
+            push @spans, {
+                utc_start =>
+                    $last_change->utc_start_datetime->utc_rd_as_seconds,
+                utc_end => $INFINITY,
+                local_start =>
+                    $last_change->local_start_datetime->utc_rd_as_seconds,
+                local_end  => $INFINITY,
+                short_name => $last_change->short_name,
+                offset     => $last_change->total_offset,
+                is_dst     => $last_change->is_dst,
+                };
         }
-        # This happens with zones that have only one rule and no real changes (Pacific/Johnston)
-        else
-        {
-            my $utc_start =
-                @spans ? $spans[-1]{utc_end} : -1 * $INFINITY;
 
-            push @spans, { utc_start   => $utc_start,
-                           utc_end     => $INFINITY,
-                           local_start => $utc_start - $last_observance->total_offset,
-                           local_end   => $INFINITY,
-                           short_name  => sprintf( $last_observance->format, '' ),
-                           offset      => $last_observance->total_offset,
-                           is_dst      => 0,
-                         };
+        # This happens with zones that have only one rule and no real changes (Pacific/Johnston)
+        else {
+            my $utc_start = @spans ? $spans[-1]{utc_end} : -1 * $INFINITY;
+
+            push @spans, {
+                utc_start   => $utc_start,
+                utc_end     => $INFINITY,
+                local_start => $utc_start - $last_observance->total_offset,
+                local_end   => $INFINITY,
+                short_name  => sprintf( $last_observance->format, '' ),
+                offset      => $last_observance->total_offset,
+                is_dst      => 0,
+                };
         }
     }
 
     return \@spans;
 }
 
-sub serialize_spans
-{
+sub serialize_spans {
     my $spans = shift;
 
     my $string = "[\n";
@@ -339,11 +322,11 @@ sub serialize_spans
     return $string;
 }
 
-sub serialize_span
-{
+sub serialize_span {
     my $span = shift;
+
     # must correspond to constants in DT::TZ, and short_name is always last
-    my @keys = qw( utc_start utc_end local_start local_end offset is_dst );
+    my @keys   = qw( utc_start utc_end local_start local_end offset is_dst );
     my $string = "    [\n";
     $string .= join ",\n", @$span{@keys};
     $string .= ",\n'$span->{short_name}'";
@@ -352,8 +335,7 @@ sub serialize_span
     return $string;
 }
 
-sub zone_generator
-{
+sub zone_generator {
     my $zone = shift;
 
     return '' unless $zone->infinite_rules;
@@ -368,7 +350,7 @@ my $rules = !RULES;
 sub _rules { $rules }
 EOF
 
-    my $last_observance = ($zone->sorted_changes)[-1]->observance;
+    my $last_observance = ( $zone->sorted_changes )[-1]->observance;
 
     # hack to trim size of dumped object
     delete $last_observance->{utc_start_datetime}{locale};
@@ -388,13 +370,11 @@ EOF
     # This is cleaner than making the above a double-quoted string
     $generator =~ s/!RULES/Dumper \@rules/eg;
     $generator =~ s/!LAST_OBSERVANCE/Dumper $last_observance/eg;
-    $generator =~
-        s/\$VAR1->{'local_start_datetime'}{'tz'}/bless( {
+    $generator =~ s/\$VAR1->{'local_start_datetime'}{'tz'}/bless( {
       'name' => 'floating',
       'offset' => 0
     }, 'DateTime::TimeZone::Floating' )/;
-    $generator =~
-        s/\$VAR1->{'utc_start_datetime'}{'tz'}/bless( {
+    $generator =~ s/\$VAR1->{'utc_start_datetime'}{'tz'}/bless( {
       'name' => 'floating',
       'offset' => 0
     }, 'DateTime::TimeZone::Floating' )/;
@@ -403,63 +383,61 @@ EOF
     return $generator;
 }
 
-sub clean_links
-{
+sub clean_links {
+
     # override some links and add others
-    %links =
-        ( %links,
-          'Etc/GMT'       => 'UTC',
-          'Etc/GMT+0'     => 'UTC',
-          'Etc/Universal' => 'UTC',
-          'Etc/UCT'       => 'UTC',
-          'Etc/UTC'       => 'UTC',
-          'Etc/Zulu'      => 'UTC',
-          'GMT0'          => 'UTC',
-          'GMT'           => 'UTC',
-          'AKST9AKDT'     => 'America/Anchorage',
-          'JST-9'         => 'Asia/Tokyo',
-        );
+    %links = (
+        %links,
+        'Etc/GMT'       => 'UTC',
+        'Etc/GMT+0'     => 'UTC',
+        'Etc/Universal' => 'UTC',
+        'Etc/UCT'       => 'UTC',
+        'Etc/UTC'       => 'UTC',
+        'Etc/Zulu'      => 'UTC',
+        'GMT0'          => 'UTC',
+        'GMT'           => 'UTC',
+        'AKST9AKDT'     => 'America/Anchorage',
+        'JST-9'         => 'Asia/Tokyo',
+    );
 
     delete $links{UTC};
 
     # Some links resolve to other links - chase them down until they point
     # to a real zone.
-    while ( my @k = grep { $links{ $links{$_} } } keys %links )
-    {
-        for my $k (@k)
-        {
+    while ( my @k = grep { $links{ $links{$_} } } keys %links ) {
+        for my $k (@k) {
             $links{$k} = $links{ $links{$k} };
         }
     }
 }
 
-sub make_catalog_pm
-{
+sub make_catalog_pm {
     my $links = Dumper \%links;
     $links =~ s/{/(/;
     $links =~ s/}/)/;
 
-    my $zones = join "\n", map { "  $_" } sort @zones;
-    my $cat_names = join "\n", map { "  $_" } sort keys %categories;
-    my $cat = '';
-    foreach my $c ( sort keys %categories )
-    {
+    my $zones     = join "\n", map {"  $_"} sort @zones;
+    my $cat_names = join "\n", map {"  $_"} sort keys %categories;
+    my $cat       = '';
+    foreach my $c ( sort keys %categories ) {
         $cat .= qq|  '$c' => [ qw(\n|;
-        $cat .= join "\n", map { "    $_" } sort @{ $categories{$c} };
+        $cat .= join "\n", map {"    $_"} sort @{ $categories{$c} };
         $cat .= "\n) ],\n";
     }
 
     my %countries = parse_zone_tab();
+
     # hard-code this alias per request of David Cantrell on the list.
     $countries{UK} = $countries{GB};
 
     my $countries = '';
-    for my $c ( sort keys %countries )
-    {
+    for my $c ( sort keys %countries ) {
         $countries .= qq|  '\L$c' => [ qw(\n|;
+
         # We explicitly do not sort these because the order in
         # zones.tab is by population.
-        $countries .= join "\n", map { "    $_" } map { $_->[0] } @{ $countries{$c} };
+        $countries .= join "\n",
+            map {"    $_"} map { $_->[0] } @{ $countries{$c} };
         $countries .= "\n) ],\n";
     }
 
@@ -524,12 +502,10 @@ so that applications can easily present a list of timezones.
 
 EOF
 
-    for my $category ( sort keys %categories )
-    {
+    for my $category ( sort keys %categories ) {
         $zonecatalog .= "=head3 $category\n\n";
 
-        for my $zone ( @{ $categories{$category} } )
-        {
+        for my $zone ( @{ $categories{$category} } ) {
             $zonecatalog .= "  $category/$zone\n";
         }
 
@@ -549,8 +525,9 @@ EOF
 
         $zonecatalog .= "=head3 $country->[0] ($country->[1])\n\n";
 
-        for my $zone ( sort { lc $a->[0] cmp $b->[0] } @{ $countries{ $country->[1] } } ) {
-            my $line = join ' - ', grep { defined } @{$zone};
+        for my $zone ( sort { lc $a->[0] cmp $b->[0] }
+            @{ $countries{ $country->[1] } } ) {
+            my $line = join ' - ', grep {defined} @{$zone};
             $zonecatalog .= "  $line\n";
         }
 
@@ -577,16 +554,13 @@ EOF
     close $fh or die $!;
 }
 
-
-sub parse_zone_tab
-{
+sub parse_zone_tab {
     my $file = File::Spec->catfile( $opts{dir}, 'zone.tab' );
 
     open my $fh, "<$file" or die "Cannot read $file: $!";
 
     my %countries;
-    while (<$fh>)
-    {
+    while (<$fh>) {
         next if /^\#/;
         chomp;
 
@@ -597,4 +571,3 @@ sub parse_zone_tab
 
     return %countries;
 }
-

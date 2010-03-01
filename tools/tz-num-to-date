@@ -8,8 +8,7 @@ use DateTime;
 {
     package FakeCal;
 
-    sub utc_rd_values
-    {
+    sub utc_rd_values {
         return @{ $_[0] };
     }
 }

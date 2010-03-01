@@ -9,18 +9,15 @@ $VERSION = '0.01';
 use DateTime::TimeZone;
 use File::Spec;
 
-
-sub TimeZone
-{
+sub TimeZone {
     my $class = shift;
 
     my $subclass = $class->_load_subclass();
 
-    for my $meth ( $subclass->Methods() )
-    {
-	my $tz = $subclass->$meth();
+    for my $meth ( $subclass->Methods() ) {
+        my $tz = $subclass->$meth();
 
-	return $tz if $tz;
+        return $tz if $tz;
     }
 
     die "Cannot determine local time zone\n";
@@ -30,22 +27,22 @@ sub TimeZone
     # Stolen from File::Spec. My theory is that other folks can write
     # the non-existent modules if they feel a need, and release them
     # to CPAN separately.
-    my %subclass = ( MSWin32 => 'Win32',
-                     VMS     => 'VMS',
-                     MacOS   => 'Mac',
-                     os2     => 'OS2',
-                     epoc    => 'Epoc',
-                     NetWare => 'Win32',
-                     symbian => 'Win32',
-                     dos     => 'OS2',
-                     cygwin  => 'Unix',
-                   );
+    my %subclass = (
+        MSWin32 => 'Win32',
+        VMS     => 'VMS',
+        MacOS   => 'Mac',
+        os2     => 'OS2',
+        epoc    => 'Epoc',
+        NetWare => 'Win32',
+        symbian => 'Win32',
+        dos     => 'OS2',
+        cygwin  => 'Unix',
+    );
 
-    sub _load_subclass
-    {
+    sub _load_subclass {
         my $class = shift;
 
-        my $os_name = $subclass{ $^O } || $^O;
+        my $os_name = $subclass{$^O} || $^O;
         my $subclass = $class . '::' . $os_name;
 
         return $subclass if $subclass->can('Methods');
@@ -53,18 +50,15 @@ sub TimeZone
         local $@;
         local $SIG{__DIE__};
         eval "use $subclass";
-        if ( my $e = $@ )
-        {
-            if ( $e =~ /locate.+$os_name/ )
-            {
+        if ( my $e = $@ ) {
+            if ( $e =~ /locate.+$os_name/ ) {
                 $subclass = $class . '::' . 'Unix';
 
                 eval "use $subclass";
                 my $e2 = $@;
                 die $e2 if $e2;
             }
-            else
-            {
+            else {
                 die $e;
             }
         }
@@ -73,29 +67,25 @@ sub TimeZone
     }
 }
 
-sub FromEnv
-{
+sub FromEnv {
     my $class = shift;
 
-    foreach my $var ( $class->EnvVars() )
-    {
-	if ( $class->_IsValidName( $ENV{$var} ) )
-	{
-	    my $tz;
+    foreach my $var ( $class->EnvVars() ) {
+        if ( $class->_IsValidName( $ENV{$var} ) ) {
+            my $tz;
             {
                 local $@;
                 local $SIG{__DIE__};
                 $tz = eval { DateTime::TimeZone->new( name => $ENV{$var} ) };
             }
             return $tz if $tz;
-	}
+        }
     }
 
     return;
 }
 
-sub _IsValidName
-{
+sub _IsValidName {
     shift;
 
     return 0 unless defined $_[0];
@@ -103,8 +93,6 @@ sub _IsValidName
 
     return $_[0] =~ m{^[\w/\-\+]+$};
 }
-
-
 
 1;
 
