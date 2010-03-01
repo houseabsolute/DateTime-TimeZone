@@ -1,3 +1,9 @@
+1.11
+
+- Added a list of zones by country, and a list of zone links (aliases) to the
+  docs for DateTime::TimeZone::Catalog.
+
+
 1.10    2010-01-25
 
 - This release is based on version 2010b of the Olson database. This release
