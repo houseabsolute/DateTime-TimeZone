@@ -90,37 +90,36 @@ sub two_changes_as_span
 }
 
 sub _debug_output {
-        my $self = shift;
+    my $self = shift;
 
-        my $obs = $self->observance;
+    my $obs = $self->observance;
 
-        if ( $self->utc_start_datetime ) {
-            print " UTC:        ", $self->utc_start_datetime->datetime, "\n";
-            print " Local:      ", $self->local_start_datetime->datetime,
-                "\n";
-        }
-        else {
-            print " First change (starts at -inf)\n";
-        }
+    if ( $self->utc_start_datetime ) {
+        print " UTC:        ", $self->utc_start_datetime->datetime,   "\n";
+        print " Local:      ", $self->local_start_datetime->datetime, "\n";
+    }
+    else {
+        print " First change (starts at -inf)\n";
+    }
 
-        print " Short name: ", $self->short_name,     "\n";
-        print " UTC offset: ", $obs->offset_from_utc, "\n";
+    print " Short name: ", $self->short_name,     "\n";
+    print " UTC offset: ", $obs->offset_from_utc, "\n";
 
-        if ( $obs->offset_from_std || $self->rule ) {
-            if ( $obs->offset_from_std ) {
-                print " Std offset: ", $obs->offset_from_std, "\n";
-            }
-
-            if ( $self->rule ) {
-                print " Std offset: ", $self->rule->offset_from_std, ' - ',
-                    $self->rule->name, " rule\n";
-            }
-        }
-        else {
-            print " Std offset: 0 - no rule\n";
+    if ( $obs->offset_from_std || $self->rule ) {
+        if ( $obs->offset_from_std ) {
+            print " Std offset: ", $obs->offset_from_std, "\n";
         }
 
-        print "\n";
+        if ( $self->rule ) {
+            print " Std offset: ", $self->rule->offset_from_std, ' - ',
+                $self->rule->name, " rule\n";
+        }
+    }
+    else {
+        print " Std offset: 0 - no rule\n";
+    }
+
+    print "\n";
 }
 
 1;
