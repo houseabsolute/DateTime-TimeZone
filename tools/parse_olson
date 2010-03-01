@@ -11,6 +11,7 @@ use File::Find::Rule;
 use File::Path;
 use File::Spec;
 use Getopt::Long;
+use Locale::Country qw( code2country );
 
 $Data::Dumper::Indent = 1;
 $Data::Dumper::Sortkeys = 1;
@@ -458,7 +459,7 @@ sub make_catalog_pm
         $countries .= qq|  '\L$c' => [ qw(\n|;
         # We explicitly do not sort these because the order in
         # zones.tab is by population.
-        $countries .= join "\n", map { "    $_" } @{ $countries{$c} };
+        $countries .= join "\n", map { "    $_" } map { $_->[0] } @{ $countries{$c} };
         $countries .= "\n) ],\n";
     }
 
@@ -519,7 +520,7 @@ so that applications can easily present a list of timezones.
 
 =head1 AVAILABLE ZONES
 
-=head2 Zones by Region
+=head2 Zones by Continent/Region
 
 EOF
 
@@ -530,6 +531,27 @@ EOF
         for my $zone ( @{ $categories{$category} } )
         {
             $zonecatalog .= "  $category/$zone\n";
+        }
+
+        $zonecatalog .= "\n";
+    }
+
+    $zonecatalog .= <<'EOF';
+=head2 Zones by Country
+
+EOF
+
+    for my $country (
+        sort { lc $a->[0] cmp lc $b->[0] }
+        map { [ code2country($_), $_ ] } keys %countries
+        ) {
+        next if $country->[1] eq 'UK';
+
+        $zonecatalog .= "=head3 $country->[0] ($country->[1])\n\n";
+
+        for my $zone ( sort { lc $a->[0] cmp $b->[0] } @{ $countries{ $country->[1] } } ) {
+            my $line = join ' - ', grep { defined } @{$zone};
+            $zonecatalog .= "  $line\n";
         }
 
         $zonecatalog .= "\n";
@@ -555,9 +577,9 @@ sub parse_zone_tab
         next if /^\#/;
         chomp;
 
-        my ( $cc, undef, $tz, undef ) = split /\t/, $_;
+        my ( $cc, undef, $tz, $desc ) = split /\t/, $_;
 
-        push @{ $countries{$cc} }, $tz;
+        push @{ $countries{$cc} }, [ $tz, $desc ];
     }
 
     return %countries;
