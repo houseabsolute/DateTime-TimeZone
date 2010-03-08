@@ -1,6 +1,12 @@
+1.12    2010-03-08
+
+- This release is based on version 2010d of the Olson database. This release
+  has changes for Bangladesh, Fiji, Samoa, and Chile.
+
+
 1.11    2010-03-01
 
-- This release is based on version 2010b of the Olson database. This release
+- This release is based on version 2010c of the Olson database. This release
   has changes for Paraguay.
 
 - Added a list of zones by country, and a list of zone links (aliases) to the
