@@ -48,10 +48,11 @@ Module::Build->new(
     create_makefile_pl => 'traditional',
     create_readme      => 1,
     dynamic_config     => 1,
-    meta_merge     => {
+    meta_merge         => {
         resources => {
-            homepage   => 'http://datetime.perl.org/',
-            bugtracker => 'http://rt.cpan.org/NoAuth/Bugs.html?Dist=DateTime-TimeZone',
+            homepage => 'http://datetime.perl.org/',
+            bugtracker =>
+                'http://rt.cpan.org/NoAuth/Bugs.html?Dist=DateTime-TimeZone',
             repository => 'http://hg.urth.org/hg/DateTime-TimeZone',
         },
     },
