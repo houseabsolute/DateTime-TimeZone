@@ -11,7 +11,7 @@ use File::Find::Rule;
 use File::Path;
 use File::Spec;
 use Getopt::Long;
-use Locale::Country qw( code2country );
+use Locale::Country 3.11 qw( code2country );
 
 $Data::Dumper::Indent   = 1;
 $Data::Dumper::Sortkeys = 1;
