@@ -15,7 +15,7 @@ use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
 
-my $IsMaintainer = hostname() =~ /houseabsolute|quasar/ && -d '.svn';
+my $IsMaintainer = hostname() =~ /houseabsolute|quasar/ && -d '.hg';
 my $CanWriteEtcLocaltime = -w '/etc/localtime' && -l '/etc/localtime';
 
 my @aliases = sort keys %{ DateTime::TimeZone::links() };
