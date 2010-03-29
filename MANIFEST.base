@@ -42,7 +42,6 @@ t/20local-subclass.t
 t/check_datetime_version.pl
 xt/kwalitee.t
 xt/pod.t
-xt/pod-coverage.t
 xt/pod-spell.t
 tools/compile-all-zones
 tools/parse_olson
