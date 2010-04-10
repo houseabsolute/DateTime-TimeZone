@@ -1,3 +1,9 @@
+1.17    2010-04-10
+
+- Updated Win32 to Olson name translation mapping. Patch by David
+  Pinkowitz. RT #56445.
+
+
 1.16    2010-04-05
 
 - This release is based on version 2010h of the Olson database. This release
