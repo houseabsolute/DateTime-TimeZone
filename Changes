@@ -1,3 +1,9 @@
+1.18    2010-04-19
+
+- This release is based on version 2010i of the Olson database. This release
+  includes changes for Morocco, Taiwan (historical only), and Argentina.
+
+
 1.17    2010-04-10
 
 - Updated Win32 to Olson name translation mapping. Patch by David
