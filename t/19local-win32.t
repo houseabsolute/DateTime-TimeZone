@@ -38,7 +38,7 @@ plan skip_all => 'These tests require write access to TimeZoneInformation regist
 
 my @win_tz_names = windows_tz_names();
 
-plan tests => @win_tz_names + 6;
+plan tests => ( 2 * @win_tz_names ) + 6;
 
 
 my $WindowsTZKey;
@@ -53,7 +53,7 @@ my $WindowsTZKey;
     # least a few known names do work, rather than just relying on
     # looping through a list.
     for my $pair ( [ 'Eastern Standard Time', 'America/New_York' ],
-                   [ 'Dateline Standard Time', 'Pacific/Majuro' ],
+                   [ 'Dateline Standard Time', '-1200' ],
                    [ 'Israel Standard Time', 'Asia/Jerusalem' ],
                  )
     {
@@ -127,4 +127,42 @@ sub test_windows_zone
             fail($desc);
         }
     }
+	else
+	{
+		my $dt = DateTime->new( year   => 2010,
+                       month  => 7,
+                       day    => 1,
+                       hour   => 12,
+                       time_zone => $tz->name(),
+                     );
+		my $olsonOffset = int($dt->strftime("%z"));
+		$olsonOffset -= 100 if $dt->is_dst();
+		my $windowsOffset = $WindowsTZKey->{"${windows_tz_name}/Display"};
+		SKIP: {
+			if ($windowsOffset =~ /^\(GMT\).*$/)
+			{
+				$windowsOffset = 0;
+			}
+			else
+			{
+				if ($windowsOffset =~ s/^\(GMT(.*?):(.*?)\).*$/$1$2/)
+				{
+					$windowsOffset = int($windowsOffset);
+				}
+				else
+				{
+					skip ("Time Zone display for $windows_tz_name not testable", 1);
+				}
+			}
+			if (($windows_tz_name eq 'Kamchatka Standard Time') || ($windows_tz_name eq 'Namibia Standard Time'))
+			{
+				TODO: {
+					local $TODO = "Microsoft has some out-of-date time zones relative to Olson";
+					is( $olsonOffset, $windowsOffset, "$windows_tz_name - Windows offset matches Olson offset" );
+					return;
+				}
+			}
+			is( $olsonOffset, $windowsOffset, "$windows_tz_name - Windows offset matches Olson offset" );
+		}
+	}
 }
