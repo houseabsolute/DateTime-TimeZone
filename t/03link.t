@@ -10,12 +10,7 @@ BEGIN { require 'check_datetime_version.pl' }
 
 use DateTime::TimeZone;
 
-my @links = DateTime::TimeZone::links();
-
-plan tests => @links + 2;
-
-for my $link (@links)
-{
+for my $link ( DateTime::TimeZone::links() ) {
     my $tz = DateTime::TimeZone->new( name => $link );
     isa_ok( $tz, 'DateTime::TimeZone' );
 }
@@ -25,3 +20,5 @@ is( $tz->name, 'Africa/Tripoli', 'check ->name' );
 
 $tz = DateTime::TimeZone->new( name => 'US/Central' );
 is( $tz->name, 'America/Chicago', 'check ->name' );
+
+done_testing();
