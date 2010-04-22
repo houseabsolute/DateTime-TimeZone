@@ -124,36 +124,45 @@ sub test_windows_zone {
             hour      => 12,
             time_zone => $tz->name(),
         );
-        my $olsonOffset = int( $dt->strftime("%z") );
-        $olsonOffset -= 100 if $dt->is_dst();
-        my $windowsOffset = $WindowsTZKey->{"${windows_tz_name}/Display"};
+
+        my $olson_offset = int( $dt->strftime("%z") );
+        $olson_offset -= 100 if $dt->is_dst();
+        my $windows_offset = $WindowsTZKey->{"${windows_tz_name}/Display"};
+
     SKIP: {
-            if ( $windowsOffset =~ /^\(GMT\).*$/ ) {
-                $windowsOffset = 0;
+            if ( $windows_offset =~ /^\(GMT\).*$/ ) {
+                $windows_offset = 0;
             }
             else {
-                if ( $windowsOffset =~ s/^\(GMT(.*?):(.*?)\).*$/$1$2/ ) {
-                    $windowsOffset = int($windowsOffset);
+                if ( $windows_offset =~ s/^\(GMT(.*?):(.*?)\).*$/$1$2/ ) {
+                    $windows_offset = int($windows_offset);
                 }
                 else {
                     skip(
                         "Time Zone display for $windows_tz_name not testable",
-                        1 );
+                        1
+                    );
                 }
             }
-            if (   ( $windows_tz_name eq 'Kamchatka Standard Time' )
-                || ( $windows_tz_name eq 'Namibia Standard Time' ) ) {
+
+            if (   $windows_tz_name eq 'Kamchatka Standard Time'
+                || $windows_tz_name eq 'Namibia Standard Time' ) {
+
             TODO: {
                     local $TODO
                         = "Microsoft has some out-of-date time zones relative to Olson";
-                    is( $olsonOffset, $windowsOffset,
+                    is(
+                        $olson_offset, $windows_offset,
                         "$windows_tz_name - Windows offset matches Olson offset"
                     );
                     return;
                 }
             }
-            is( $olsonOffset, $windowsOffset,
-                "$windows_tz_name - Windows offset matches Olson offset" );
+
+            is(
+                $olson_offset, $windows_offset,
+                "$windows_tz_name - Windows offset matches Olson offset"
+            );
         }
     }
 }
