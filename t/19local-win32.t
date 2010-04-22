@@ -100,6 +100,9 @@ sub test_windows_zone {
     my $windows_tz_name = shift;
     my $olson_name      = shift;
 
+    my %KnownBad = map { $_ => 1 } 'Kamchatka Standard Time',
+        'Namibia Standard Time';
+
     my $tz = DateTime::TimeZone::Local::Win32->FromRegistry();
 
     ok(
@@ -145,9 +148,7 @@ sub test_windows_zone {
                 }
             }
 
-            if (   $windows_tz_name eq 'Kamchatka Standard Time'
-                || $windows_tz_name eq 'Namibia Standard Time' ) {
-
+            if ( $KnownBad{$windows_tz_name} ) {
             TODO: {
                     local $TODO
                         = "Microsoft has some out-of-date time zones relative to Olson";
