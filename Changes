@@ -3,8 +3,6 @@
 - Dateline time zone on Win32 now always maps to a fixed -12:00 zone. Patch by
   David Pinkowitz.
 
-- Improved Win32 tests to be less fragile. Patch by David Pinkowitz.
-
 
 1.18    2010-04-19
 
