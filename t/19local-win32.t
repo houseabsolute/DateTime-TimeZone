@@ -11,9 +11,11 @@ use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
 
-unless ( $^O =~ /win32/i ) {
-    plan skip_all => 'These tests only run on Windows';
-}
+plan skip_all => 'These tests only run on Windows'
+    unless $^O =~ /win32/i;
+
+plan skip_all => 'These tests only run for maintainers'
+    unless -d '.hg';
 
 my $Registry;
 eval <<'EOF';
