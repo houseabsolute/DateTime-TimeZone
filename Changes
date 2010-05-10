@@ -1,4 +1,7 @@
-1.19
+1.19    2010-05-10
+
+- This release is based on version 2010j of the Olson database. This release
+  creates a new zone for Mexico (America/Bahia_Banderas).
 
 - Dateline time zone on Win32 now always maps to a fixed -12:00 zone. Patch by
   David Pinkowitz.
