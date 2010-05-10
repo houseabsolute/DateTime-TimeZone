@@ -378,3 +378,5 @@ SKIP:
         '_Readlink follows multiple levels of symlinking'
     );
 }
+
+done_testing();
