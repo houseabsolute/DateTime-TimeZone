@@ -1,3 +1,10 @@
+1.20    2010-07-26
+
+- This release is based on version 2010k of the Olson database. This release
+  includes updates for Egypt, Finland (historical only), and Mexico. It also
+  renames Pacific/Truk to Pacific/Chuuk and Pacific/Ponape to Pacific/Pohnpei.
+
+
 1.19    2010-05-10
 
 - This release is based on version 2010j of the Olson database. This release
