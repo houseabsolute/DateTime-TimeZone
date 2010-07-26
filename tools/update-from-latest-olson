@@ -31,6 +31,7 @@ my $dir = $opts{dir} ? $opts{dir} : File::Temp::tempdir( CLEANUP => 1 );
             or die 'Cannot login: ', $ftp->message;
         $ftp->cwd('/pub')
             or die 'Cannot cwd to /pub: ', $ftp->message;
+        $ftp->binary();
 
         for my $f ( $ftp->ls ) {
             if ( $f =~ /^tz(?:code|data)/ ) {
