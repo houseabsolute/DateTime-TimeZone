@@ -650,8 +650,7 @@ can be ambiguous due to Daylight Saving Time rules.
 
 =head2 $tz->name
 
-Returns the name of the time zone.  If this value is passed to the
-C<new()> method, it is guaranteed to create the same object.
+Returns the name of the time zone.
 
 =head2 $tz->short_name_for_datetime( $dt )
 
