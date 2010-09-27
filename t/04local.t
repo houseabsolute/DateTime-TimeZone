@@ -187,8 +187,8 @@ SKIP:
 {
     skip
         "Cannot run these tests without explicitly knowing local time zone first (only runs on developers' machine)",
-        6
-        unless $IsMaintainer;
+        4
+        unless $IsMaintainer && -l '/etc/localtime';
 
     {
         local $ENV{TZ} = '';
@@ -214,6 +214,13 @@ SKIP:
             '/etc/timezone should contain America/Chicago'
         );
     }
+}
+
+SKIP:
+{
+    skip
+        "Can only run this test on developers' machine", 2
+            unless $IsMaintainer && -f '/etc/default/init';
 
     {
 
