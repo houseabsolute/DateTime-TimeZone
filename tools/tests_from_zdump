@@ -5,6 +5,7 @@ use strict;
 use lib './lib';
 
 use DateTime::TimeZone;
+use File::Slurp qw( read_file );
 use File::Spec;
 use Getopt::Long;
 
@@ -59,6 +60,8 @@ $opts{zoneinfo} ||= '/usr/share/zoneinfo';
 die "No zoneinfo directory at $opts{zoneinfo}!\n" unless -d $opts{zoneinfo};
 
 $opts{zdump} ||= 'zdump';
+
+my $dist_version = dist_version();
 
 my $x = 1;
 my %months = map { $_ => $x++ } qw( Jan Feb Mar Apr May Jun
@@ -206,6 +209,8 @@ foreach my $tz_name (@names) {
 
 use strict;
 
+BEGIN { \$DateTime::TimeZone::VERSION = '$dist_version' }
+
 use DateTime;
 
 use Test::More tests => $test_count;
@@ -245,4 +250,13 @@ EOF
 
 EOF
     }
+}
+
+sub dist_version {
+    my $ini = read_file('dist.ini');
+
+    my ($version) = $ini =~ /version\s*=\s*(\S+)/
+        or die "No version in dist.ini";
+
+    return $version;
 }

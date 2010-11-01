@@ -3,9 +3,6 @@ package DateTime::TimeZone::Local;
 use strict;
 use warnings;
 
-use vars qw( $VERSION );
-$VERSION = '0.01';
-
 use DateTime::TimeZone;
 use File::Spec;
 
@@ -96,11 +93,9 @@ sub _IsValidName {
 
 1;
 
+# ABSTRACT: Determine the local system's time zone
+
 __END__
-
-=head1 NAME
-
-DateTime::TimeZone::Local - Determine the local system's time zone
 
 =head1 SYNOPSIS
 
@@ -190,18 +185,5 @@ Here is a simple example subclass:
 
       ...
   }
-
-=head1 AUTHOR
-
-Dave Rolsky, <autarch@urth.org>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (c) 2003-2008 David Rolsky.  All rights reserved.  This
-program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
-
-The full text of the license can be found in the LICENSE file included
-with this module.
 
 =cut

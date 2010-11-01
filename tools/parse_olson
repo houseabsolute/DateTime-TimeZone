@@ -4,6 +4,9 @@ use strict;
 
 use lib './lib';
 
+# Hack so loading DateTime.pm doesn't blow up
+BEGIN { $DateTime::TimeZone::VERSION = '1.24' }
+
 use Data::Dumper;
 use DateTime::TimeZone::OlsonDB;
 use File::Copy;
@@ -44,14 +47,13 @@ $opts{version} ||= 'test';
 if ( $opts{help} ) {
     print <<'EOF';
 
-This script parses the Olson time zone database files and turns them
-into a set of Perl modules.  It also generates the MANIFEST and the
-DateTime::TimeZone::Catalog module, which contains a list of all the
-available time zone names.
+This script parses the Olson time zone database files and turns them into a
+set of Perl modules.  It also generates the DateTime::TimeZone::Catalog
+module, which contains a list of all the available time zone names.
 
-By default, it looks for files named africa, antarctica, asia,
-australasia, europe, northamerica, pacificnew, southamerica, and
-backward.  All other files are ignored.
+By default, it looks for files named africa, antarctica, asia, australasia,
+europe, northamerica, pacificnew, southamerica, and backward.  All other files
+are ignored.
 
 It takes the following arguments:
 
@@ -73,8 +75,8 @@ It takes the following arguments:
 
   --help     What you are reading
 
-If the --file or --name options are specified, the MANIFEST and
-DateTime::TimeZone::Catalog files will not be generated.
+If the --file or --name options are specified, the DateTime::TimeZone::Catalog
+module will not be generated.
 
 EOF
 
@@ -96,12 +98,6 @@ else {
 
     push @files, qw( etcetera factory systemv )
         if $opts{old};
-}
-
-my $man;
-unless ( $opts{name} || $opts{file} ) {
-    copy( 'MANIFEST.base', 'MANIFEST' );
-    open $man, ">>MANIFEST" or die "Cannot write to MANIFEST: $!";
 }
 
 my ( @zones, %categories, %links );
@@ -245,10 +241,6 @@ EOF
         open my $fh, ">$outfile2" or die "Cannot write to $outfile2: $!";
         print $fh $body or die "Cannot write to $outfile2: $!";
         close $fh or die "Cannot write to $outfile2: $!";
-
-        unless ( $opts{name} || $opts{file} ) {
-            print $man "$outfile2\n" or die "Cannot write to MANIFEST: $!";
-        }
     }
 }
 

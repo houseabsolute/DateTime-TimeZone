@@ -13,11 +13,9 @@ sub EnvVars {
 
 1;
 
+# ABSTRACT: Determine the local system's time zone on VMS
+
 __END__
-
-=head1 NAME
-
-DateTime::TimeZone::Local::VMS - Determine the local system's time zone on VMS
 
 =head1 SYNOPSIS
 
@@ -59,18 +57,5 @@ We check the following environment variables:
 =back
 
 =back
-
-=head1 AUTHOR
-
-Dave Rolsky, <autarch@urth.org>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (c) 2003-2008 David Rolsky.  All rights reserved.  This
-program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
-
-The full text of the license can be found in the LICENSE file included
-with this module.
 
 =cut

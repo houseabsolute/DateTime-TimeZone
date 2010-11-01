@@ -296,11 +296,9 @@ sub utc_datetime_for_time_spec {
 
 1;
 
+# ABSTRACT: An object to represent an Olson time zone database
+
 __END__
-
-=head1 NAME
-
-DateTime::TimeZone::OlsonDB - An object to represent an Olson time zone database
 
 =head1 SYNOPSIS
 
@@ -332,18 +330,5 @@ that rule is in effect is "CST".
 =head1 USAGE
 
 Not yet documented.  This stuff is a mess.
-
-=head1 AUTHOR
-
-Dave Rolsky, <autarch@urth.org>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (c) 2003-2008 David Rolsky.  All rights reserved.  This
-program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
-
-The full text of the license can be found in the LICENSE file included
-with this module.
 
 =cut

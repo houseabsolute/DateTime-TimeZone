@@ -12,7 +12,7 @@ use DateTime::TimeZone;
 
 my @names = DateTime::TimeZone::all_names;
 
-my $is_maintainer = -d '.hg' ? 1 : 0;
+my $is_maintainer = -d '.hg' || $ENV{RELEASE_TESTING} ? 1 : 0;
 
 foreach my $name (@names) {
     my $tz = DateTime::TimeZone->new( name => $name );

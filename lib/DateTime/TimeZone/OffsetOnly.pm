@@ -1,9 +1,7 @@
 package DateTime::TimeZone::OffsetOnly;
 
 use strict;
-
-use vars qw ($VERSION);
-$VERSION = 0.02;
+use warnings;
 
 use DateTime::TimeZone;
 use base 'DateTime::TimeZone';
@@ -72,11 +70,9 @@ sub STORABLE_thaw {
 
 1;
 
+# ABSTRACT: A DateTime::TimeZone object that just contains an offset
+
 __END__
-
-=head1 NAME
-
-DateTime::TimeZone::OffsetOnly - A DateTime::TimeZone object that just contains an offset
 
 =head1 SYNOPSIS
 
@@ -110,18 +106,5 @@ is always used.
 =head2 $tz->short_name_for_datetime()
 
 Both of these methods return the offset in string form.
-
-=head1 AUTHOR
-
-Dave Rolsky, <autarch@urth.org>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (c) 2003-2008 David Rolsky.  All rights reserved.  This
-program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
-
-The full text of the license can be found in the LICENSE file included
-with this module.
 
 =cut

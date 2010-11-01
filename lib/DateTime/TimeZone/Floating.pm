@@ -1,9 +1,7 @@
 package DateTime::TimeZone::Floating;
 
 use strict;
-
-use vars qw ($VERSION @ISA);
-$VERSION = 0.01;
+use warnings;
 
 use DateTime::TimeZone;
 use base 'DateTime::TimeZone::OffsetOnly';
@@ -41,11 +39,9 @@ sub STORABLE_thaw {
 
 1;
 
+# ABSTRACT: A time zone that is always local
+
 __END__
-
-=head1 NAME
-
-DateTime::TimeZone::Floating - A time zone that is always local
 
 =head1 SYNOPSIS
 
@@ -62,18 +58,5 @@ A floating time has no time zone, and has an effective offset of zero.
 This class has the same methods as a real time zone object, but the
 C<short_name_for_datetime()>, and C<category()> methods both return
 undef.
-
-=head1 AUTHOR
-
-Dave Rolsky, <autarch@urth.org>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (c) 2003-2008 David Rolsky.  All rights reserved.  This
-program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
-
-The full text of the license can be found in the LICENSE file included
-with this module.
 
 =cut

@@ -42,9 +42,6 @@
 
 ^DateTime-TimeZone-
 
-# No need to ship this
-\.shipit
-
 t/zd.+
 
 \.shipit

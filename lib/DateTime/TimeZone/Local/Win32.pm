@@ -252,11 +252,9 @@ sub _FindWindowsTZName {
 
 1;
 
+# ABSTRACT: Determine the local system's time zone on Windows
+
 __END__
-
-=head1 NAME
-
-DateTime::TimeZone::Local::Win32 - Determine the local system's time zone on Windows
 
 =head1 SYNOPSIS
 
@@ -312,18 +310,5 @@ of "SOFTWARE/Microsoft/Windows/CurrentVersion/Time Zones/"
 =back
 
 =back
-
-=head1 AUTHOR
-
-Dave Rolsky, <autarch@urth.org>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (c) 2003-2008 David Rolsky.  All rights reserved.  This
-program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
-
-The full text of the license can be found in the LICENSE file included
-with this module.
 
 =cut
