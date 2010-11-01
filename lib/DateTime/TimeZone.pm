@@ -5,8 +5,6 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '1.24';
-
 use DateTime::TimeZone::Catalog;
 use DateTime::TimeZone::Floating;
 use DateTime::TimeZone::Local;
@@ -548,11 +546,9 @@ sub names_in_country {
 
 1;
 
+# ABSTRACT: Time zone object base class and factory
+
 __END__
-
-=head1 NAME
-
-DateTime::TimeZone - Time zone object base class and factory
 
 =head1 SYNOPSIS
 
@@ -647,6 +643,11 @@ for the given datetime.  Unlike the previous method, this method uses
 the local time's Rata Die days and seconds.  This should only be done
 when the corresponding UTC time is not yet known, because local times
 can be ambiguous due to Daylight Saving Time rules.
+
+=head2 $tz->is_dst_for_datetime( $dt )
+
+Given a C<DateTime> object, this method returns true if the DateTime is
+currently in Daylight Saving Time.
 
 =head2 $tz->name
 
@@ -800,24 +801,11 @@ To donate, log into PayPal and send money to autarch@urth.org or use
 the button on this page:
 L<http://www.urth.org/~autarch/fs-donation.html>
 
-=head1 AUTHOR
-
-Dave Rolsky <autarch@urth.org>
-
 =head1 CREDITS
 
 This module was inspired by Jesse Vincent's work on
 Date::ICal::Timezone, and written with much help from the
 datetime@perl.org list.
-
-=head1 COPYRIGHT
-
-Copyright (c) 2003-2008 David Rolsky.  All rights reserved.  This
-program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
-
-The full text of the license can be found in the LICENSE file included
-with this module.
 
 =head1 SEE ALSO
 
