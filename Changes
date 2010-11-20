@@ -1,3 +1,11 @@
+1.25    2010-11-20
+
+- Attempting to determine the local time zone while inside a sort subroutine
+  could cause an error "Can't return outside a subroutine". This was caused by
+  stack corruption that happens when an eval "use $module" fails. Reported by
+  Andy Jones. RT #63106.
+
+
 1.24    2010-10-25
 
 - This release is based on version 2010n of the Olson database. This release
