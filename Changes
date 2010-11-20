@@ -1,3 +1,10 @@
+1.26    2010-11-20
+
+- Fix release engineering bugs. The last release had both a Build.PL and
+  Makefile.PL, but the former did not list all the prereqs. Also, dynamic
+  prereqs for Win32 and HPUX were not being added properly.
+
+
 1.25    2010-11-20
 
 - Attempting to determine the local time zone while inside a sort subroutine
