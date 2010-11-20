@@ -3,6 +3,7 @@ package DateTime::TimeZone::Local;
 use strict;
 use warnings;
 
+use Class::Load qw( is_class_loaded load_class try_load_class );
 use DateTime::TimeZone;
 use File::Spec;
 
@@ -42,23 +43,13 @@ sub TimeZone {
         my $os_name = $subclass{$^O} || $^O;
         my $subclass = $class . '::' . $os_name;
 
-        return $subclass if $subclass->can('Methods');
+        return $subclass if is_class_loaded($subclass);
 
-        local $@;
-        local $SIG{__DIE__};
-        eval "use $subclass";
-        if ( my $e = $@ ) {
-            if ( $e =~ /locate.+$os_name/ ) {
-                $subclass = $class . '::' . 'Unix';
+        return $subclass if try_load_class($subclass);
 
-                eval "use $subclass";
-                my $e2 = $@;
-                die $e2 if $e2;
-            }
-            else {
-                die $e;
-            }
-        }
+        $subclass = $class . '::Unix';
+
+        load_class($subclass);
 
         return $subclass;
     }
@@ -172,7 +163,7 @@ Here is a simple example subclass:
   use strict;
   use warnings;
 
-  use parent 'DateTime::TimeZone::Local';
+  use base 'DateTime::TimeZone::Local';
 
 
   sub Methods { qw( FromEnv FromEther ) }
