@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use DateTime::TimeZone;
-use base 'DateTime::TimeZone::OffsetOnly';
+use parent 'DateTime::TimeZone::OffsetOnly';
 
 sub new {
     my $class = shift;

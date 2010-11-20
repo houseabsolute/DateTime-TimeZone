@@ -3,7 +3,7 @@ package DateTime::TimeZone::Local::Win32;
 use strict;
 use warnings;
 
-use base 'DateTime::TimeZone::Local';
+use parent 'DateTime::TimeZone::Local';
 
 use Win32::TieRegistry ( 'KEY_READ', Delimiter => q{/} );
 

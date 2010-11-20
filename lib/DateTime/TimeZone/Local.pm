@@ -172,7 +172,7 @@ Here is a simple example subclass:
   use strict;
   use warnings;
 
-  use base 'DateTime::TimeZone::Local';
+  use parent 'DateTime::TimeZone::Local';
 
 
   sub Methods { qw( FromEnv FromEther ) }

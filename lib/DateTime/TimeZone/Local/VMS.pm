@@ -3,7 +3,7 @@ package DateTime::TimeZone::Local::VMS;
 use strict;
 use warnings;
 
-use base 'DateTime::TimeZone::Local';
+use parent 'DateTime::TimeZone::Local';
 
 sub Methods { return qw( FromEnv ) }
 
