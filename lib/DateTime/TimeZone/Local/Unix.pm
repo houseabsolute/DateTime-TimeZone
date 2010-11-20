@@ -6,7 +6,8 @@ use warnings;
 use parent 'DateTime::TimeZone::Local';
 
 sub Methods {
-    return qw( FromEnv
+    return qw(
+        FromEnv
         FromEtcLocaltime
         FromEtcTimezone
         FromEtcTIMEZONE
