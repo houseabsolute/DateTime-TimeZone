@@ -1,3 +1,9 @@
+1.27    2011-01-19
+
+- This release is based on version 2011a of the Olson database. This release
+  includes historical updates for Australia and Hawaii.
+
+
 1.26    2010-11-20
 
 - Fix release engineering bugs. The last release had both a Build.PL and
