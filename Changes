@@ -1,3 +1,9 @@
+1.28    2011-02-07
+
+- This release is based on version 2011b of the Olson database. This release
+  includes a new zone, America/North_Dakota/Beulah.
+
+
 1.27    2011-01-19
 
 - This release is based on version 2011a of the Olson database. This release
