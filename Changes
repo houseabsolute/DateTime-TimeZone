@@ -1,6 +1,12 @@
+1.30    2011-03-14
+
+- This release is based on version 2011d of the Olson database. This release
+  includes changes for Samoa, Turkey, and Cuba.
+
+
 1.29    2011-03-07
 
-- This release is based on version 2011b of the Olson database. This release
+- This release is based on version 2011c of the Olson database. This release
   includes new zones, America/Sitka and America/Metlakatla, as well as changes
   for Alaska and Chile.
 
