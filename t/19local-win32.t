@@ -14,9 +14,6 @@ BEGIN { require 'check_datetime_version.pl' }
 plan skip_all => 'These tests only run on Windows'
     unless $^O =~ /win32/i;
 
-plan skip_all => 'These tests only run for maintainers'
-    unless -d '.hg';
-
 my $Registry;
 eval <<'EOF';
 use DateTime::TimeZone::Local::Win32;
@@ -102,8 +99,7 @@ sub test_windows_zone {
     my $windows_tz_name = shift;
     my $olson_name      = shift;
 
-    my %KnownBad = map { $_ => 1 } 'Kamchatka Standard Time',
-        'Namibia Standard Time';
+    my %KnownBad = map { $_ => 1 } ();
 
     my $tz = DateTime::TimeZone::Local::Win32->FromRegistry();
 
@@ -122,24 +118,31 @@ sub test_windows_zone {
         }
     }
     else {
-        my $dt = DateTime->new(
-            year      => 2010,
-            month     => 7,
-            day       => 1,
-            hour      => 12,
-            time_zone => $tz->name(),
-        );
-
-        my $olson_offset = int( $dt->strftime("%z") );
-        $olson_offset -= 100 if $dt->is_dst();
-        my $windows_offset = $WindowsTZKey->{"${windows_tz_name}/Display"};
-
     SKIP: {
-            if ( $windows_offset =~ /^\(GMT\).*$/ ) {
+            if (!$tz || ! DateTime::TimeZone->is_valid_name( $tz->name() ))
+            {
+                skip(
+                    "Time Zone display for $windows_tz_name not testable",
+                    1
+                );
+            }
+            my $dt = DateTime->new(
+                year      => 2010,
+                month     => 7,
+                day       => 1,
+                hour      => 12,
+                time_zone => $tz->name(),
+            );
+
+            my $olson_offset = int( $dt->strftime("%z") );
+            $olson_offset -= 100 if $dt->is_dst();
+            my $windows_offset = $WindowsTZKey->{"${windows_tz_name}/Display"};
+
+            if ( $windows_offset =~ /^\((?:GMT|UTC)\).*$/ ) {
                 $windows_offset = 0;
             }
             else {
-                if ( $windows_offset =~ s/^\(GMT(.*?):(.*?)\).*$/$1$2/ ) {
+                if ( $windows_offset =~ s/^\((?:GMT|UTC)(.*?):(.*?)\).*$/$1$2/ ) {
                     $windows_offset = int($windows_offset);
                 }
                 else {
@@ -150,6 +153,14 @@ sub test_windows_zone {
                 }
             }
 
+            unless ( -d '.hg' )
+            {
+                skip(
+                    "$windows_tz_name - Windows offset matches Olson offset (Maintainer only)",
+                    1
+                );
+            }
+            
             if ( $KnownBad{$windows_tz_name} ) {
             TODO: {
                     local $TODO
@@ -161,11 +172,19 @@ sub test_windows_zone {
                     return;
                 }
             }
-
-            is(
-                $olson_offset, $windows_offset,
-                "$windows_tz_name - Windows offset matches Olson offset"
-            );
+            elsif ( defined $WindowsTZKey->{"${windows_tz_name}/IsObsolete"} 
+                    && $WindowsTZKey->{"${windows_tz_name}/IsObsolete"} eq "0x00000001" ) {
+                skip(
+                    "$windows_tz_name - deprecated by Microsoft",
+                    1
+                );
+            }
+            else {
+                is(
+                    $olson_offset, $windows_offset,
+                    "$windows_tz_name - Windows offset matches Olson offset"
+                );
+            }
         }
     }
 }
