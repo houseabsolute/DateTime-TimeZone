@@ -119,8 +119,7 @@ sub test_windows_zone {
     }
     else {
     SKIP: {
-            if (!$tz || ! DateTime::TimeZone->is_valid_name( $tz->name() ))
-            {
+            if ( !$tz || !DateTime::TimeZone->is_valid_name( $tz->name() ) ) {
                 skip(
                     "Time Zone display for $windows_tz_name not testable",
                     1
@@ -136,13 +135,15 @@ sub test_windows_zone {
 
             my $olson_offset = int( $dt->strftime("%z") );
             $olson_offset -= 100 if $dt->is_dst();
-            my $windows_offset = $WindowsTZKey->{"${windows_tz_name}/Display"};
+            my $windows_offset
+                = $WindowsTZKey->{"${windows_tz_name}/Display"};
 
             if ( $windows_offset =~ /^\((?:GMT|UTC)\).*$/ ) {
                 $windows_offset = 0;
             }
             else {
-                if ( $windows_offset =~ s/^\((?:GMT|UTC)(.*?):(.*?)\).*$/$1$2/ ) {
+                if ( $windows_offset
+                    =~ s/^\((?:GMT|UTC)(.*?):(.*?)\).*$/$1$2/ ) {
                     $windows_offset = int($windows_offset);
                 }
                 else {
@@ -153,14 +154,13 @@ sub test_windows_zone {
                 }
             }
 
-            unless ( -d '.hg' )
-            {
+            unless ( -d '.hg' ) {
                 skip(
                     "$windows_tz_name - Windows offset matches Olson offset (Maintainer only)",
                     1
                 );
             }
-            
+
             if ( $KnownBad{$windows_tz_name} ) {
             TODO: {
                     local $TODO
@@ -172,8 +172,9 @@ sub test_windows_zone {
                     return;
                 }
             }
-            elsif ( defined $WindowsTZKey->{"${windows_tz_name}/IsObsolete"} 
-                    && $WindowsTZKey->{"${windows_tz_name}/IsObsolete"} eq "0x00000001" ) {
+            elsif ( defined $WindowsTZKey->{"${windows_tz_name}/IsObsolete"}
+                && $WindowsTZKey->{"${windows_tz_name}/IsObsolete"} eq
+                "0x00000001" ) {
                 skip(
                     "$windows_tz_name - deprecated by Microsoft",
                     1
