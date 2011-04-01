@@ -1,3 +1,9 @@
+1.32    2011-04-01
+
+- This release is based on version 2011e of the Olson database. This release
+  includes changes for Morocco and Chile.
+
+
 1.31    2011-03-18
 
 - Updates for Win32 time zones. Patch by David Pinkowitz.
