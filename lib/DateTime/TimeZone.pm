@@ -44,7 +44,7 @@ sub new {
     unless ( $p{name} =~ m,/,
         || $SpecialName{ $p{name} } ) {
         if ( $p{name} eq 'floating' ) {
-            return DateTime::TimeZone::Floating->new;
+            return DateTime::TimeZone::Floating->instance;
         }
 
         if ( $p{name} eq 'local' ) {
@@ -52,7 +52,7 @@ sub new {
         }
 
         if ( $p{name} eq 'UTC' || $p{name} eq 'Z' ) {
-            return DateTime::TimeZone::UTC->new;
+            return DateTime::TimeZone::UTC->instance;
         }
 
         return DateTime::TimeZone::OffsetOnly->new( offset => $p{name} );

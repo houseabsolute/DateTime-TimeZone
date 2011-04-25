@@ -3,7 +3,6 @@ package DateTime::TimeZone::OffsetOnly;
 use strict;
 use warnings;
 
-use DateTime::TimeZone;
 use parent 'DateTime::TimeZone';
 
 use DateTime::TimeZone::UTC;

@@ -3,10 +3,13 @@ package DateTime::TimeZone::Floating;
 use strict;
 use warnings;
 
-use DateTime::TimeZone;
-use parent 'DateTime::TimeZone::OffsetOnly';
+use parent 'Class::Singleton', 'DateTime::TimeZone::OffsetOnly';
 
 sub new {
+    return shift->instance;
+}
+
+sub _new_instance {
     my $class = shift;
 
     return bless {

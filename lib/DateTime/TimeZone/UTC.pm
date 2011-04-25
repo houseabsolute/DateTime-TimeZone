@@ -3,10 +3,13 @@ package DateTime::TimeZone::UTC;
 use strict;
 use warnings;
 
-use DateTime::TimeZone;
-use parent 'DateTime::TimeZone';
+use parent 'Class::Singleton', 'DateTime::TimeZone';
 
 sub new {
+    return shift->instance;
+}
+
+sub _new_instance {
     my $class = shift;
 
     return bless { name => 'UTC' }, $class;
