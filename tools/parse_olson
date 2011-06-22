@@ -408,7 +408,7 @@ sub make_catalog_pm {
     $links =~ s/{/(/;
     $links =~ s/}/)/;
 
-    my $zones     = join "\n", map {"  $_"} sort @zones;
+    my $zones     = join "\n", map {"  $_"} sort @zones, 'UTC';;
     my $cat_names = join "\n", map {"  $_"} sort keys %categories;
     my $cat       = '';
     foreach my $c ( sort keys %categories ) {
