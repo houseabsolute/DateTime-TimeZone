@@ -1,6 +1,6 @@
 {{$NEXT}}
 
-- Include UTC in the list of all time zone names.
+- Include UTC in the list of all time zone names. RT #67070.
 
 
 1.34    2011-04-25
