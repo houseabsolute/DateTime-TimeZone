@@ -10,7 +10,7 @@ BEGIN { require 'check_datetime_version.pl' }
 
 use DateTime::TimeZone;
 
-my @names = DateTime::TimeZone::all_names;
+my @names = DateTime::TimeZone::all_names();
 
 my $is_maintainer = -d '.hg' || $ENV{RELEASE_TESTING} ? 1 : 0;
 
@@ -21,7 +21,8 @@ foreach my $name (@names) {
     is( $tz->name, $name, 'check ->name' );
 
     is( $tz->is_floating, 0, 'should not be floating' );
-    is( $tz->is_utc,      0, 'should not be UTC' );
+    is( $tz->is_utc,      0, 'should not be UTC' )
+        unless $name eq 'UTC';
 
     # adding these tests makes the test suite take a _long_ time to
     # finish, and it uses up lots of memory too.
