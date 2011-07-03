@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- This release is based on version 2011h of the Olson database. This release
+  includes changes for Russia.
+
 - Include UTC in the list of all time zone names. RT #67070.
 
 
