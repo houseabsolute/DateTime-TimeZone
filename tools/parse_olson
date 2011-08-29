@@ -511,7 +511,7 @@ EOF
 
     for my $country (
         sort { lc $a->[0] cmp lc $b->[0] }
-        map { [ code2country($_), $_ ] } keys %countries
+        map { [ my_code2country($_), $_ ] } keys %countries
         ) {
         next if $country->[1] eq 'UK';
 
@@ -562,4 +562,12 @@ sub parse_zone_tab {
     }
 
     return %countries;
+}
+
+sub my_code2country {
+    my $code = shift;
+
+    return 'South Sudan' if $code eq 'SS';
+
+    return code2country($code);
 }
