@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.36    2011-08-29
+
 - This release is based on version 2011i of the Olson database. This release
   includes a new zone for South Sudan (Africa/Juba) and changes for Samoa,
   Kaliningrad (Russia), Alaska, Hawaii, Newfoundland/Labrador (Canada), and
