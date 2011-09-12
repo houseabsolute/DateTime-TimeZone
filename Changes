@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.37    2011-09-12
+
 - This release is based on version 2011j of the Olson database. This release
   includes contemporary changes for Samoa and historical changes for Kenya,
   Uganda, and Tanzania.
