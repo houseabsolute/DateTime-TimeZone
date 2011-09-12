@@ -12,6 +12,9 @@
   Kaliningrad (Russia), Alaska, Hawaii, Newfoundland/Labrador (Canada), and
   Resolute Bay.
 
+- Require ExtUtils::MakeMaker 6.58+. This fixes an installation problem on
+  Windows.
+
 
 1.35    2011-07-03
 
