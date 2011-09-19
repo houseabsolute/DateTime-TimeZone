@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.38    2011-09-19
+
 - Removed code matching /^package/ in tools/parse_olson. This was confusing
   the metacpan indexer.
 
