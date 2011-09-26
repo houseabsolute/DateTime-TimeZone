@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2011k of the Olson database. This release
+  includes contemporary changes for Palestine, Belarus, and Ukraine.
+
+
 1.38    2011-09-19
 
 - Removed code matching /^package/ in tools/parse_olson. This was confusing
