@@ -518,15 +518,18 @@ EOF
 
     for my $country (
         sort { lc $a->[0] cmp lc $b->[0] }
-        map { [ my_code2country($_), $_ ] } keys %countries
+        map {
+            my $country = my_code2country($_);
+            warn "no country for $_\n" unless defined $country;
+            [ $country, $_ ];
+        } grep { $_ ne 'UK' } keys %countries
         ) {
-        next if $country->[1] eq 'UK';
 
         $zonecatalog .= "=head3 $country->[0] ($country->[1])\n\n";
 
         for my $zone ( sort { lc $a->[0] cmp $b->[0] }
             @{ $countries{ $country->[1] } } ) {
-            my $line = join ' - ', grep {defined} @{$zone};
+            my $line = join ' - ', grep { defined } @{$zone};
             $zonecatalog .= "  $line\n";
         }
 
