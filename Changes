@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- This release is based on version 2011l of the Olson database. This release
+  includes contemporary changes for Palestine, Fiji, Russia, Belarus, Ukraine,
+  and several other post-Soviet states.
+
+
 1.39    2011-09-26
 
 - This release is based on version 2011k of the Olson database. This release
