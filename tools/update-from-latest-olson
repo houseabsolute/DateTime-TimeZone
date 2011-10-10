@@ -25,8 +25,10 @@ my $dir = $opts{dir} ? $opts{dir} : File::Temp::tempdir( CLEANUP => 1 );
     local $CWD = $dir;
 
     if ( $opts{download} ) {
-        my $ftp = Net::FTP->new( 'elsie.nci.nih.gov', Passive => 1 )
-            or die "Cannot connect to elsie.nci.nih.gov: $@";
+        my $host = 'munnari.oz.au';
+
+        my $ftp = Net::FTP->new( $host, Passive => 1 )
+            or die "Cannot connect to $host: $@";
         $ftp->login()
             or die 'Cannot login: ', $ftp->message;
         $ftp->cwd('/pub')
