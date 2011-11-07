@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.42    2011-11-07
+
 - This release is based on version 2011n of the Olson database. This release
   includes contemporary changes for Fiji, Moldova (reversing the 2011m
   changes), and Cuba. The Moldova change removes the Europe/Tiraspol zone
