@@ -433,7 +433,7 @@ sub make_catalog_pm {
         # We explicitly do not sort these because the order in
         # zones.tab is by population.
         $countries .= join "\n",
-            map {"    $_"} map { $_->[0] } @{ $countries{$c} };
+            map {"    $_"} map { $_->[0] } sort @{ $countries{$c} };
         $countries .= "\n) ],\n";
     }
 
