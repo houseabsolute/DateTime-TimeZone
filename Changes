@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- This release is based on version 2012a of the Olson database. This release
+  includes contemporary changes for Armenia, Chile, the Falkland Islands, and
+  Tokelau.
+
+
 1.42    2011-11-07
 
 - This release is based on version 2011n of the Olson database. This release
