@@ -10,7 +10,7 @@ use DateTime::TimeZone::Floating;
 use DateTime::TimeZone::Local;
 use DateTime::TimeZone::OffsetOnly;
 use DateTime::TimeZone::UTC;
-use Params::Validate qw( validate validate_pos SCALAR ARRAYREF BOOLEAN ) 0.72;
+use Params::Validate 0.72 qw( validate validate_pos SCALAR ARRAYREF BOOLEAN );
 
 use constant INFINITY => 100**1000;
 use constant NEG_INFINITY => -1 * ( 100**1000 );
