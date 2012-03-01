@@ -566,7 +566,7 @@ sub parse_zone_tab {
         next if /^\#/;
         chomp;
 
-        my ( $cc, undef, $tz, $desc ) = split /\t/, $_;
+        my ( $cc, undef, $tz, $desc ) = split /\t+/, $_;
 
         push @{ $countries{$cc} }, [ $tz, $desc ];
     }
