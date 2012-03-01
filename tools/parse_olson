@@ -527,7 +527,7 @@ EOF
 
         $zonecatalog .= "=head3 $country->[0] ($country->[1])\n\n";
 
-        for my $zone ( sort { lc $a->[0] cmp $b->[0] }
+        for my $zone ( sort { lc $a->[0] cmp lc $b->[0] }
             @{ $countries{ $country->[1] } } ) {
             my $line = join ' - ', grep { defined } @{$zone};
             $zonecatalog .= "  $line\n";
