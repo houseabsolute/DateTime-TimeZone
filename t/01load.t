@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use File::Spec;
-use Test::More;
+use Test::More 0.88;
 
 use lib File::Spec->catdir( File::Spec->curdir, 't' );
 

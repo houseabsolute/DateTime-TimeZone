@@ -204,7 +204,7 @@ $pkg_keyword DateTime::TimeZone::$mod_name;
 
 use strict;
 
-use Class::Singleton;
+use Class::Singleton 1.03;
 use DateTime::TimeZone;
 use DateTime::TimeZone::OlsonDB;
 

@@ -62,7 +62,7 @@ sub FromEtcLocaltime {
 sub _Readlink {
     my $link = $_[1];
 
-    require Cwd;
+    require Cwd 3;
 
     # Using abs_path will resolve multiple levels of link indirection,
     # whereas readlink just follows the link to the next target.
