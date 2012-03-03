@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.45    2012-03-03
+
 - Remove the dependency on DateTime and DateTime::Duration which was
   accidentally added in 1.43. Reported by Slaven Rezic. RT #75508.
 
