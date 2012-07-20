@@ -25,29 +25,52 @@ my $dir = $opts{dir} ? $opts{dir} : File::Temp::tempdir( CLEANUP => 1 );
     local $CWD = $dir;
 
     if ( $opts{download} ) {
-        my $host = 'munnari.oz.au';
+        my $host = 'ftp.iana.org';
 
         my $ftp = Net::FTP->new( $host, Passive => 1 )
             or die "Cannot connect to $host: $@";
         $ftp->login()
             or die 'Cannot login: ', $ftp->message;
-        $ftp->cwd('/pub')
-            or die 'Cannot cwd to /pub: ', $ftp->message;
-        $ftp->binary();
 
-        for my $f ( $ftp->ls ) {
-            if ( $f =~ /^tz(?:code|data)/ ) {
-                print "Getting $f\n";
-                $ftp->get($f);
+        my $dir = '/tz/releases';
+        $ftp->cwd($dir)
+            or die "Cannot cwd to $dir: ", $ftp->message;
 
-                system( 'tar', 'xzf', $f );
+        my @code;
+        my @data;
+        for my $file ( $ftp->ls() ) {
+            next unless $file =~ /tz(code|data)(\d+)(\w+)\.tar\.gz/;
 
-                ($olson_version) = $f =~ /(\d\d\d\d\w)/;
+            if ( $1 eq 'code' ) {
+                push @code, [ $file, $2, $3 ];
+            }
+            else {
+                push @data, [ $file, $2, $3 ];
             }
         }
 
-        die "Did not retrieve anything from elsie"
-            unless $olson_version;
+        my $data
+            = ( sort { $b->[1] <=> $a->[1] or $b->[2] cmp $a->[2] } @data )[0]
+            ->[0];
+
+        my $code
+            = ( sort { $b->[1] <=> $a->[1] or $b->[2] cmp $a->[2] } @code )[0]
+            ->[0];
+
+        $ftp->binary();
+
+        for my $file ( $code, $data ) {
+            print "Getting $file\n";
+            $ftp->get($file)
+                or die "Cannot fetch $file: ", $ftp->message;
+
+            system( 'tar', 'xzf', $file );
+
+            ($olson_version) = $file =~ /(\d\d\d\d\w)/;
+
+            die "Did not retrieve anything from elsie"
+                unless $olson_version;
+        }
     }
     else {
         $dir =~ s{/$}{};
