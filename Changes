@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2012d of the Olson database. This release
+  includes contemporary changes for Morocco.
+
+
 1.46    2012-04-02
 
 - This release is based on version 2012c of the Olson database. This release
