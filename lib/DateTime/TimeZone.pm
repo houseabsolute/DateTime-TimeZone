@@ -522,7 +522,7 @@ sub names_in_category {
 
     return wantarray
         ? @{ $DateTime::TimeZone::Catalog::CATEGORIES{ $_[0] } }
-        : [ $DateTime::TimeZone::Catalog::CATEGORIES{ $_[0] } ];
+        : $DateTime::TimeZone::Catalog::CATEGORIES{ $_[0] };
 }
 
 sub countries {

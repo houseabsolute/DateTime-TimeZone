@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- In scalar context, DateTime::TimeZone->names_in_category returned an
+  arrayref containing an arrayref (rather than _just_ an arrayref). Reported
+  by Ed Shrock. RT #76791.
+
+
 1.49    2012-09-13
 
 - This release is based on version 2012f of the Olson database. This release

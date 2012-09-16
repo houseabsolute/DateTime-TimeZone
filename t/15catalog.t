@@ -58,6 +58,10 @@ use DateTime::TimeZone;
 
     my $names = DateTime::TimeZone::names_in_category('America');
     ok( ref $names, 'names_in_category() returns ref in scalar context' );
+    is_deeply(
+        \@names, $names,
+        'names_in_category() returns same values in list and scalar context'
+    );
 }
 
 {
