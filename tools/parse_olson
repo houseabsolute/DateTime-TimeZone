@@ -417,7 +417,9 @@ sub make_catalog_pm {
     my $cat       = '';
     foreach my $c ( sort keys %categories ) {
         $cat .= qq|  '$c' => [ qw(\n|;
-        $cat .= join "\n", map {"    $_"} sort @{ $categories{$c} };
+        # We explicitly do not sort these because the order in
+        # zones.tab is by population.
+        $cat .= join "\n", map {"    $_"} @{ $categories{$c} };
         $cat .= "\n) ],\n";
     }
 
@@ -527,8 +529,7 @@ EOF
 
         $zonecatalog .= "=head3 $country->[0] ($country->[1])\n\n";
 
-        for my $zone ( sort { lc $a->[0] cmp lc $b->[0] }
-            @{ $countries{ $country->[1] } } ) {
+        for my $zone ( @{ $countries{ $country->[1] } } ) {
             my $line = join ' - ', grep { defined } @{$zone};
             $zonecatalog .= "  $line\n";
         }
