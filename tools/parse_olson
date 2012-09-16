@@ -417,9 +417,7 @@ sub make_catalog_pm {
     my $cat       = '';
     foreach my $c ( sort keys %categories ) {
         $cat .= qq|  '$c' => [ qw(\n|;
-        # We explicitly do not sort these because the order in
-        # zones.tab is by population.
-        $cat .= join "\n", map {"    $_"} @{ $categories{$c} };
+        $cat .= join "\n", map {"    $_"} sort @{ $categories{$c} };
         $cat .= "\n) ],\n";
     }
 
@@ -433,7 +431,7 @@ sub make_catalog_pm {
         $countries .= qq|  '\L$c' => [ qw(\n|;
 
         # We explicitly do not sort these because the order in
-        # zones.tab is by population.
+        # zones.tab is already in a sane sort order.
         $countries .= join "\n",
             map {"    $_"} map { $_->[0] } @{ $countries{$c} };
         $countries .= "\n) ],\n";

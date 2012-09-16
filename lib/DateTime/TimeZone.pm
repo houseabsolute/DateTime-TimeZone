@@ -723,9 +723,6 @@ that category, without the category portion.  So the list for the
 "Kentucky/Monticello", and "New_York". In scalar context, it returns
 an array reference, while in list context it returns an array.
 
-The list is returned in order of population by zone, which should mean
-that this order will be the best to use for most UIs.
-
 =head2 DateTime::TimeZone->countries()
 
 Returns a sorted list of all the valid country codes (in lower-case)
@@ -741,6 +738,11 @@ Given a two-letter ISO3166 country code, this method returns a list of
 time zones used in that country. The country code may be of any
 case. In scalar context, it returns an array reference, while in list
 context it returns an array.
+
+This list is returned in an order vaguely based on geography and
+population. In general, the least used zones come last, but there are not
+guarantees of a specific order from one release to the next. This order is
+probably the best option for presenting zones names to end users.
 
 =head2 DateTime::TimeZone->offset_as_seconds( $offset )
 

@@ -62,13 +62,6 @@ use DateTime::TimeZone;
         \@names, $names,
         'names_in_category() returns same values in list and scalar context'
     );
-
-    my @order = grep { $_ eq 'Chicago' || $_ eq 'Adak' } @names;
-    is_deeply(
-        \@order,
-        [ 'Chicago', 'Adak' ],
-        'names_in_category returns most populated zones first'
-    );
 }
 
 {
