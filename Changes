@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2012g of the Olson database. This release
+  includes contemporary changes for Palestine and Samoa.
+
+
 1.50    2012-09-16
 
 - In scalar context, DateTime::TimeZone->names_in_category returned an
