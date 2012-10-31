@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2012h of the Olson database. This release
+  includes contemporary changes for Brazil, Israel, and Jordan.
+
+
 1.51    2012-10-18
 
 - This release is based on version 2012g of the Olson database. This release
