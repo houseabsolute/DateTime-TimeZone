@@ -27,6 +27,7 @@ AE
 AO
 API
 AQ
+Aland
 BD
 BG
 BH
@@ -43,7 +44,9 @@ Burkina
 CN
 CPAN
 CX
+CY
 Caicos
+Costa
 Cunha
 DK
 DM
@@ -51,6 +54,7 @@ Darussalam
 DateTime
 EE
 EG
+El
 Eustatius
 FI
 FJ
@@ -78,11 +82,14 @@ JM
 Jamahiriya
 KE
 KH
+KI
 KZ
 Kitts
 LK
 LV
+LY
 Lanka
+Leone
 Leste
 MF
 MH
@@ -110,6 +117,7 @@ QA
 RO
 RW
 Rata
+Rica
 Rolsky
 SG
 SL
@@ -117,10 +125,12 @@ SV
 SX
 SY
 SZ
+Saba
 Sao
 Sint
 Sri
 Storable
+Subclass
 TF
 TG
 TJ
@@ -155,4 +165,6 @@ da
 datetime
 env
 pre
+subclasses
+timezones
 versa
