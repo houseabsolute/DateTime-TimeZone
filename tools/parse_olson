@@ -16,6 +16,7 @@ use File::Find::Rule;
 use File::Path;
 use File::Spec;
 use Getopt::Long;
+use List::AllUtils qw( max );
 use Locale::Country 3.11 qw( code2country );
 
 $Data::Dumper::Indent   = 1;
@@ -175,6 +176,11 @@ sub parse_file {
             name           => $zone_name,
             expand_to_year => $max_year,
         );
+
+        if ( my $last = $zone->last_change() ) {
+            my $last_change_year = $last->utc_start_datetime()->year();
+            $max_year = max( $last_change_year, $max_year );
+        }
 
         my $spans = serialize_spans( zone_as_spans($zone) );
 
