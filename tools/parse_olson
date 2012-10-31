@@ -177,15 +177,10 @@ sub parse_file {
             $zone->last_rules_year($odb),
         );
 
-        my $zone     = $odb->expanded_zone(
+        my $zone = $odb->expanded_zone(
             name           => $zone_name,
             expand_to_year => $max_year,
         );
-
-        if ( my $last = $zone->last_change() ) {
-            my $last_change_year = $last->utc_start_datetime()->year();
-            $max_year = max( $last_change_year, $max_year );
-        }
 
         my $spans = serialize_spans( zone_as_spans($zone) );
 
