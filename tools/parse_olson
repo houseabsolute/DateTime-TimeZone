@@ -366,7 +366,7 @@ sub serialize_span {
 
         my $dt = DateTime->from_object( object => $obj );
 
-        return $dt->strftime( '%Y-%m-%d %H:%M:%S' );
+        return $dt->strftime( '%Y-%m-%d %H:%M:%S (%a)' );
     }
 }
 
