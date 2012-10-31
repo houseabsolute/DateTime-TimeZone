@@ -332,6 +332,7 @@ sub serialize_span {
     my $string = "    [\n";
     for my $key (qw( utc_start utc_end local_start local_end )) {
         my $comment = sprintf( '# %12s %s', $key, _num_as_datetime( $span->{$key} ) );
+        $comment =~ s/\s+$//;
         $string .= "$span->{$key}, $comment\n";
     }
 
