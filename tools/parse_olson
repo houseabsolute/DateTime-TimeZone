@@ -9,6 +9,7 @@ use lib './lib';
 BEGIN { $DateTime::TimeZone::VERSION = '1.24' }
 
 use Data::Dumper;
+use DateTime;
 use DateTime::TimeZone::OlsonDB;
 use File::Copy;
 use File::Find::Rule;
@@ -322,13 +323,45 @@ sub serialize_span {
     my $span = shift;
 
     # must correspond to constants in DT::TZ, and short_name is always last
-    my @keys   = qw( utc_start utc_end local_start local_end offset is_dst );
     my $string = "    [\n";
-    $string .= join ",\n", @$span{@keys};
-    $string .= ",\n'$span->{short_name}'";
+    for my $key (qw( utc_start utc_end local_start local_end )) {
+        my $comment = sprintf( '# %12s %s', $key, _num_as_datetime( $span->{$key} ) );
+        $string .= "$span->{$key}, $comment\n";
+    }
+
+    for my $key (qw( offset is_dst )) {
+        $string .= "$span->{$key},\n";
+    }
+
+    $string .= "'$span->{short_name}',";
     $string .= "\n    ],";
 
     return $string;
+}
+
+{
+    {
+        package FakeCal;
+
+        sub utc_rd_values {
+            return @{ $_[0] };
+        }
+    }
+
+    sub _num_as_datetime {
+        my $num = shift;
+
+        return q{} unless $num =~ /^\d+$/;
+
+        my $days = do { use integer; $num / 86400 };
+        my $secs = $num % 86400;
+
+        my $obj = bless [ $days, $secs, 0 ], 'FakeCal';
+
+        my $dt = DateTime->from_object( object => $obj );
+
+        return $dt->strftime( '%Y-%m-%d %H:%M:%S' );
+    }
 }
 
 sub zone_generator {
