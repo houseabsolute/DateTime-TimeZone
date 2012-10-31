@@ -171,7 +171,12 @@ sub parse_file {
         ( my $mod_name = $zone_name ) =~ s/\//::/g;
         $mod_name =~ tr/-/_/;
 
-        my $max_year = (localtime)[5] + 1910;
+        my $zone     = $odb->zone($zone_name);
+        my $max_year = max(
+            (localtime)[5] + 1910,
+            $zone->last_rules_year($odb),
+        );
+
         my $zone     = $odb->expanded_zone(
             name           => $zone_name,
             expand_to_year => $max_year,
