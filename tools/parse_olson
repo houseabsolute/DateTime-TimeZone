@@ -177,7 +177,7 @@ sub parse_file {
             $zone->last_rules_year($odb),
         );
 
-        my $zone = $odb->expanded_zone(
+        $zone = $odb->expanded_zone(
             name           => $zone_name,
             expand_to_year => $max_year,
         );
