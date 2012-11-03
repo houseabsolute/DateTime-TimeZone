@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2012i of the Olson database. This release
+  includes contemporary changes for Cuba.
+
+
 1.52    2012-10-31
 
 - This release is based on version 2012h of the Olson database. This release
