@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.56    2012-11-30
+
 - The previous release was missing some files. That's what I get for running
   "git clean -dxf". Reported by Andreas Koenig. RT #81593.
 
