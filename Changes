@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Updated mapping from Win32 to Olson time zone names. Patch by Andrey
+  Makhnutin. RT #81456.
+
+
 1.54    2012-11-13
 
 - This release is based on version 2012j of the Olson database. This release
