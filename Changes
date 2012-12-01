@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- The previous release was missing some files. That's what I get for running
+  "git clean -dxf". Reported by Andreas Koenig. RT #81593.
+
+
 1.55    2012-11-30
 
 - Updated mapping from Win32 to Olson time zone names. Patch by Andrey
