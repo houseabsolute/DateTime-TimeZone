@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.57    2013-03-02
+
 - This release is based on version 2013a of the Olson database. This release
   includes contemporary changes for Chile as well as several new zones -
   Asia/Khandyga, Asia/Ust-Nera, and Europe/Busingen. It also includes a number
