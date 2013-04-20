@@ -131,6 +131,7 @@ Sint
 Sri
 Storable
 Subclass
+Subclasses
 TF
 TG
 TJ
