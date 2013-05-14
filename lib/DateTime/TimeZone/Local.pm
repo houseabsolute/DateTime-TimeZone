@@ -151,7 +151,7 @@ list of env vars to be checked by C<< $class->FromEnv() >>.
 =head2 $class->_IsValidName($name)
 
 Given a possible time zone name, this returns a boolean indicating
-whether or not the the name looks valid. It always return false for
+whether or not the name looks valid. It always return false for
 "local" in order to avoid infinite loops.
 
 =head1 EXAMPLE SUBCLASS

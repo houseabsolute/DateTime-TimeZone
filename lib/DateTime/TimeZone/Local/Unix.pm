@@ -185,8 +185,7 @@ sub FromEtcSysconfigClock {
     return eval { DateTime::TimeZone->new( name => $name ) };
 }
 
-# this is a sparate function so that it can be overridden in the test
-# suite
+# this is a separate function so that it can be overridden in the test suite
 sub _ReadEtcSysconfigClock {
     my $class = shift;
 
