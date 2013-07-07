@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- This release is based on version 2013d of the Olson database. This release
+  includes contemporary changes for Morocco and Israel. It also includes
+  historical changes for Jerusalem.
+
+
 1.59    2013-04-20
 
 - This release is based on version 2013c of the Olson database. This release
