@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.61    2013-09-20
+
 - This release is based on version 2013e of the Olson database. This release
   includes contemporary changes for Fiji, Indonesia and San Luis,
   Argentina. It also includes a number of historical changes. See
