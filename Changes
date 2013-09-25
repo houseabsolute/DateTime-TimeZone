@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2013f of the Olson database. This release
+  includes contemporary changes for Tocantins, Jordan, and Palestine.
+
+
 1.61    2013-09-20
 
 - This release is based on version 2013e of the Olson database. This release
