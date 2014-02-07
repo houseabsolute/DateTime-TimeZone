@@ -33,7 +33,7 @@ sub parse_file {
     my $self = shift;
     my $file = shift;
 
-    open my $fh, "<$file"
+    open my $fh, '<', '$file'
         or die "Cannot read $file: $!";
 
     while (<$fh>) {

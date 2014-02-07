@@ -127,11 +127,10 @@ sub FromEtcTimezone {
 
     return unless -f $tz_file && -r _;
 
-    local *TZ;
-    open TZ, "<$tz_file"
+    open my $fh, '<', $tz_file
         or die "Cannot read $tz_file: $!";
-    my $name = join '', <TZ>;
-    close TZ;
+    my $name = join '', <$fh>;
+    close $fh;
 
     $name =~ s/^\s+|\s+$//g;
 
@@ -149,19 +148,18 @@ sub FromEtcTIMEZONE {
 
     return unless -f $tz_file && -r _;
 
-    local *TZ;
-    open TZ, "<$tz_file"
+    open my $fh, '<', $tz_file
         or die "Cannot read $tz_file: $!";
 
     my $name;
-    while ( defined( $name = <TZ> ) ) {
+    while ( defined( $name = <$fh> ) ) {
         if ( $name =~ /\A\s*TZ\s*=\s*(\S+)/ ) {
             $name = $1;
             last;
         }
     }
 
-    close TZ;
+    close $fh;
 
     return unless $class->_IsValidName($name);
 
@@ -189,12 +187,11 @@ sub FromEtcSysconfigClock {
 sub _ReadEtcSysconfigClock {
     my $class = shift;
 
-    local *CLOCK;
-    open CLOCK, '</etc/sysconfig/clock'
+    open my $fh, '<', '/etc/sysconfig/clock'
         or die "Cannot read /etc/sysconfig/clock: $!";
 
     local $_;
-    while (<CLOCK>) {
+    while (<$fh>) {
         return $1 if /^(?:TIME)?ZONE="([^"]+)"/;
     }
 }
@@ -218,12 +215,11 @@ sub FromEtcDefaultInit {
 sub _ReadEtcDefaultInit {
     my $class = shift;
 
-    local *INIT;
-    open INIT, '</etc/default/init'
+    open my $fh, '<', '/etc/default/init'
         or die "Cannot read /etc/default/init: $!";
 
     local $_;
-    while (<INIT>) {
+    while (<$fh>) {
         return $1 if /^TZ=(.+)/;
     }
 }
