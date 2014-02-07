@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.64    2014-02-07
+
 - Under taint mode, DateTime::TimeZone->new( name => 'local' ) could die
   depending on the method used to find the local time zone name. The resulting
   variable would often be tainted. We now untaint all names before attempting
