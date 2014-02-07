@@ -3,7 +3,7 @@
 - Under taint mode, DateTime::TimeZone->new( name => 'local' ) could die
   depending on the method used to find the local time zone name. The resulting
   variable would often be tainted. We now untaint all names before attempting
-  to load them.
+  to load them. Reported by Stevie-O. RT #92631.
 
 
 1.63    2013-10-28
