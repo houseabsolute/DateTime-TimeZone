@@ -1,5 +1,11 @@
 {{$NEXT}}
 
+- Under taint mode, DateTime::TimeZone->new( name => 'local' ) could die
+  depending on the method used to find the local time zone name. The resulting
+  variable would often be tainted. We now untaint all names before attempting
+  to load them.
+
+
 1.63    2013-10-28
 
 - This release is based on version 2013h of the Olson database. This release

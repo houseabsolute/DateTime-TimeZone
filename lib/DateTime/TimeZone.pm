@@ -67,6 +67,8 @@ sub new {
         unless $real_class =~ /^\w+(::\w+)*$/;
 
     unless ( $real_class->can('instance') ) {
+        ($real_class) = $real_class =~ m{\A([a-zA-Z0-9_]+(?:::[a-zA-Z0-9_]+)*)\z};
+
         my $e = do {
             local $@;
             local $SIG{__DIE__};
