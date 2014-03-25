@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2014b of the IANA database. This release
+  includes contemporary changes for Crimea and Troll Station, Antarctica.
+
+
 1.65    2014-03-09
 
 - This release is based on version 2014a of the Olson database. This release
