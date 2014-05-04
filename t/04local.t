@@ -111,7 +111,7 @@ no warnings 'redefine';
 
 SKIP:
 {
-    skip "/etc/localtime is not a symlink", 6
+    skip '/etc/localtime is not a symlink', 6
         unless -l '/etc/localtime';
 
     local *DateTime::TimeZone::Local::Unix::_Readlink
@@ -150,7 +150,7 @@ SKIP:
 
 SKIP:
 {
-    skip "cannot read /etc/sysconfig/clock", 2
+    skip 'cannot read /etc/sysconfig/clock', 2
         unless -r '/etc/sysconfig/clock' && -f _;
 
     local *DateTime::TimeZone::Local::Unix::_ReadEtcSysconfigClock
@@ -168,7 +168,7 @@ SKIP:
 
 SKIP:
 {
-    skip "cannot read /etc/default/init", 2
+    skip 'cannot read /etc/default/init', 2
         unless -r '/etc/default/init' && -f _;
 
     local *DateTime::TimeZone::Local::Unix::_ReadEtcDefaultInit
@@ -186,7 +186,7 @@ SKIP:
 SKIP:
 {
     skip
-        "Cannot run these tests without explicitly knowing local time zone first (only runs on developers' machine)",
+        q{Cannot run these tests without explicitly knowing local time zone first (only runs on developers' machine)},
         4
         unless $IsMaintainer && -l '/etc/localtime';
 
@@ -218,9 +218,8 @@ SKIP:
 
 SKIP:
 {
-    skip
-        "Can only run this test on developers' machine", 2
-            unless $IsMaintainer && -f '/etc/default/init';
+    skip q{Can only run this test on developers' machine}, 2
+        unless $IsMaintainer && -f '/etc/default/init';
 
     {
 
@@ -245,7 +244,7 @@ SKIP:
 {
     my $file = '/etc/timezone';
 
-    skip "Cannot run this test unless we can write to /etc/timezone", 1
+    skip 'Cannot run this test unless we can write to /etc/timezone', 1
         unless $IsMaintainer && -w $file;
 
     open my $fh, '>', $file
@@ -268,7 +267,7 @@ SKIP:
 {
     my $file = '/etc/TIMEZONE';
 
-    skip "Cannot run this test unless we can write to /etc/TIMEZONE", 1
+    skip 'Cannot run this test unless we can write to /etc/TIMEZONE', 1
         unless $IsMaintainer && -w '/etc';
 
     open my $fh, '>', $file
@@ -287,11 +286,11 @@ SKIP:
 
 SKIP:
 {
-    skip "These tests are too dangerous to run on someone else's machine ;)",
+    skip q{These tests are too dangerous to run on someone else's machine ;)},
         5
         unless $IsMaintainer;
 
-    skip "These tests can only be run if we can overwrite /etc/localtime", 5
+    skip 'These tests can only be run if we can overwrite /etc/localtime', 5
         unless $CanWriteEtcLocaltime;
 
     my $tz_file = readlink '/etc/localtime';
@@ -355,9 +354,9 @@ SKIP:
 
 SKIP:
 {
-    skip "These tests require File::Temp", 1
+    skip 'These tests require File::Temp', 1
         unless require File::Temp;
-    skip "These tests require a filesystem which support symlinks", 1
+    skip 'These tests require a filesystem which support symlinks', 1
         unless eval { symlink '', ''; 1 };
 
     my $tempdir = File::Temp::tempdir( CLEANUP => 1 );
