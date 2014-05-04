@@ -245,7 +245,7 @@ SKIP:
 {
     my $file = '/etc/timezone';
 
-    skip "Cannot write this test unless we can write to /etc/timezone", 1
+    skip "Cannot run this test unless we can write to /etc/timezone", 1
         unless $IsMaintainer && -w $file;
 
     open my $fh, '>', $file
@@ -268,7 +268,7 @@ SKIP:
 {
     my $file = '/etc/TIMEZONE';
 
-    skip "Cannot write this test unless we can write to /etc/TIMEZONE", 1
+    skip "Cannot run this test unless we can write to /etc/TIMEZONE", 1
         unless $IsMaintainer && -w '/etc';
 
     open my $fh, '>', $file
