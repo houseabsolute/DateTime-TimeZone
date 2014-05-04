@@ -1,22 +1,27 @@
 use strict;
 use warnings;
 
+use Cwd qw( abs_path cwd );
 use DateTime::TimeZone::Local;
 use DateTime::TimeZone::Local::Unix;
 use File::Basename qw( basename );
-use File::Spec;
+use File::Spec::Functions qw( catdir catfile curdir );
+use File::Path qw( mkpath );
+use File::Temp qw( tempdir );
 use Sys::Hostname qw( hostname );
 use Test::More;
 
 plan skip_all => 'HPUX is weird'
     if $^O eq 'hpux';
 
-use lib File::Spec->catdir( File::Spec->curdir, 't' );
+use lib catdir( curdir(), 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
 
 my $IsMaintainer = hostname() =~ /houseabsolute|quasar/ && -d '.hg';
 my $CanWriteEtcLocaltime = -w '/etc/localtime' && -l '/etc/localtime';
+my $CanSymlink = eval { symlink q{}, q{}; 1 };
+my ($TestFile) = abs_path($0) =~ /(.+)/;
 
 # Ensures that we can load our OS-specific subclass. Otherwise this
 # might happen later in an eval, and the error will get lost.
@@ -68,8 +73,10 @@ DateTime::TimeZone::Local->_load_subclass();
     local $ENV{TZ} = 'Africa/Kinshasa';
 
     my $tz = DateTime::TimeZone::Local::Unix->FromEnv();
-    is( $tz->name(), 'Africa/Kinshasa',
-        'tz object name() is Africa::Kinshasa' );
+    is(
+        $tz->name(), 'Africa/Kinshasa',
+        'tz object name() is Africa::Kinshasa'
+    );
 
     local $ENV{TZ} = 0;
     $tz = eval { DateTime::TimeZone::Local->TimeZone() };
@@ -91,7 +98,7 @@ DateTime::TimeZone::Local->_load_subclass();
     local $ENV{TZ} = bless [], 'Foo';
 
     DateTime::TimeZone::Local::Unix->FromEnv();
-    is( $@, '', 'FromEnv does not leave $@ set' );
+    is( $@, q{}, 'FromEnv does not leave $@ set' );
 }
 
 {
@@ -111,16 +118,24 @@ no warnings 'redefine';
 
 SKIP:
 {
-    skip '/etc/localtime is not a symlink', 6
-        unless -l '/etc/localtime';
+    skip 'These tests require a file system that supports symlinks', 6
+        unless $CanSymlink;
+
+    my $etc_dir = tempdir( CLEANUP => 1 );
+    local $DateTime::TimeZone::Local::Unix::EtcDir = $etc_dir;
+
+    # It doesn't matter what this links to since we override _ReadLink below.
+    symlink $TestFile => catfile( $etc_dir, 'localtime' );
 
     local *DateTime::TimeZone::Local::Unix::_Readlink
         = sub {'/usr/share/zoneinfo/US/Eastern'};
 
     my $tz;
     eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcLocaltime() };
-    is( $@, '',
-        'valid time zone name in /etc/localtime symlink should not die' );
+    is(
+        $@, q{},
+        'valid time zone name in /etc/localtime symlink should not die'
+    );
     is(
         $tz->name(), 'America/New_York',
         'FromEtchLocaltime() with _Readlink returning /usr/share/zoneinfo/US/Eastern'
@@ -130,7 +145,8 @@ SKIP:
         = sub {'/usr/share/zoneinfo/Foo/Bar'};
 
     $tz = DateTime::TimeZone::Local::Unix->FromEtcLocaltime();
-    is( $@, '',
+    is(
+        $@, q{},
         'valid time zone name in /etc/localtime symlink should not leave $@ set'
     );
     ok( !$tz, 'no time zone was found' );
@@ -140,62 +156,90 @@ SKIP:
         = sub {'America/Los_Angeles'};
 
     eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcLocaltime() };
-    is( $@, '',
-        'fall back to _FindMatchZoneinfoFile if _Readlink finds nothing' );
+    is(
+        $@, q{},
+        'fall back to _FindMatchZoneinfoFile if _Readlink finds nothing'
+    );
     is(
         $tz->name(), 'America/Los_Angeles',
         'FromEtchLocaltime() with _FindMatchingZoneinfoFile returning America/Los_Angeles'
     );
 }
 
-SKIP:
 {
-    skip 'cannot read /etc/sysconfig/clock', 2
-        unless -r '/etc/sysconfig/clock' && -f _;
+    my $etc_dir = tempdir( CLEANUP => 1 );
+    local $DateTime::TimeZone::Local::Unix::EtcDir = $etc_dir;
+
+    mkpath( catdir( $etc_dir, 'sysconfig' ), 0, 0755 );
+    open my $fh, '>', catfile( $etc_dir, 'sysconfig', 'clock' )
+        or die $!;
+    close $fh;
 
     local *DateTime::TimeZone::Local::Unix::_ReadEtcSysconfigClock
         = sub {'US/Eastern'};
 
     my $tz;
     eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcSysconfigClock() };
-    is( $@, '',
-        'valid time zone name in /etc/sysconfig/clock should not die' );
+    is(
+        $@, q{},
+        'valid time zone name in /etc/sysconfig/clock should not die'
+    );
     is(
         $tz->name(), 'America/New_York',
         'FromEtcSysConfigClock() with _ReadEtcSysconfigClock returning US/Eastern'
     );
 }
 
-SKIP:
 {
-    skip 'cannot read /etc/default/init', 2
-        unless -r '/etc/default/init' && -f _;
+    my $etc_dir = tempdir( CLEANUP => 1 );
+    local $DateTime::TimeZone::Local::Unix::EtcDir = $etc_dir;
+
+    mkpath( catdir( $etc_dir, 'default' ), 0, 0755 );
+    open my $fh, '>', catfile( $etc_dir, 'default', 'init' )
+        or die $!;
+    close $fh;
 
     local *DateTime::TimeZone::Local::Unix::_ReadEtcDefaultInit
         = sub {'Asia/Tokyo'};
 
     my $tz;
     eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcDefaultInit() };
-    is( $@, '', 'valid time zone name in /etc/default/init should not die' );
+    is( $@, q{}, 'valid time zone name in /etc/default/init should not die' );
     is(
         $tz->name(), 'Asia/Tokyo',
         'FromEtcDefaultInit with _ReadEtcDefaultInit returning Asia/Tokyo'
     );
 }
 
-SKIP:
 {
-    skip
-        q{Cannot run these tests without explicitly knowing local time zone first (only runs on developers' machine)},
-        4
-        unless $IsMaintainer && -l '/etc/localtime';
+    my $etc_dir = tempdir( CLEANUP => 1 );
+    local $DateTime::TimeZone::Local::Unix::EtcDir = $etc_dir;
 
+    local $ENV{TZ} = q{};
+
+SKIP:
     {
-        local $ENV{TZ} = '';
+        skip 'These tests require a file system that supports symlinks', 2
+            unless $CanSymlink;
+
+        my $zoneinfo_dir = catdir( $etc_dir, qw( share zoneinfo ) );
+        local $DateTime::TimeZone::Local::Unix::ZoneinfoDir = $zoneinfo_dir;
+
+        mkpath( catdir( $zoneinfo_dir, 'America' ) );
+
+        # The contents of this file are irrelevant but it cannot be zero size. All
+        # that matters is the name.
+        my $tz_file = catfile( $zoneinfo_dir, 'America', 'Chicago' );
+        open my $fh, '>', $tz_file or die $!;
+        print {$fh} 'foo';
+        close $fh;
+
+        symlink $tz_file => catfile( $etc_dir, 'localtime' );
 
         my $tz;
         eval { $tz = DateTime::TimeZone::Local->TimeZone() };
-        is( $@, '', 'valid time zone name in /etc/localtime should not die' );
+        is( $@, q{},
+            'valid time zone name in /etc/localtime should not die' );
         is(
             $tz->name(), 'America/Chicago',
             '/etc/localtime should link to America/Chicago'
@@ -203,12 +247,17 @@ SKIP:
     }
 
     {
+        my $tz_file = catdir( $etc_dir, 'timezone' );
+        open my $fh, '>', $tz_file or die $!;
+        print {$fh} "America/Chicago\n";
+        close $fh;
+
         local *DateTime::TimeZone::Local::Unix::FromEtcLocaltime
             = sub {undef};
 
         my $tz;
         eval { $tz = DateTime::TimeZone::Local->TimeZone() };
-        is( $@, '', 'valid time zone name in /etc/timezone should not die' );
+        is( $@, q{}, 'valid time zone name in /etc/timezone should not die' );
         is(
             $tz->name(), 'America/Chicago',
             '/etc/timezone should contain America/Chicago'
@@ -216,10 +265,18 @@ SKIP:
     }
 }
 
-SKIP:
 {
-    skip q{Can only run this test on developers' machine}, 2
-        unless $IsMaintainer && -f '/etc/default/init';
+    my $etc_dir = tempdir( CLEANUP => 1 );
+    local $DateTime::TimeZone::Local::Unix::EtcDir = $etc_dir;
+
+    my $default_dir = catdir( $etc_dir, 'default' );
+    mkpath( $default_dir, 0, 0755 );
+
+    my $tz_file = catfile( $default_dir, 'init' );
+
+    open my $fh, '>', $tz_file or die $!;
+    print {$fh} "TZ=Australia/Melbourne\n";
+    close $fh;
 
     {
 
@@ -232,7 +289,7 @@ SKIP:
 
         my $tz;
         eval { $tz = DateTime::TimeZone::Local->TimeZone() };
-        is( $@, '', '/etc/default/init contains TZ=Australia/Melbourne' );
+        is( $@, q{}, '/etc/default/init contains TZ=Australia/Melbourne' );
         is(
             $tz->name(), 'Australia/Melbourne',
             '/etc/default/init should contain Australia/Melbourne'
@@ -240,91 +297,82 @@ SKIP:
     }
 }
 
-SKIP:
 {
-    my $file = '/etc/timezone';
+    my $etc_dir = tempdir( CLEANUP => 1 );
+    local $DateTime::TimeZone::Local::Unix::EtcDir = $etc_dir;
 
-    skip 'Cannot run this test unless we can write to /etc/timezone', 1
-        unless $IsMaintainer && -w $file;
+    my $tz_file = catfile( $etc_dir, 'timezone' );
 
-    open my $fh, '>', $file
-        or die "Cannot write to $file: $!";
-    print $fh 'Foo/Bar';
+    open my $fh, '>', $tz_file
+        or die "Cannot write to $tz_file: $!";
+    print {$fh} 'Foo/Bar';
     close $fh;
 
     DateTime::TimeZone::Local::Unix->FromEtcTimezone();
-    is( $@, '',
+    is(
+        $@, q{},
         'calling FromEtcTimezone when it contains a bad name should not leave $@ set'
     );
-
-    open $fh, '>', $file
-        or die "Cannot write to $file: $!";
-    print $fh 'America/Chicago';
-    close $fh;
 }
 
-SKIP:
 {
-    my $file = '/etc/TIMEZONE';
+    my $etc_dir = tempdir( CLEANUP => 1 );
+    local $DateTime::TimeZone::Local::Unix::EtcDir = $etc_dir;
 
-    skip 'Cannot run this test unless we can write to /etc/TIMEZONE', 1
-        unless $IsMaintainer && -w '/etc';
+    my $tz_file = catfile( $etc_dir, 'timezone' );
 
-    open my $fh, '>', $file
-        or die "Cannot write to $file: $!";
-    print $fh "TZ = Foo/Bar\n";
+    open my $fh, '>', $tz_file
+        or die "Cannot write to $tz_file: $!";
+    print {$fh} "TZ = Foo/Bar\n";
     close $fh;
 
     DateTime::TimeZone::Local::Unix->FromEtcTIMEZONE();
-    is( $@, '',
+    is(
+        $@, q{},
         'calling FromEtcTIMEZONE when it contains a bad name should not leave $@ set'
     );
-
-    unlink $file
-        or die "Cannot unlink $file: $!";
 }
 
 SKIP:
 {
-    skip q{These tests are too dangerous to run on someone else's machine ;)},
+    my $zone_file = '/usr/share/zoneinfo/Asia/Kolkata';
+    skip
+        'These tests require an up to date IANA database under /usr/share/zoneinfo',
         5
-        unless $IsMaintainer;
+        unless -f $zone_file && -s _;
 
-    skip 'These tests can only be run if we can overwrite /etc/localtime', 5
-        unless $CanWriteEtcLocaltime;
-
-    my $tz_file = readlink '/etc/localtime';
-
-    unlink '/etc/localtime' or die "Cannot unlink /etc/localtime: $!";
+    my $etc_dir = tempdir( CLEANUP => 1 );
+    local $DateTime::TimeZone::Local::Unix::EtcDir = $etc_dir;
 
     require File::Copy;
-    File::Copy::copy( '/usr/share/zoneinfo/Asia/Calcutta', '/etc/localtime' )
+    File::Copy::copy( $zone_file, catfile( $etc_dir, 'localtime' ) )
         or die
-        "Cannot copy /usr/share/zoneinfo/Asia/Calcutta to '/etc/localtime': $!";
+        "Cannot copy /usr/share/zoneinfo/Asia/Kolkata to '/etc/localtime': $!";
 
     {
-        local $ENV{TZ} = '';
+        local $ENV{TZ} = q{};
 
-        require Cwd;
-        my $cwd = Cwd::cwd();
+        my $cwd = cwd();
 
         my $tz;
         eval { $tz = DateTime::TimeZone::Local->TimeZone() };
-        is( $@, '', 'copy of zoneinfo file at /etc/localtime' );
+        is( $@, q{}, 'copy of zoneinfo file at /etc/localtime' );
         is(
-            $tz->name(), 'Asia/Calcutta',
-            '/etc/localtime should be a copy of Asia/Calcutta'
+            $tz->name(), 'Asia/Kolkata',
+            '/etc/localtime should be a copy of Asia/Kolkata'
         );
 
-        is( Cwd::cwd(), $cwd,
-            'cwd should not change after finding local time zone' );
+        is(
+            cwd(), $cwd,
+            'cwd should not change after finding local time zone'
+        );
 
         $tz = DateTime::TimeZone::Local->TimeZone();
-        is( $@, '', 'calling _FindMatchZoneinfoFile does not leave $@ set' );
+        is( $@, q{}, 'calling _FindMatchZoneinfoFile does not leave $@ set' );
     }
 
     {
-        local $ENV{TZ} = '';
+        local $ENV{TZ} = q{};
 
         # Make sure that a die handler does not break our use of die
         # to escape from File::Find::find()
@@ -333,14 +381,10 @@ SKIP:
         my $tz;
         eval { $tz = DateTime::TimeZone::Local->TimeZone() };
         is(
-            $tz->name(), 'Asia/Calcutta',
+            $tz->name(), 'Asia/Kolkata',
             'a __DIE__ handler did not interfere with our use of File::Find'
         );
     }
-
-    unlink '/etc/localtime' or die "Cannot unlink /etc/localtime: $!";
-    symlink $tz_file, '/etc/localtime'
-        or die "Cannot symlink $tz_file to '/etc/localtime': $!";
 }
 
 {
@@ -354,12 +398,10 @@ SKIP:
 
 SKIP:
 {
-    skip 'These tests require File::Temp', 1
-        unless require File::Temp;
     skip 'These tests require a filesystem which support symlinks', 1
-        unless eval { symlink '', ''; 1 };
+        unless $CanSymlink;
 
-    my $tempdir = File::Temp::tempdir( CLEANUP => 1 );
+    my $tempdir = tempdir( CLEANUP => 1 );
 
     my $first = File::Spec->catfile( $tempdir, 'first' );
     open my $fh, '>', $first
