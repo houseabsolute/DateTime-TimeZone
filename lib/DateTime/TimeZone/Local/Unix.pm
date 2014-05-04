@@ -19,11 +19,17 @@ sub Methods {
 
 sub EnvVars { return 'TZ' }
 
+our $EtcDir = '/etc';
+
+sub _EtcFile {
+    shift;
+    return File::Spec->catfile( $EtcDir, @_ );
+}
+
 sub FromEtcLocaltime {
     my $class = shift;
 
-    my $lt_file = '/etc/localtime';
-
+    my $lt_file = $class->_EtcFile('localtime');
     return unless -r $lt_file && -s _;
 
     my $real_name;
@@ -68,12 +74,13 @@ sub _Readlink {
     return Cwd::abs_path($link);
 }
 
+our $ZoneinfoDir = '/usr/share/zoneinfo';
 # for systems where /etc/localtime is a copy of a zoneinfo file
 sub _FindMatchingZoneinfoFile {
     my $class         = shift;
     my $file_to_match = shift;
 
-    return unless -d '/usr/share/zoneinfo';
+    return unless -d $ZoneinfoDir;
 
     require File::Basename;
     require File::Compare;
@@ -110,7 +117,7 @@ sub _FindMatchingZoneinfoFile {
                 },
                 no_chdir => 1,
             },
-            '/usr/share/zoneinfo',
+            $ZoneinfoDir,
         );
     };
 
@@ -123,8 +130,7 @@ sub _FindMatchingZoneinfoFile {
 sub FromEtcTimezone {
     my $class = shift;
 
-    my $tz_file = '/etc/timezone';
-
+    my $tz_file = $class->_EtcFile('timezone');
     return unless -f $tz_file && -r _;
 
     open my $fh, '<', $tz_file
@@ -144,8 +150,7 @@ sub FromEtcTimezone {
 sub FromEtcTIMEZONE {
     my $class = shift;
 
-    my $tz_file = '/etc/TIMEZONE';
-
+    my $tz_file = $class->_EtcFile('TIMEZONE');
     return unless -f $tz_file && -r _;
 
     open my $fh, '<', $tz_file
@@ -172,7 +177,8 @@ sub FromEtcTIMEZONE {
 sub FromEtcSysconfigClock {
     my $class = shift;
 
-    return unless -r "/etc/sysconfig/clock" && -f _;
+    my $clock_file = $class->_EtcFile('sysconfig/clock');
+    return unless -r $clock_file && -f _;
 
     my $name = $class->_ReadEtcSysconfigClock();
 
@@ -185,10 +191,11 @@ sub FromEtcSysconfigClock {
 
 # this is a separate function so that it can be overridden in the test suite
 sub _ReadEtcSysconfigClock {
-    my $class = shift;
+    my $class      = shift;
+    my $clock_file = shift;
 
-    open my $fh, '<', '/etc/sysconfig/clock'
-        or die "Cannot read /etc/sysconfig/clock: $!";
+    open my $fh, '<', $clock_file
+        or die "Cannot read $clock_file: $!";
 
     local $_;
     while (<$fh>) {
@@ -199,9 +206,10 @@ sub _ReadEtcSysconfigClock {
 sub FromEtcDefaultInit {
     my $class = shift;
 
-    return unless -r "/etc/default/init" && -f _;
+    my $init_file = $class->_EtcFile('default/init');
+    return unless -r $init_file && -f _;
 
-    my $name = $class->_ReadEtcDefaultInit();
+    my $name = $class->_ReadEtcDefaultInit($init_file);
 
     return unless $class->_IsValidName($name);
 
@@ -213,10 +221,11 @@ sub FromEtcDefaultInit {
 # this is a separate function so that it can be overridden in the test
 # suite
 sub _ReadEtcDefaultInit {
-    my $class = shift;
+    my $class     = shift;
+    my $init_file = shift;
 
-    open my $fh, '<', '/etc/default/init'
-        or die "Cannot read /etc/default/init: $!";
+    open my $fh, '<', $init_file
+        or die "Cannot read $init_file: $!";
 
     local $_;
     while (<$fh>) {
