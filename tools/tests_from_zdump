@@ -101,39 +101,40 @@ foreach my $tz_name (@names) {
             $loc_mon_name, $loc_day, $loc_hour, $loc_min, $loc_sec, $loc_year,
             $short_name, $is_dst, $offset_from_utc
             )
-            = $line =~ m/ ^
-                        \w+(?:\/[\w\/-]+)? # zone name
-                        \s+
-                        \w\w\w        # UTC day name
-                        \s+
-                        (\w\w\w)      # UTC month name
-                        \s+
-                        (\d+)         # UTC day of month
-                        \s+
-                        (\d\d):(\d\d):(\d\d)  # UTC time
-                        \s+
-                        (\d\d\d\d)    # UTC year
-                        \s+
-                        (?:UTC?|GMT)  # some systems say one, some the other
-                        \s+
-                        =
-                        \s+
-                        \w\w\w        # local day name
-                        \s+
-                        (\w\w\w)      # local month name
-                        \s+
-                        (\d+)         # local day of month
-                        \s+
-                        (\d\d):(\d\d):(\d\d)  # local time
-                        \s+
-                        (\d\d\d\d)    # local year
-                        \s+
-                        (\w+)         # local short name
-                        \s+
-                        isdst=(1|0)
-                        \s+
-                        gmtoff=(-?\d+)
-                      /x;
+            = $line =~ m/
+                            ^
+                            \w+(?:\/[\w\/-]+)? # zone name
+                            \s+
+                            \w\w\w        # UTC day name
+                            \s+
+                            (\w\w\w)      # UTC month name
+                            \s+
+                            (\d+)         # UTC day of month
+                            \s+
+                            (\d\d):(\d\d):(\d\d)  # UTC time
+                            \s+
+                            (\d\d\d\d)    # UTC year
+                            \s+
+                            (?:UTC?|GMT)  # some systems say one, some the other
+                            \s+
+                            =
+                            \s+
+                            \w\w\w        # local day name
+                            \s+
+                            (\w\w\w)      # local month name
+                            \s+
+                            (\d+)         # local day of month
+                            \s+
+                            (\d\d):(\d\d):(\d\d)  # local time
+                            \s+
+                            (\d\d\d\d)    # local year
+                            \s+
+                            (\w+)         # local short name
+                            \s+
+                            isdst=(1|0)
+                            \s+
+                            gmtoff=(-?\d+)
+                        /x;
 
         unless ($1) {
             warn "Can't parse zump output:\n$line\n";
