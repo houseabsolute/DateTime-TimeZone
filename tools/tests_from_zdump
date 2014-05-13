@@ -2,16 +2,19 @@
 
 use strict;
 use warnings;
+use autodie qw( :all );
 
 use lib './lib';
 
 use DateTime::TimeZone;
-use File::Slurp qw( read_file );
+use File::Slurp::Tiny qw( read_file );
 use File::Spec;
 use Getopt::Long;
+use Parallel::ForkManager;
 
-my %opts;
+my %opts = ( jobs => 6 );
 GetOptions(
+    'jobs:i'     => \$opts{jobs},
     'name:s'     => \@{ $opts{name} },
     'zoneinfo:s' => \$opts{zoneinfo},
     'zdump:s'    => \$opts{zdump},
@@ -72,18 +75,33 @@ my @pieces = qw( year month day hour minute second );
 
 my @names
     = @{ $opts{name} } ? @{ $opts{name} } : DateTime::TimeZone::all_names();
+
+my $pm = Parallel::ForkManager->new($opts{jobs});
 foreach my $tz_name (@names) {
-    unless ( -e File::Spec->catfile( $opts{zoneinfo}, split /\//, $tz_name ) )
-    {
+    my $pid = $pm->start() and next;
+
+    make_test_file( \%opts, $tz_name );
+
+    $pm->finish();
+}
+
+$pm->wait_all_children();
+
+sub make_test_file {
+    my $opts    = shift;
+    my $tz_name = shift;
+
+    unless (
+        -e File::Spec->catfile( $opts->{zoneinfo}, split /\//, $tz_name ) ) {
         print "\nNo zoneinfo file for $tz_name - skipping\n"
-            if $opts{verbose};
-        next;
+            if $opts->{verbose};
+        return;
     }
 
-    print "\nGetting change data for $tz_name\n" if $opts{verbose};
+    print "\nGetting change data for $tz_name\n" if $opts->{verbose};
 
     my @tests;
-    my $command = "$opts{zdump} -v $tz_name";
+    my $command = "$opts->{zdump} -v $tz_name";
     my @lines   = `$command`;
 
     die
@@ -138,7 +156,7 @@ foreach my $tz_name (@names) {
 
         unless ($1) {
             warn "Can't parse zump output:\n$line\n";
-            next;
+            return;
         }
 
         # On a 32-bit system, I suspect that this will generate bogus
@@ -154,8 +172,8 @@ foreach my $tz_name (@names) {
             && $last_short_name ne 'UTC' ) {
             print
                 "  skipping $last_short_name -> $short_name change in $loc_year\n"
-                if $opts{verbose};
-            next;
+                if $opts->{verbose};
+            return;
         }
 
         my $utc_month = $months{$utc_mon_name};
@@ -191,22 +209,19 @@ foreach my $tz_name (@names) {
     unless (@tests) {
         print
             "No change data in time_t range for $tz_name - can't create tests\n"
-            if $opts{verbose};
-        next;
+            if $opts->{verbose};
+        return;
     }
-
-    local *T;
 
     ( my $test_file_name = $tz_name ) =~ s,/,-,g;
     my $file = File::Spec->catfile( 't', "zd_$test_file_name.t" );
-    open T, ">$file"
-        or die "Cannot write to $file: $!";
+    open my $fh, '>', $file;
 
-    print "Creating tests for $tz_name in $file\n" if $opts{verbose};
+    print "Creating tests for $tz_name in $file\n" if $opts->{verbose};
 
     my $test_count = scalar @tests * 9;
 
-    print T <<"EOF";
+    print {$fh} <<"EOF" or die "$file: $!";
 #!/usr/bin/perl -w
 
 use strict;
@@ -228,7 +243,7 @@ EOF
             @{ $t->{local} }{qw( year month day hour minute second )}
         );
 
-        print T <<"EOF";
+        print {$fh} <<"EOF" or die "$file: $!";
 {
     my \$dt = DateTime->new( $utc_new,
                             time_zone => 'UTC',
@@ -238,12 +253,12 @@ EOF
 EOF
 
         foreach my $p (@pieces) {
-            print T <<"EOF";
+            print {$fh} <<"EOF" or die "$file: $!";
     is( \$dt->$p, $t->{local}{$p}, 'local $p should be $t->{local}{$p} ($local_datetime)' );
 EOF
         }
 
-        print T <<"EOF";
+        print {$fh} <<"EOF" or die "$file: $!";
 
     is( \$dt->is_dst, $t->{is_dst}, 'is_dst should be $t->{is_dst} ($local_datetime)' );
     is( \$dt->offset, $t->{offset}, 'offset should be $t->{offset} ($local_datetime)' );
@@ -252,6 +267,8 @@ EOF
 
 EOF
     }
+
+    close $fh;
 }
 
 sub dist_version {
