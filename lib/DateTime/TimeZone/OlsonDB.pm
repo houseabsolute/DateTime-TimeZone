@@ -52,7 +52,7 @@ sub _parse_line {
     # remove any comments at the end of the line
     $line =~ s/\s*#.+$//;
 
-    if ( $self->{in_zone} && $line =~ /^\t/ ) {
+    if ( $self->{in_zone} && $line =~ /^[ \t]/ ) {
         $self->_parse_zone( $line, $self->{in_zone} );
         return;
     }
