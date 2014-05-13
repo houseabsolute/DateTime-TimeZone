@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- The last release was missing some changes I made on another machine. Doh.
+
+
 1.67    2014-05-13
 
 - This release is based on version 2014c of the IANA database (I skipped 2014b
