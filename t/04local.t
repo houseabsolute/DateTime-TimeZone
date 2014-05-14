@@ -11,21 +11,22 @@ use File::Temp qw( tempdir );
 use Sys::Hostname qw( hostname );
 use Test::More;
 
-plan skip_all => 'HPUX is weird'
-    if $^O eq 'hpux';
-
 use lib catdir( curdir(), 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
+
+plan skip_all => 'HPUX is weird'
+    if $^O eq 'hpux';
+
+# Ensures that we can load our OS-specific subclass. Otherwise this
+# might happen later in an eval, and the error will get lost.
+DateTime::TimeZone::Local->_load_subclass() =~ /Unix$/
+    or plan skip_all => 'These tests only run on Unix-ish OSes';
 
 my $IsMaintainer = hostname() =~ /houseabsolute|quasar/ && -d '.hg';
 my $CanWriteEtcLocaltime = -w '/etc/localtime' && -l '/etc/localtime';
 my $CanSymlink = eval { symlink q{}, q{}; 1 };
 my ($TestFile) = abs_path($0) =~ /(.+)/;
-
-# Ensures that we can load our OS-specific subclass. Otherwise this
-# might happen later in an eval, and the error will get lost.
-DateTime::TimeZone::Local->_load_subclass();
 
 {
     my %links = DateTime::TimeZone->links();
