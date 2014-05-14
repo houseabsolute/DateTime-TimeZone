@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.69    2014-05-13
+
 - Don't run tests for Unix on non-Unix boxes.
 
 
