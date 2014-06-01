@@ -1,5 +1,12 @@
 {{$NEXT}}
 
+- Unset $ENV{TZ} in t/04local..t test to avoid interference from
+  system. Reported by Mark Gardner. RT #96083.
+
+- This release is based on version 2014d of the IANA database, but there are
+  no data changes from 2014c.
+
+
 1.69    2014-05-13
 
 - Don't run tests for Unix on non-Unix boxes.

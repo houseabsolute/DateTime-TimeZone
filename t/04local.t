@@ -28,6 +28,8 @@ my $CanWriteEtcLocaltime = -w '/etc/localtime' && -l '/etc/localtime';
 my $CanSymlink = eval { symlink q{}, q{}; 1 };
 my ($TestFile) = abs_path($0) =~ /(.+)/;
 
+local $ENV{TZ} = undef;
+
 {
     my %links = DateTime::TimeZone->links();
 
@@ -280,7 +282,6 @@ SKIP:
     close $fh;
 
     {
-
         # requires that /etc/default/init contain
         # TZ=Australia/Melbourne to work.
         local *DateTime::TimeZone::Local::Unix::FromEtcLocaltime
