@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.70    2014-06-01
+
 - Unset $ENV{TZ} in t/04local..t test to avoid interference from
   system. Reported by Mark Gardner. RT #96083.
 
