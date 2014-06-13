@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2014e of the Olson database. This release
+  includes contemporary changes for Egypt and Morocco.
+
+
 1.70    2014-06-01
 
 - Unset $ENV{TZ} in t/04local..t test to avoid interference from
