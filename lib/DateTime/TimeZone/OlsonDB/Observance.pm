@@ -7,7 +7,7 @@ use DateTime::Duration;
 use DateTime::TimeZone::OlsonDB;
 use DateTime::TimeZone::OlsonDB::Change;
 
-use List::Util qw( first );
+use List::AllUtils qw( any first );
 use Params::Validate qw( validate SCALAR ARRAYREF UNDEF OBJECT );
 
 sub new {
@@ -113,7 +113,7 @@ sub expand_from_rules {
     foreach my $year ( $min_year .. $max_year ) {
         my @rules = $self->_sorted_rules_for_year($year);
 
-        foreach my $rule (@rules) {
+        for my $rule (@rules) {
             my $dt = $rule->utc_start_datetime_for_year( $year,
                 $self->offset_from_utc, $zone->last_change->offset_from_std );
 
@@ -151,7 +151,7 @@ sub _sorted_rules_for_year {
     my $self = shift;
     my $year = shift;
 
-    return (
+    my @rules = (
         map      { $_->[0] }
             sort { $a->[1] <=> $b->[1] }
             map {
@@ -164,6 +164,51 @@ sub _sorted_rules_for_year {
                 && ( ( !$_->max_year ) || $_->max_year >= $year )
             } $self->rules
     );
+
+    my %rules_by_month;
+    for my $rule (@rules) {
+        push @{ $rules_by_month{ $rule->month() } }, $rule;
+    }
+
+    # For horrible cases like Morocco, we have both a "max year" rule and a
+    # "this year" rule for a given month's change. In that case, we want to
+    # pick the more specific ("this year") rule, not apply both.
+    my @final_rules;
+    for my $month ( sort { $a <=> $b } keys %rules_by_month ) {
+        my @r = @{ $rules_by_month{$month} };
+        if ( @r == 2 ) {
+            my ($repeating) = grep { !defined $_->max_year() } @r;
+            my ($this_year)
+                = grep { $_->max_year() && $_->max_year() == $year } @r;
+            if ( $repeating && $this_year ) {
+                if ( $year == 2037 ) {
+                    # This is what zic seems to do but I have no idea why
+                    if ($DateTime::TimeZone::OlsonDB::DEBUG) {
+                        print
+                            "Found two rules for the same month, picking the max year one because this year is 2037\n";
+                    }
+
+                    push @final_rules, $repeating;
+                }
+                else {
+                    if ($DateTime::TimeZone::OlsonDB::DEBUG) {
+                        print
+                            "Found two rules for the same month, picking the one for this year\n";
+                    }
+
+                    push @final_rules, $this_year;
+                }
+                next;
+            }
+
+            push @final_rules, @r;
+        }
+        else {
+            push @final_rules, @r;
+        }
+    }
+
+    return @final_rules;
 }
 
 sub until {
