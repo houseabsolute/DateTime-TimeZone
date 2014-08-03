@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Added support for getting the local time zone on Android. Patch from Brian
+  Fraser. RT #97711.
+
+
 1.71    2014-06-21
 
 - This release is based on version 2014e of the Olson database. This release

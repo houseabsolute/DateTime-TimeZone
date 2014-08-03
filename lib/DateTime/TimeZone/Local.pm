@@ -34,6 +34,7 @@ sub TimeZone {
         NetWare => 'Win32',
         symbian => 'Win32',
         dos     => 'OS2',
+        android => 'Android',
         cygwin  => 'Unix',
     );
 
