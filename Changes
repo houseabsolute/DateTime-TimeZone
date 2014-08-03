@@ -3,6 +3,8 @@
 - Added support for getting the local time zone on Android. Patch from Brian
   Fraser. RT #97711.
 
+- The primary repo for this distro is now on GitHub.
+
 
 1.71    2014-06-21
 
