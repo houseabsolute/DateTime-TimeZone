@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.72    2014-08-03
+
 - Added support for getting the local time zone on Android. Patch from Brian
   Fraser. RT #97711.
 
