@@ -522,6 +522,8 @@ sub OlsonVersion { '$opts{version}' }
 
 __END__
 
+=pod
+
 =head1 NAME
 
 DateTime::TimeZone::Catalog - Provides a list of all valid time zone names
