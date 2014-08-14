@@ -180,7 +180,7 @@ sub FromEtcSysconfigClock {
     my $clock_file = $class->_EtcFile('sysconfig/clock');
     return unless -r $clock_file && -f _;
 
-    my $name = $class->_ReadEtcSysconfigClock();
+    my $name = $class->_ReadEtcSysconfigClock($clock_file);
 
     return unless $class->_IsValidName($name);
 
