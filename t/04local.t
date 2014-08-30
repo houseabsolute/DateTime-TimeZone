@@ -73,12 +73,12 @@ local $ENV{TZ} = undef;
 }
 
 {
-    local $ENV{TZ} = 'Africa/Kinshasa';
+    local $ENV{TZ} = 'Africa/Lagos';
 
     my $tz = DateTime::TimeZone::Local::Unix->FromEnv();
     is(
-        $tz->name(), 'Africa/Kinshasa',
-        'tz object name() is Africa::Kinshasa'
+        $tz->name(), 'Africa/Lagos',
+        'tz object name() is Africa::Lagos'
     );
 
     local $ENV{TZ} = 0;
