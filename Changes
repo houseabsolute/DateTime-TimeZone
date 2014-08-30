@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2014g of the Olson database. This release
+  includes contemporary changes for Turks & Caicos.
+
+
 1.73    2014-08-06
 
 - This release is based on version 2014f of the Olson database. This release
