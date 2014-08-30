@@ -3,6 +3,9 @@
 - This release is based on version 2014g of the Olson database. This release
   includes contemporary changes for Turks & Caicos.
 
+- Fixed a bug when trying to get the local timezone by looking at
+  /etc/sysconfig/clock. Patch by Alexey Molchanov. GitHub PR #2.
+
 
 1.73    2014-08-06
 
