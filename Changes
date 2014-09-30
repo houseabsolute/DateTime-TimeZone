@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2014h of the Olson database. This release
+  only includes historical changes.
+
+
 1.74    2014-08-30
 
 - This release is based on version 2014g of the Olson database. This release
