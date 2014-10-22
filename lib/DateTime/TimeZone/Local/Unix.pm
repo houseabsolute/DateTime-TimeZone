@@ -9,8 +9,8 @@ use parent 'DateTime::TimeZone::Local';
 sub Methods {
     return qw(
         FromEnv
-        FromEtcLocaltime
         FromEtcTimezone
+        FromEtcLocaltime
         FromEtcTIMEZONE
         FromEtcSysconfigClock
         FromEtcDefaultInit
