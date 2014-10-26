@@ -58,11 +58,12 @@ sub new {
         return DateTime::TimeZone::OffsetOnly->new( offset => $p{name} );
     }
 
-    my $subclass =  $p{name};
-    $subclass    =~ s{/}{::}g;
-    $subclass    =~ s/-(\d)/_Minus$1/;
-    $subclass    =~ s/\+/_Plus/;
-    $subclass    =~ s/-/_/g;
+    my $subclass = $p{name};
+    $subclass =~ s{/}{::}g;
+    $subclass =~ s/-(\d)/_Minus$1/;
+    $subclass =~ s/\+/_Plus/;
+    $subclass =~ s/-/_/g;
+
     my $real_class = "DateTime::TimeZone::$subclass";
 
     die "The timezone '$p{name}' in an invalid name.\n"
