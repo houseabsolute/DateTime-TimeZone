@@ -72,7 +72,7 @@ It takes the following arguments:
 
   --name     Only create the specified time zone.  For debugging.
 
-  --old      Also look for files named etcetera, factory, and systemv
+  --old      Also look for files named etcetera and systemv
 
   --debug    Turn on debugging in Olson parser
 
@@ -99,7 +99,7 @@ else {
         southamerica backward
     );
 
-    push @files, qw( etcetera factory systemv )
+    push @files, qw( etcetera systemv )
         if $opts{old};
 }
 
@@ -166,10 +166,15 @@ sub parse_file {
             $name = $zone_name;
         }
 
-        ( my $outfile1 = $name ) =~ tr/-/_/;
+        my $outfile1 =  $name;
+        $outfile1    =~ s/-(\d)/_Minus$1/;
+        $outfile1    =~ s/\+/_Plus/;
+        $outfile1    =~ s/-/_/g;
 
-        ( my $mod_name = $zone_name ) =~ s/\//::/g;
-        $mod_name =~ tr/-/_/;
+        ( my $mod_name =  $zone_name ) =~ s/\//::/g;
+        $mod_name      =~ s/-(\d)/_Minus$1/;
+        $mod_name      =~ s/\+/_Plus/;
+        $mod_name      =~ s/-/_/g;
 
         my $zone     = $odb->zone($zone_name);
         my $max_year = max(
