@@ -4,6 +4,11 @@
   /etc/localtime. The former is a much quicker check if it exists. Patch by
   Karen Etheridge. PR #3.
 
+- The tools/parse_olson script now supports parsing the etcetera and systemv
+  files. This is *not* enabled by default as it would generate zones that
+  conflict with existing links for Etc/UTC and others. Patch by Alfie John. PR
+  #1.
+
 
 1.75    2014-09-30
 
