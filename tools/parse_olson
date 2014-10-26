@@ -6,7 +6,7 @@ use warnings;
 use lib './lib';
 
 # Hack so loading DateTime.pm doesn't blow up
-BEGIN { $DateTime::TimeZone::VERSION = '1.24' }
+BEGIN { $DateTime::TimeZone::VERSION = '1.75' }
 
 use Data::Dumper;
 use DateTime;
