@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.76    2014-10-26
+
 - When searching for the local timezone we now look at /etc/timezone before
   /etc/localtime. The former is a much quicker check if it exists. Patch by
   Karen Etheridge. PR #3.
