@@ -12,12 +12,13 @@ use Path::Class qw( dir tempdir );
 sub main {
     my %opts = (
         download => 1,
-        dir      => undef,
+        tests    => 1,
     );
 
     GetOptions(
         'download!' => \$opts{download},
         'dir:s'     => \$opts{dir},
+        'tests!'    => \$opts{tests},
     );
 
     my $olson_version;
@@ -34,7 +35,7 @@ sub main {
     }
 
     _compile_tzdata($dir);
-    _parse_olson( $dir, $olson_version );
+    _parse_olson( $dir, $olson_version, $opts{tests} );
 }
 
 sub _download {
@@ -140,8 +141,9 @@ sub _compile_tzdata {
 }
 
 sub _parse_olson {
-    my $dir           = shift;
-    my $olson_version = shift;
+    my $dir            = shift;
+    my $olson_version  = shift;
+    my $generate_tests = shift;
 
     system(
         './tools/parse_olson',
@@ -150,9 +152,11 @@ sub _parse_olson {
         '--dir',     $dir,
     ) and die "Cannot run parse_olson: $!";
 
-    print "Generating tests from zdump\n";
-    system('./tools/tests_from_zdump')
-        and die "Cannot run tests_from_zdump: $!";
+    if ($generate_tests) {
+        print "Generating tests from zdump\n";
+        system('./tools/tests_from_zdump')
+            and die "Cannot run tests_from_zdump: $!";
+    }
 }
 
 main();
