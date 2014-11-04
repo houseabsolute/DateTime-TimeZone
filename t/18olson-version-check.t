@@ -11,7 +11,7 @@ use lib File::Spec->catdir( File::Spec->curdir, 't' );
 BEGIN { require 'check_datetime_version.pl' }
 
 {
-    Test::Output::stderr_like(
+    stderr_like(
         sub { DateTime::TimeZone->new( name => 'Fake/TZ' ) },
         qr/\Qfrom an older version (unknown)/,
         'loading timezone where olson version is not defined'
@@ -19,7 +19,7 @@ BEGIN { require 'check_datetime_version.pl' }
 }
 
 {
-    Test::Output::stderr_like(
+    stderr_like(
         sub { DateTime::TimeZone->new( name => 'Fake/TZ2' ) },
         qr/\Qfrom an older version (2000a)/,
         'loading timezone where olson version is older than current'
