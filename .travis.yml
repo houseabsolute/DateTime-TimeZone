@@ -24,7 +24,7 @@ before_install:
 install:
   - sudo apt-get update
   - sudo apt-get install rdfind symlinks
-  - cpanm --notest DateTime File::pushd Getopt::Long IPC::System::Simple Net::FTP Path::Class
+  - cpan-install DateTime File::pushd Getopt::Long IPC::System::Simple Net::FTP Path::Class
   - perl ./tools/update-from-latest-olson --notests
   - cpan-install ExtUtils::MakeMaker~6.68 --deps
 script:
