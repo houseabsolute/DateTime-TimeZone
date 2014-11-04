@@ -21,6 +21,8 @@ before_install:
   - perl -V
   - build-dist
   - cd $BUILD_DIR
+  - cpanm --notest File::pushd Getopt::Long Net::FTP Path::Class
+  - perl ./tools/update-from-latest-olson --notests
 install:
   - cpan-install ExtUtils::MakeMaker~6.68 --deps
 script:
