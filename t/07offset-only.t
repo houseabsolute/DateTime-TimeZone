@@ -1,16 +1,18 @@
 use strict;
 use warnings;
 
-use File::Spec;
 use Test::More;
+use Test::Fatal;
+
+use File::Spec;
 
 use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
 BEGIN { require 'check_datetime_version.pl' }
 
-eval { DateTime::TimeZone::OffsetOnly->new( offset => 'bad' ) };
 is(
-    $@, "Invalid offset: bad\n",
+    exception { DateTime::TimeZone::OffsetOnly->new( offset => 'bad' ) },
+    "Invalid offset: bad\n",
     'test that OffsetOnly does not allow invalid offsets'
 );
 
@@ -106,8 +108,11 @@ foreach (@good_offsets) {
 }
 
 foreach (@bad_offsets) {
-    eval { DateTime::TimeZone::OffsetOnly->new( offset => $_ ) };
-    like( $@, qr/Invalid offset/, "$_ is invalid" );
+    like(
+        exception { DateTime::TimeZone::OffsetOnly->new( offset => $_ ) },
+        qr/Invalid offset/,
+        "$_ is invalid"
+    );
 }
 
 done_testing();

@@ -3,9 +3,10 @@ package DateTime::TimeZone::Local;
 use strict;
 use warnings;
 
-use Class::Load qw( is_class_loaded load_class try_load_class );
 use DateTime::TimeZone;
 use File::Spec;
+use Module::Runtime qw( require_module );
+use Try::Tiny;
 
 sub TimeZone {
     my $class = shift;
@@ -44,13 +45,16 @@ sub TimeZone {
         my $os_name = $subclass{$^O} || $^O;
         my $subclass = $class . '::' . $os_name;
 
-        return $subclass if is_class_loaded($subclass);
+        return $subclass if $subclass->can('Methods');
 
-        return $subclass if try_load_class($subclass);
+        return $subclass if try {
+            local $SIG{__DIE__} = undef;
+            require_module($subclass);
+        };
 
         $subclass = $class . '::Unix';
 
-        load_class($subclass);
+        require_module($subclass);
 
         return $subclass;
     }
@@ -61,12 +65,11 @@ sub FromEnv {
 
     foreach my $var ( $class->EnvVars() ) {
         if ( $class->_IsValidName( $ENV{$var} ) ) {
-            my $tz;
-            {
-                local $@;
-                local $SIG{__DIE__};
-                $tz = eval { DateTime::TimeZone->new( name => $ENV{$var} ) };
-            }
+            my $tz = try {
+                local $SIG{__DIE__} = undef;
+                DateTime::TimeZone->new( name => $ENV{$var} );
+            };
+
             return $tz if $tz;
         }
     }

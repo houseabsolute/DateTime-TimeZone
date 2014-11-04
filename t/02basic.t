@@ -1,8 +1,11 @@
 use strict;
 use warnings;
 
-use File::Spec;
 use Test::More;
+use Test::Fatal;
+
+use File::Spec;
+use Try::Tiny;
 
 use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
@@ -31,18 +34,31 @@ foreach my $name (@names) {
     # finish, and it uses up lots of memory too.
     if ($is_maintainer) {
         my $dt;
-        eval { $dt = DateTime->now( time_zone => $name ) };
-        is( $@, '', "Can call DateTime->now with $name" );
-        eval { $dt->add( years => 50 ) };
-        is( $@, '', "Can add 50 years with $name" );
-        eval { $dt->subtract( years => 400 ) };
-        is( $@, '', "Can subtract 400 years with $name" );
-        eval {
+        is(
+            exception { $dt = DateTime->now( time_zone => $name ) },
+            undef,
+            "Can call DateTime->now with $name"
+        );
+
+        is(
+            exception { $dt->add( years => 50 ) },
+            undef,
+            "Can add 50 years with $name"
+        );
+
+        is(
+            exception { $dt->subtract( years => 400 ) },
+            undef,
+            "Can subtract 400 years with $name"
+        );
+
+        try {
             $dt = DateTime->new( year => 2000, month => 6, hour => 1,
                 time_zone => $name );
         };
         is( $dt->hour, 1, 'make sure that local time is always respected' );
-        eval {
+
+        try {
             $dt = DateTime->new( year => 2000, month => 12, hour => 1,
                 time_zone => $name );
         };
@@ -123,7 +139,7 @@ my $tz = DateTime::TimeZone->new( name => 'America/Chicago' );
     # max year
     my $tz = DateTime::TimeZone->new( name => 'America/Los_Angeles' );
 
-    my $dt = eval {
+    my $dt = try {
         DateTime->new(
             year      => $tz->{max_year} + 1,
             month     => 5,
@@ -189,8 +205,14 @@ my $tz = DateTime::TimeZone->new( name => 'America/Chicago' );
     # before the LOCAL_END.
     my $dt = DateTime->from_object( object => TestHack->new );
 
-    eval { $dt->set_time_zone('UTC')->set_time_zone('Australia/Sydney') };
-    ok( !$@,         'should be able to set time zone' );
+    is(
+        exception {
+            $dt->set_time_zone('UTC')->set_time_zone('Australia/Sydney')
+        },
+        undef,
+        'should be able to set time zone without error'
+    );
+
     ok( $dt->is_dst, 'is_dst should be true' );
 }
 

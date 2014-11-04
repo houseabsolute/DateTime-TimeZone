@@ -10,7 +10,9 @@ use DateTime::TimeZone::Floating;
 use DateTime::TimeZone::Local;
 use DateTime::TimeZone::OffsetOnly;
 use DateTime::TimeZone::UTC;
+use Module::Runtime qw( require_module );
 use Params::Validate 0.72 qw( validate validate_pos SCALAR ARRAYREF BOOLEAN );
+use Try::Tiny;
 
 use constant INFINITY => 100**1000;
 use constant NEG_INFINITY => -1 * ( 100**1000 );
@@ -66,17 +68,19 @@ sub new {
 
     my $real_class = "DateTime::TimeZone::$subclass";
 
-    die "The timezone '$p{name}' in an invalid name.\n"
+    die "The timezone '$p{name}' is an invalid name.\n"
         unless $real_class =~ /^\w+(::\w+)*$/;
 
     unless ( $real_class->can('instance') ) {
         ($real_class) = $real_class =~ m{\A([a-zA-Z0-9_]+(?:::[a-zA-Z0-9_]+)*)\z};
 
-        my $e = do {
-            local $@;
-            local $SIG{__DIE__};
-            eval "require $real_class";
-            $@;
+        my $e;
+        try {
+            local $SIG{__DIE__} = undef;
+            require_module($real_class);
+        }
+        catch {
+            $e = $_;
         };
 
         if ($e) {
@@ -394,12 +398,13 @@ sub name { $_[0]->{name} }
 sub category { ( split /\//, $_[0]->{name}, 2 )[0] }
 
 sub is_valid_name {
-    my $tz;
-    {
-        local $@;
-        local $SIG{__DIE__};
-        $tz = eval { $_[0]->new( name => $_[1] ) };
-    }
+    my $class = shift;
+    my $name  = shift;
+
+    my $tz = try {
+        local $SIG{__DIE__} = undef;
+        $class->new( name => $name );
+    };
 
     return $tz && $tz->isa('DateTime::TimeZone') ? 1 : 0;
 }
@@ -434,13 +439,11 @@ sub STORABLE_thaw {
 # Functions
 #
 sub offset_as_seconds {
-    {
-        local $@;
-        local $SIG{__DIE__};
-        shift if eval { $_[0]->isa('DateTime::TimeZone') };
-    }
-
     my $offset = shift;
+    $offset = shift if try {
+        local $SIG{__DIE__} = undef;
+        $offset->isa('DateTime::TimeZone');
+    };
 
     return undef unless defined $offset;
 
@@ -471,13 +474,11 @@ sub offset_as_seconds {
 }
 
 sub offset_as_string {
-    {
-        local $@;
-        local $SIG{__DIE__};
-        shift if eval { $_[0]->isa('DateTime::TimeZone') };
-    }
-
     my $offset = shift;
+    $offset = shift if try {
+        local $SIG{__DIE__} = undef;
+        $offset->isa('DateTime::TimeZone');
+    };
 
     return undef unless defined $offset;
     return undef unless $offset >= -359999 && $offset <= 359999;

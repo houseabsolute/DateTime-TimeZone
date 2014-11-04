@@ -1,8 +1,11 @@
 use strict;
 use warnings;
 
-use File::Spec;
 use Test::More;
+use Test::Fatal;
+
+use File::Spec;
+use Try::Tiny;
 
 use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
@@ -10,11 +13,17 @@ BEGIN { require 'check_datetime_version.pl' }
 
 {
     my $dt = DateTime->now;
-    eval { $dt->set_time_zone('Pacific/Tarawa') };
-    is( $@, '', "time zone without dst change works" );
+    is(
+        exception { $dt->set_time_zone('Pacific/Tarawa') },
+        undef,
+        'time zone without dst change works'
+    );
 
-    eval { $dt->set_time_zone('Asia/Dhaka') };
-    is( $@, '', "time zone without dst change works (again)" );
+    is(
+        exception { $dt->set_time_zone('Asia/Dhaka') },
+        undef,
+        'time zone without dst change works (again)'
+    );
 }
 
 # This tests a bug that happened when a time zone has a final rule
@@ -38,7 +47,7 @@ BEGIN { require 'check_datetime_version.pl' }
         [ 11, 29 ],
         [ 11, 30 ],
         ) {
-        my $dt = eval {
+        my $dt = try {
             DateTime->new(
                 year      => 2007,     month  => 12, day => 9,
                 hour      => $hm->[0], minute => $hm->[1],

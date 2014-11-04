@@ -9,7 +9,10 @@ use File::Spec::Functions qw( catdir catfile curdir );
 use File::Path qw( mkpath );
 use File::Temp qw( tempdir );
 use Sys::Hostname qw( hostname );
+use Try::Tiny;
+
 use Test::More;
+use Test::Fatal;
 
 use lib catdir( curdir(), 't' );
 
@@ -25,7 +28,7 @@ DateTime::TimeZone::Local->_load_subclass() =~ /Unix$/
 
 my $IsMaintainer = hostname() =~ /houseabsolute|quasar/ && -d '.hg';
 my $CanWriteEtcLocaltime = -w '/etc/localtime' && -l '/etc/localtime';
-my $CanSymlink = eval { symlink q{}, q{}; 1 };
+my $CanSymlink = try { symlink q{}, q{}; 1 };
 my ($TestFile) = abs_path($0) =~ /(.+)/;
 
 local $ENV{TZ} = undef;
@@ -35,7 +38,7 @@ local $ENV{TZ} = undef;
 
     for my $alias ( sort keys %{ DateTime::TimeZone::links() } ) {
         local $ENV{TZ} = $alias;
-        my $tz = eval { DateTime::TimeZone::Local->TimeZone() };
+        my $tz = try { DateTime::TimeZone::Local->TimeZone() };
         is(
             $tz->name(), $links{$alias},
             "$alias in \$ENV{TZ} for Local->TimeZone()"
@@ -46,7 +49,7 @@ local $ENV{TZ} = undef;
 {
     for my $name ( sort DateTime::TimeZone::all_names() ) {
         local $ENV{TZ} = $name;
-        my $tz = eval { DateTime::TimeZone::Local->TimeZone() };
+        my $tz = try { DateTime::TimeZone::Local->TimeZone() };
         is(
             $tz->name(), $name,
             "$name in \$ENV{TZ} for Local->TimeZone()"
@@ -82,7 +85,7 @@ local $ENV{TZ} = undef;
     );
 
     local $ENV{TZ} = 0;
-    $tz = eval { DateTime::TimeZone::Local->TimeZone() };
+    $tz = try { DateTime::TimeZone::Local->TimeZone() };
     is(
         $tz->name(), 'UTC',
         "\$ENV{TZ} set to 0 returns UTC"
@@ -107,9 +110,10 @@ local $ENV{TZ} = undef;
 {
     local $^O = 'DoesNotExist';
     my @err;
-    local $SIG{__DIE__} = sub { push @err, shift };
-
-    eval { DateTime::TimeZone::Local->_load_subclass() };
+    try {
+        local $SIG{__DIE__} = sub { push @err, shift };
+        DateTime::TimeZone::Local->_load_subclass();
+    };
 
     is_deeply(
         \@err, [],
@@ -134,9 +138,11 @@ SKIP:
         = sub {'/usr/share/zoneinfo/US/Eastern'};
 
     my $tz;
-    eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcLocaltime() };
     is(
-        $@, q{},
+        exception {
+            $tz = DateTime::TimeZone::Local::Unix->FromEtcLocaltime()
+        },
+        undef,
         'valid time zone name in /etc/localtime symlink should not die'
     );
     is(
@@ -158,9 +164,11 @@ SKIP:
     local *DateTime::TimeZone::Local::Unix::_FindMatchingZoneinfoFile
         = sub {'America/Los_Angeles'};
 
-    eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcLocaltime() };
     is(
-        $@, q{},
+        exception {
+            $tz = DateTime::TimeZone::Local::Unix->FromEtcLocaltime()
+        },
+        undef,
         'fall back to _FindMatchZoneinfoFile if _Readlink finds nothing'
     );
     is(
@@ -182,11 +190,14 @@ SKIP:
         = sub {'US/Eastern'};
 
     my $tz;
-    eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcSysconfigClock() };
     is(
-        $@, q{},
+        exception {
+            $tz = DateTime::TimeZone::Local::Unix->FromEtcSysconfigClock()
+        },
+        undef,
         'valid time zone name in /etc/sysconfig/clock should not die'
     );
+
     is(
         $tz->name(), 'America/New_York',
         'FromEtcSysConfigClock() with _ReadEtcSysconfigClock returning US/Eastern'
@@ -206,8 +217,14 @@ SKIP:
         = sub {'Asia/Tokyo'};
 
     my $tz;
-    eval { $tz = DateTime::TimeZone::Local::Unix->FromEtcDefaultInit() };
-    is( $@, q{}, 'valid time zone name in /etc/default/init should not die' );
+    is(
+        exception {
+            $tz = DateTime::TimeZone::Local::Unix->FromEtcDefaultInit()
+        },
+        undef,
+        'valid time zone name in /etc/default/init should not die'
+    );
+
     is(
         $tz->name(), 'Asia/Tokyo',
         'FromEtcDefaultInit with _ReadEtcDefaultInit returning Asia/Tokyo'
@@ -240,9 +257,11 @@ SKIP:
         symlink $tz_file => catfile( $etc_dir, 'localtime' );
 
         my $tz;
-        eval { $tz = DateTime::TimeZone::Local->TimeZone() };
-        is( $@, q{},
-            'valid time zone name in /etc/localtime should not die' );
+        is(
+            exception { $tz = DateTime::TimeZone::Local->TimeZone() },
+            undef,
+            'valid time zone name in /etc/localtime should not die'
+        );
         is(
             $tz->name(), 'America/Chicago',
             '/etc/localtime should link to America/Chicago'
@@ -259,8 +278,11 @@ SKIP:
             = sub {undef};
 
         my $tz;
-        eval { $tz = DateTime::TimeZone::Local->TimeZone() };
-        is( $@, q{}, 'valid time zone name in /etc/timezone should not die' );
+        is(
+            exception { $tz = DateTime::TimeZone::Local->TimeZone() },
+            undef,
+            'valid time zone name in /etc/timezone should not die'
+        );
         is(
             $tz->name(), 'America/Chicago',
             '/etc/timezone should contain America/Chicago'
@@ -290,8 +312,11 @@ SKIP:
         local *DateTime::TimeZone::Local::Unix::FromEtcTIMEZONE = sub {undef};
 
         my $tz;
-        eval { $tz = DateTime::TimeZone::Local->TimeZone() };
-        is( $@, q{}, '/etc/default/init contains TZ=Australia/Melbourne' );
+        is(
+            exception { $tz = DateTime::TimeZone::Local->TimeZone() },
+            undef,
+            '/etc/default/init contains TZ=Australia/Melbourne'
+        );
         is(
             $tz->name(), 'Australia/Melbourne',
             '/etc/default/init should contain Australia/Melbourne'
@@ -357,8 +382,11 @@ SKIP:
         my $cwd = cwd();
 
         my $tz;
-        eval { $tz = DateTime::TimeZone::Local->TimeZone() };
-        is( $@, q{}, 'copy of zoneinfo file at /etc/localtime' );
+        is(
+            exception { $tz = DateTime::TimeZone::Local->TimeZone() },
+            undef,
+            'copy of zoneinfo file at /etc/localtime'
+        );
         is(
             $tz->name(), 'Asia/Kolkata',
             '/etc/localtime should be a copy of Asia/Kolkata'
@@ -381,7 +409,11 @@ SKIP:
         local $SIG{__DIE__} = sub { die 'haha'; };
 
         my $tz;
-        eval { $tz = DateTime::TimeZone::Local->TimeZone() };
+        is(
+            exception { $tz = DateTime::TimeZone::Local->TimeZone() },
+            undef,
+            'no exception from DateTime::Time::Local->TimeZone'
+        );
         is(
             $tz->name(), 'Asia/Kolkata',
             'a __DIE__ handler did not interfere with our use of File::Find'
@@ -391,7 +423,7 @@ SKIP:
 
 {
     local $ENV{TZ} = 'Australia/Melbourne';
-    my $tz = eval { DateTime::TimeZone->new( name => 'local' ) };
+    my $tz = try { DateTime::TimeZone->new( name => 'local' ) };
     is(
         $tz->name(), 'Australia/Melbourne',
         q|DT::TZ->new( name => 'local' )|

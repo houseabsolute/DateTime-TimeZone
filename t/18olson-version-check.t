@@ -1,19 +1,14 @@
 use strict;
 use warnings;
 
-use File::Spec;
 use Test::More;
+use Test::Requires qw( Test::Output );
+
+use File::Spec;
 
 use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
-BEGIN {
-    require 'check_datetime_version.pl';
-
-    eval { require Test::Output };
-    if ($@) {
-        plan skip_all => 'These tests require Test::Output.';
-    }
-}
+BEGIN { require 'check_datetime_version.pl' }
 
 {
     Test::Output::stderr_like(

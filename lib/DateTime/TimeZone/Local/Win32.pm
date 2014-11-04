@@ -3,9 +3,10 @@ package DateTime::TimeZone::Local::Win32;
 use strict;
 use warnings;
 
-use parent 'DateTime::TimeZone::Local';
-
+use Try::Tiny;
 use Win32::TieRegistry ( 'KEY_READ', Delimiter => q{/} );
+
+use parent 'DateTime::TimeZone::Local';
 
 sub Methods { return qw( FromEnv FromRegistry ) }
 
@@ -219,9 +220,10 @@ sub EnvVars { return 'TZ' }
 
         return unless $class->_IsValidName($olson);
 
-        local $@;
-        local $SIG{__DIE__};
-        return eval { DateTime::TimeZone->new( name => $olson ) };
+        return try {
+            local $SIG{__DIE__} = undef;
+            DateTime::TimeZone->new( name => $olson );
+        };
     }
 }
 

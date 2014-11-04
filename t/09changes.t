@@ -1,8 +1,10 @@
 use strict;
 use warnings;
 
-use File::Spec;
 use Test::More;
+use Test::Fatal;
+
+use File::Spec;
 
 use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
@@ -151,7 +153,6 @@ BEGIN { require 'check_datetime_version.pl' }
 # same tests without using UTC as intermediate
 {
 
-    # wrapped in eval because if change data is buggy it can throw exception
     my $dt = DateTime->new(
         year      => 1982, month  => 3, day => 28,
         hour      => 1,    minute => 59,
@@ -325,34 +326,42 @@ BEGIN { require 'check_datetime_version.pl' }
 }
 
 {
-    eval {
-        DateTime->new(
-            year => 2003, month     => 4, day => 6,
-            hour => 2,    time_zone => 'America/Chicago',
-        );
-    };
+    like(
+        exception {
+            DateTime->new(
+                year => 2003, month     => 4, day => 6,
+                hour => 2,    time_zone => 'America/Chicago',
+            );
+        },
+        qr/Invalid local time .+/,
+        'exception for invalid time'
+    );
 
-    like( $@, qr/Invalid local time .+/, 'exception for invalid time' );
-
-    eval {
-        DateTime->new(
-            year      => 2003, month  => 4,  day    => 6,
-            hour      => 2,    minute => 59, second => 59,
-            time_zone => 'America/Chicago',
-        );
-    };
-    like( $@, qr/Invalid local time .+/, 'exception for invalid time' );
+    like(
+        exception {
+            DateTime->new(
+                year      => 2003, month  => 4,  day    => 6,
+                hour      => 2,    minute => 59, second => 59,
+                time_zone => 'America/Chicago',
+            );
+        },
+        qr/Invalid local time .+/,
+        'exception for invalid time'
+    );
 }
 
 {
-    eval {
-        DateTime->new(
-            year      => 2003, month  => 4,  day    => 6,
-            hour      => 1,    minute => 59, second => 59,
-            time_zone => 'America/Chicago',
-        );
-    };
-    ok( !$@, 'no exception for valid time' );
+    is(
+        exception {
+            DateTime->new(
+                year      => 2003, month  => 4,  day    => 6,
+                hour      => 1,    minute => 59, second => 59,
+                time_zone => 'America/Chicago',
+            );
+        },
+        undef,
+        'no exception for valid time'
+    );
 
 SKIP:
     {
@@ -367,9 +376,11 @@ SKIP:
             time_zone => 'America/Chicago',
         );
 
-        eval { $dt->add( days => 1 ) };
-        like( $@, qr/Invalid local time .+/,
-            'exception for invalid time produced via add' );
+        like(
+            exception { $dt->add( days => 1 ) },
+            qr/Invalid local time .+/,
+            'exception for invalid time produced via add'
+        );
     }
 }
 
@@ -379,8 +390,11 @@ SKIP:
         hour      => 2,
         time_zone => 'America/Chicago',
     );
-    eval { $dt->add( hours => 24 ) };
-    ok( !$@, 'add 24 hours should work even if add 1 day does not' );
+    is(
+        exception { $dt->add( hours => 24 ) },
+        undef,
+        'add 24 hours should work even if add 1 day does not'
+    );
 
     is( $dt->hour, 3, "hour should no be 3" );
 }
@@ -429,14 +443,17 @@ SKIP:
 }
 
 {
-    eval {
-        DateTime->new(
-            year      => 2040, month  => 3,  day    => 11,
-            hour      => 2,    minute => 59, second => 59,
-            time_zone => 'America/Chicago',
-        );
-    };
-    like( $@, qr/Invalid local time .+/, 'exception for invalid time' );
+    like(
+        exception {
+            DateTime->new(
+                year      => 2040, month  => 3,  day    => 11,
+                hour      => 2,    minute => 59, second => 59,
+                time_zone => 'America/Chicago',
+            );
+        },
+        qr/Invalid local time .+/,
+        'exception for invalid time'
+    );
 }
 
 {
