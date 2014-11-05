@@ -4,7 +4,7 @@ DateTime::TimeZone - Time zone object base class and factory
 
 # VERSION
 
-version 1.76
+version 1.77
 
 # SYNOPSIS
 
@@ -273,6 +273,16 @@ flag to see what they can be used for.
 # AUTHOR
 
 Dave Rolsky <autarch@urth.org>
+
+# CONTRIBUTORS
+
+- Alexey Molchanov <alexey.molchanov@gmail.com>
+- Alfie John <alfiej@fastmail.fm>
+- Daisuke Maki <dmaki@cpan.org>
+- David Pinkowitz <dave@pinkowitz.com>
+- Iain Truskett <deceased>
+- Joshua Hoblitt <jhoblitt@cpan.org>
+- Karen Etheridge <ether@cpan.org>
 
 # COPYRIGHT AND LICENSE
 
