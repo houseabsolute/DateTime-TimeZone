@@ -76,7 +76,7 @@ sub new {
 
         my $e;
         try {
-            local $SIG{__DIE__} = undef;
+            local $SIG{__DIE__};
             require_module($real_class);
         }
         catch {
@@ -402,7 +402,7 @@ sub is_valid_name {
     my $name  = shift;
 
     my $tz = try {
-        local $SIG{__DIE__} = undef;
+        local $SIG{__DIE__};
         $class->new( name => $name );
     };
 
@@ -441,7 +441,7 @@ sub STORABLE_thaw {
 sub offset_as_seconds {
     my $offset = shift;
     $offset = shift if try {
-        local $SIG{__DIE__} = undef;
+        local $SIG{__DIE__};
         $offset->isa('DateTime::TimeZone');
     };
 
@@ -476,7 +476,7 @@ sub offset_as_seconds {
 sub offset_as_string {
     my $offset = shift;
     $offset = shift if try {
-        local $SIG{__DIE__} = undef;
+        local $SIG{__DIE__};
         $offset->isa('DateTime::TimeZone');
     };
 
