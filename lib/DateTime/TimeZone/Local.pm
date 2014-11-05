@@ -48,7 +48,7 @@ sub TimeZone {
         return $subclass if $subclass->can('Methods');
 
         return $subclass if try {
-            local $SIG{__DIE__} = undef;
+            local $SIG{__DIE__};
             require_module($subclass);
         };
 
@@ -66,7 +66,7 @@ sub FromEnv {
     foreach my $var ( $class->EnvVars() ) {
         if ( $class->_IsValidName( $ENV{$var} ) ) {
             my $tz = try {
-                local $SIG{__DIE__} = undef;
+                local $SIG{__DIE__};
                 DateTime::TimeZone->new( name => $ENV{$var} );
             };
 

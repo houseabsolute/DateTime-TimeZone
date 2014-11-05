@@ -57,7 +57,7 @@ sub FromEtcLocaltime {
             );
 
             my $tz = try {
-                local $SIG{__DIE__} = undef;
+                local $SIG{__DIE__};
                 DateTime::TimeZone->new( name => $name );
             };
 
@@ -90,7 +90,7 @@ sub _FindMatchingZoneinfoFile {
 
     my $real_name;
     try {
-        local $SIG{__DIE__} = undef;
+        local $SIG{__DIE__};
         local $_;
 
         File::Find::find(
@@ -143,7 +143,7 @@ sub FromEtcTimezone {
     return unless $class->_IsValidName($name);
 
     return try {
-        local $SIG{__DIE__} = undef;
+        local $SIG{__DIE__};
         DateTime::TimeZone->new( name => $name );
     };
 }
@@ -170,7 +170,7 @@ sub FromEtcTIMEZONE {
     return unless $class->_IsValidName($name);
 
     return try {
-        local $SIG{__DIE__} = undef;
+        local $SIG{__DIE__};
         DateTime::TimeZone->new( name => $name );
     };
 }
@@ -187,7 +187,7 @@ sub FromEtcSysconfigClock {
     return unless $class->_IsValidName($name);
 
     return try {
-        local $SIG{__DIE__} = undef;
+        local $SIG{__DIE__};
         DateTime::TimeZone->new( name => $name );
     };
 }
@@ -217,7 +217,7 @@ sub FromEtcDefaultInit {
     return unless $class->_IsValidName($name);
 
     return try {
-        local $SIG{__DIE__} = undef;
+        local $SIG{__DIE__};
         DateTime::TimeZone->new( name => $name );
     };
 }

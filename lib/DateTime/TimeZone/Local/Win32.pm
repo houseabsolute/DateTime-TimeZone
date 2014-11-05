@@ -221,7 +221,7 @@ sub EnvVars { return 'TZ' }
         return unless $class->_IsValidName($olson);
 
         return try {
-            local $SIG{__DIE__} = undef;
+            local $SIG{__DIE__};
             DateTime::TimeZone->new( name => $olson );
         };
     }

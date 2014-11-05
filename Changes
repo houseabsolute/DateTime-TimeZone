@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Fix warnings from Perl 5.8.8 and before. Apparently it doesn't like when
+  $SIG{__DIE__} is set to undef. Patch by Peter Rabbitson. GitHub PR #88.
+
+
 1.77    2014-11-04
 
 - Updated the mapping of Windows -> IANA time zones. Patch by David
