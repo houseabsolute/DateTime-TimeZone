@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2014j of the Olson database. This release
+  only contemporary changes for Turks & Caicos.
+
+
 1.78    2014-11-05
 
 - Fix warnings from Perl 5.8.8 and before. Apparently it doesn't like when
