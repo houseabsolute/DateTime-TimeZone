@@ -108,7 +108,7 @@ sub new {
 
         if ( $object_version ne $catalog_version ) {
             warn
-                "Loaded $real_class, which is from an older version ($object_version) of the Olson database than this installation of DateTime::TimeZone ($catalog_version).\n";
+                "Loaded $real_class, which is from a different version ($object_version) of the Olson database than this installation of DateTime::TimeZone ($catalog_version).\n";
         }
     }
 

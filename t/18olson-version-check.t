@@ -13,7 +13,7 @@ BEGIN { require 'check_datetime_version.pl' }
 {
     stderr_like(
         sub { DateTime::TimeZone->new( name => 'Fake/TZ' ) },
-        qr/\Qfrom an older version (unknown)/,
+        qr/\Qfrom a different version (unknown)/,
         'loading timezone where olson version is not defined'
     );
 }
@@ -21,7 +21,7 @@ BEGIN { require 'check_datetime_version.pl' }
 {
     stderr_like(
         sub { DateTime::TimeZone->new( name => 'Fake/TZ2' ) },
-        qr/\Qfrom an older version (2000a)/,
+        qr/\Qfrom a different version (2000a)/,
         'loading timezone where olson version is older than current'
     );
 }

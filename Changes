@@ -1,5 +1,11 @@
 {{$NEXT}}
 
+- Tweaked the warning when loading a zone class from disk that was generated
+  using a different Olson version than the current DateTime::TimeZone
+  module. Previously, it said the loaded version was older, but all we know is
+  that it's different. Reported by Karen Etheridge. RT #66097.
+
+
 1.79    2014-11-11
 
 - This release is based on version 2014j of the Olson database. This release
