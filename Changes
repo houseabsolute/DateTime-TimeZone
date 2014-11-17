@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.80    2014-11-16
+
 - This distro no longer ships the DateTime::TimeZone::Local::Win32
   module. Instead, it depends on that module when you install
   DateTime::TimeZone on a Windows system machine.
