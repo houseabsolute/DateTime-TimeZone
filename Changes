@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This distro no longer ships the DateTime::TimeZone::Local::Win32
+  module. Instead, it depends on that module when you install
+  DateTime::TimeZone on a Windows system machine.
+
 - Tweaked the warning when loading a zone class from disk that was generated
   using a different Olson version than the current DateTime::TimeZone
   module. Previously, it said the loaded version was older, but all we know is
