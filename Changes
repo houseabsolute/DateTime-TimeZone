@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.81    2014-11-21
+
 - Removed tests for Win32 code.
 
 
