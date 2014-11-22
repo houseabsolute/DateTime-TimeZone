@@ -189,8 +189,8 @@ sub parse_file {
 
         my $spans = serialize_spans( zone_as_spans($zone) );
 
-        $spans =~ s/-inf/DateTime::TimeZone::NEG_INFINITY/gi;
         $spans =~ s/inf/DateTime::TimeZone::INFINITY/gi;
+        $spans =~ s/-inf/DateTime::TimeZone::NEG_INFINITY/gi;
 
         $spans =~ s/('(?:start|end)_date'\s+=>\s+)'(\d+)'/$1$2/g;
 
@@ -411,11 +411,11 @@ EOF
     # This is cleaner than making the above a double-quoted string
     $generator =~ s/!RULES/Dumper \@rules/eg;
     $generator =~ s/!LAST_OBSERVANCE/Dumper $last_observance/eg;
-    $generator =~ s/\$VAR1->{'local_start_datetime'}{'tz'}/bless( {
+    $generator =~ s/\$VAR1->\{'local_start_datetime'\}\{'tz'\}/bless( {
       'name' => 'floating',
       'offset' => 0
     }, 'DateTime::TimeZone::Floating' )/;
-    $generator =~ s/\$VAR1->{'utc_start_datetime'}{'tz'}/bless( {
+    $generator =~ s/\$VAR1->\{'utc_start_datetime'\}\{'tz'\}/bless( {
       'name' => 'floating',
       'offset' => 0
     }, 'DateTime::TimeZone::Floating' )/;
