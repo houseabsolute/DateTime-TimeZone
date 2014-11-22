@@ -25,7 +25,7 @@ sub main {
     my $dir
         = $opts{dir}
         ? dir( $opts{dir} )
-        : tempdir( CLEANUP => 0 );
+        : tempdir( CLEANUP => 1 );
 
     if ( $opts{download} ) {
         $olson_version = _download($dir);
