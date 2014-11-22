@@ -337,9 +337,8 @@ sub _generate_spans_until_match {
                     seconds => $self->{last_observance}->total_offset
                         + $rule->offset_from_std
                 ),
-                short_name => sprintf(
-                    $self->{last_observance}->format, $rule->letter
-                ),
+                short_name => $self->{last_observance}
+                    ->formatted_short_name( $rule->letter ),
                 observance => $self->{last_observance},
                 rule       => $rule,
                 );

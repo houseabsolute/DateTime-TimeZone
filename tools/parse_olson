@@ -310,7 +310,7 @@ sub zone_as_spans {
                 utc_end     => $INFINITY,
                 local_start => $utc_start - $last_observance->total_offset,
                 local_end   => $INFINITY,
-                short_name  => sprintf( $last_observance->format, '' ),
+                short_name  => $last_observance->formatted_short_name(q{}),
                 offset      => $last_observance->total_offset,
                 is_dst      => 0,
                 };
