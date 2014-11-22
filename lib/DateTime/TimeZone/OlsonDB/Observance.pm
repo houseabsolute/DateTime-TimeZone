@@ -88,6 +88,16 @@ sub format { $_[0]->{format} }
 sub utc_start_datetime   { $_[0]->{utc_start_datetime} }
 sub local_start_datetime { $_[0]->{local_start_datetime} }
 
+sub formatted_short_name {
+    my $self   = shift;
+    my $letter = shift;
+
+    my $format = $self->format;
+    return $format unless $format =~ /%/;
+
+    return sprintf( $format, $letter );
+}
+
 sub expand_from_rules {
     my $self = shift;
     my $zone = shift;
@@ -150,7 +160,7 @@ sub expand_from_rules {
                 local_start_datetime => $dt + DateTime::Duration->new(
                     seconds => $self->total_offset + $rule->offset_from_std
                 ),
-                short_name => sprintf( $self->{format}, $rule->letter ),
+                short_name => $self->formatted_short_name( $rule->letter ),
                 observance => $self,
                 rule       => $rule,
             );
