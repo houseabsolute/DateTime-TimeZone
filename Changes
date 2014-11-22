@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- Various changes to get tests passing and tools code working with blead.
+
+
 1.81    2014-11-21
 
 - Removed tests for Win32 code.
