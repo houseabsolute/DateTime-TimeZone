@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+- The last release did not include any of the generated zone files. Oops.
+
 - Attempting to fix indexing of DateTime::TimeZone::Catalog on metacpan. No
   real code or zone changes.
 
