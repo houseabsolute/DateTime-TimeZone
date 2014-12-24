@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Attempting to fix indexing of DateTime::TimeZone::Catalog on metacpan. No
+  real code or zone changes.
+
+
 1.82    2014-12-24
 
 - Various changes to get tests passing and tools code working with blead. This
