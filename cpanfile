@@ -1,4 +1,4 @@
-requires "Class::Singleton" => "1.03";
+requires "Class::Singleton" => "0";
 requires "Cwd" => "3";
 requires "File::Basename" => "0";
 requires "File::Compare" => "0";
