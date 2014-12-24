@@ -14,9 +14,18 @@ BEGIN { require 'check_datetime_version.pl' }
 use DateTime::TimeZone;
 
 my @names = DateTime::TimeZone::all_names();
-my %links = DateTime::TimeZone->links();
+cmp_ok(
+    scalar @names, '>', 100,
+    'at least 100 zones'
+);
 
-my $is_maintainer = -d '.hg' || $ENV{RELEASE_TESTING} ? 1 : 0;
+my %links = DateTime::TimeZone->links();
+cmp_ok(
+    scalar keys %links, '>', 100,
+    'at least 100 links'
+);
+
+my $is_maintainer = -d '.git' || $ENV{RELEASE_TESTING} ? 1 : 0;
 
 foreach my $name (@names) {
     my $resolved_name = $links{$name} || $name;
