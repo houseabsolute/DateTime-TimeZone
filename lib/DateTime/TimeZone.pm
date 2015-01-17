@@ -571,10 +571,19 @@ This class is the base class for all time zone objects.  A time zone
 is represented internally as a set of observances, each of which
 describes the offset from GMT for a given time period.
 
-Note that without the C<DateTime.pm> module, this module does not do
-much.  It's primary interface is through a C<DateTime> object, and
+Note that without the L<DateTime> module, this module does not do
+much.  It's primary interface is through a L<DateTime> object, and
 most users will not need to directly use C<DateTime::TimeZone>
 methods.
+
+=head2 Special Case Platforms
+
+If you are on the Win32 platform, you will want to also install
+L<DateTime::TimeZone::Local::Win32>. This will enable you to specify a
+time zone of C<'local'> when creating a L<DateTime> object.
+
+If you are oin HPUX, install L<DateTime::TimeZone::HPUX>. This provides
+support for HPUX style time zones like C<'MET-1METDST'>.
 
 =head1 USAGE
 

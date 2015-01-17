@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- Removed the per-OS prereqs on DateTime::TimeZone::HPUX and
+  DateTime::TimeZone::Local::Win32. This gets rid of circular dependencies
+  between those distros and this one. RT #101588, 101589 and 68231.
+
+
 1.83    2014-12-24
 
 - The last release did not include any of the generated zone files. Oops.
