@@ -9,6 +9,7 @@ use DateTime::TimeZone::Catalog;
 use DateTime::TimeZone::Floating;
 use DateTime::TimeZone::Local;
 use DateTime::TimeZone::OffsetOnly;
+use DateTime::TimeZone::OlsonDB::Change;
 use DateTime::TimeZone::UTC;
 use Module::Runtime qw( require_module );
 use Params::Validate 0.72 qw( validate validate_pos SCALAR ARRAYREF BOOLEAN );
@@ -43,7 +44,7 @@ sub new {
         $p{name} = $DateTime::TimeZone::Catalog::LINKS{ uc $p{name} };
     }
 
-    unless ( $p{name} =~ m,/,
+    unless ( $p{name} =~ m{/}
         || $SpecialName{ $p{name} } ) {
         if ( $p{name} eq 'floating' ) {
             return DateTime::TimeZone::Floating->instance;
@@ -198,7 +199,7 @@ sub _span_for_datetime {
     unless ( defined $span ) {
         my $err = 'Invalid local time for date';
         $err .= ' ' . $dt->iso8601 if $type eq 'utc';
-        $err .= " in time zone: " . $self->name;
+        $err .= ' in time zone: ' . $self->name;
         $err .= "\n";
 
         die $err;
