@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2015a of the Olson database. This release
+  includes contemporary changes for Quintana Roo and Chile.
+
+
 1.84    2015-01-17
 
 - Removed the per-OS prereqs on DateTime::TimeZone::HPUX and
