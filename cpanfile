@@ -53,5 +53,4 @@ on 'develop' => sub {
   requires "Test::Pod::Coverage" => "1.08";
   requires "Test::Spelling" => "0.12";
   requires "Test::Taint" => "0";
-  requires "Test::Version" => "1";
 };
