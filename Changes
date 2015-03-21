@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2015b of the Olson database. This release
+  includes contemporary changes for Mongolia and Palestine.
+
+
 1.85    2015-01-30
 
 - This release is based on version 2015a of the Olson database. This release
