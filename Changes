@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2015d of the Olson database. This release
+  includes contemporary changes for Egypt.
+
+
 1.87    2015-04-20
 
 - This release is based on version 2015c of the Olson database. This release
