@@ -31,12 +31,10 @@ sub FromGetProp {
 
 # See the link above. Android always defaults to UTC
 sub FromDefault {
-    my $tz = try {
+    return try {
         local $SIG{__DIE__};
-        $tz = DateTime::TimeZone->new( name => 'UTC' );
-    }
-
-    return $tz if $tz;
+        DateTime::TimeZone->new( name => 'UTC' );
+    };
 }
 
 1;
