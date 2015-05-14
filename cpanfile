@@ -23,8 +23,6 @@ on 'test' => sub {
   requires "File::Spec" => "0";
   requires "File::Spec::Functions" => "0";
   requires "File::Temp" => "0";
-  requires "IO::Handle" => "0";
-  requires "IPC::Open3" => "0";
   requires "Storable" => "0";
   requires "Sys::Hostname" => "0";
   requires "Test::Fatal" => "0";
@@ -44,6 +42,9 @@ on 'configure' => sub {
 };
 
 on 'develop' => sub {
+  requires "File::Spec" => "0";
+  requires "IO::Handle" => "0";
+  requires "IPC::Open3" => "0";
   requires "Perl::Critic" => "1.123";
   requires "Perl::Tidy" => "20140711";
   requires "Pod::Coverage::TrustPod" => "0";

@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.90    2015-05-14
+
 - Made the compilation test shipped in the last release an author-only test,
   as many of the modules in this distribution try to load DateTime, but
   DateTime depends on this distribution. This caused attempts to install
