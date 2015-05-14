@@ -1,5 +1,12 @@
 {{$NEXT}}
 
+- Made the compilation test shipped in the last release an author-only test,
+  as many of the modules in this distribution try to load DateTime, but
+  DateTime depends on this distribution. This caused attempts to install
+  DateTime on a fresh perl install to fail. Reported by Noel Maddy. RT
+  #104448.
+
+
 1.89    2015-05-14
 
 - Fix a syntax error in the Android local time zone module. Reported by Gregor
