@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+1.89    2015-05-14
+
 - Fix a syntax error in the Android local time zone module. Reported by Gregor
   Hermann. RT #104105.
 
