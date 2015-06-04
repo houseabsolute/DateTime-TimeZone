@@ -24,7 +24,7 @@ before_install:
 install:
   - sudo apt-get update
   - sudo apt-get install rdfind symlinks
-  - cpan-install autodie DateTime File::Find::Rule File::pushd Getopt::Long IPC::System::Simple List::AllUtils Locale::Country~3.11 Net::FTP Parallel::ForkManager Params::Validate Path::Class
+  - cpan-install autodie DateTime File::Find::Rule File::pushd Getopt::Long IPC::System::Simple List::Util Locale::Country~3.11 Net::FTP Parallel::ForkManager Params::Validate Path::Class
   - perl ./tools/update-from-latest-olson --notests
   - cpan-install ExtUtils::MakeMaker~6.68 --deps
 script:
