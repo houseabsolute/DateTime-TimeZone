@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2015e of the Olson database. This release
+  includes contemporary changes for Morocco and Cayman Islands.
+
+
 1.90    2015-05-14
 
 - Made the compilation test shipped in the last release an author-only test,
