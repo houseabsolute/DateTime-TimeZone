@@ -1,5 +1,11 @@
 {{$NEXT}}
 
+- This distro now depends on DateTime::TimeZone::Local::Win32 when it is being
+  installed on a Windows OS. This should lead to a better experience for
+  Windows users. Requested by Matthew Horsfall and Karen Etheridge. RT
+  #103275.
+
+
 1.91    2015-06-13
 
 - This release is based on version 2015e of the Olson database. This release
