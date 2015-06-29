@@ -16,7 +16,7 @@ use File::Find::Rule;
 use File::Path;
 use File::Spec;
 use Getopt::Long;
-use List::AllUtils qw( max );
+use List::Util qw( max );
 use Locale::Country 3.11 qw( code2country );
 use Parallel::ForkManager;
 
