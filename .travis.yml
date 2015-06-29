@@ -31,8 +31,8 @@ before_install:
 install:
   - sudo apt-get update
   - sudo apt-get install rdfind symlinks
-  - perl ./tools/update-from-latest-olson --notests
   - cpan-install ExtUtils::MakeMaker~6.68 --deps
+  - perl ./tools/update-from-latest-olson --notests
 script:
   - perl Makefile.PL
   - make
