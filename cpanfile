@@ -4,8 +4,7 @@ requires "File::Basename" => "0";
 requires "File::Compare" => "0";
 requires "File::Find" => "0";
 requires "File::Spec" => "0";
-requires "List::AllUtils" => "0";
-requires "List::Util" => "0";
+requires "List::Util" => "1.33";
 requires "Module::Runtime" => "0";
 requires "Params::Validate" => "0.72";
 requires "Try::Tiny" => "0";
@@ -42,9 +41,20 @@ on 'configure' => sub {
 };
 
 on 'develop' => sub {
+  requires "DateTime" => "0";
+  requires "File::Find::Rule" => "0";
   requires "File::Spec" => "0";
+  requires "File::pushd" => "0";
+  requires "Getopt::Long" => "0";
   requires "IO::Handle" => "0";
   requires "IPC::Open3" => "0";
+  requires "IPC::System::Simple" => "0";
+  requires "List::Util" => "1.33";
+  requires "Locale::Country" => "3.11";
+  requires "Net::FTP" => "0";
+  requires "Parallel::ForkManager" => "0";
+  requires "Params::Validate" => "0";
+  requires "Path::Class" => "0";
   requires "Perl::Critic" => "1.123";
   requires "Perl::Tidy" => "20140711";
   requires "Pod::Coverage::TrustPod" => "0";
@@ -56,4 +66,5 @@ on 'develop' => sub {
   requires "Test::Pod::Coverage" => "1.08";
   requires "Test::Spelling" => "0.12";
   requires "Test::Taint" => "0";
+  requires "autodie" => "0";
 };
