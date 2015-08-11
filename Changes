@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2015f of the Olson database. This release
+  includes contemporary changes for Moldova, North Korea, and Uruguay.
+
+
 1.92    2015-06-22
 
 - This distro now depends on DateTime::TimeZone::Local::Win32 when it is being
