@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2015g of the Olson database. This release
+  includes contemporary changes for Turkey, Norfolk, Fiji, and Fort Nelson.
+
+
 1.93    2015-08-11
 
 - This release is based on version 2015f of the Olson database. This release
