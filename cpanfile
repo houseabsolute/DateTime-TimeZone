@@ -59,6 +59,7 @@ on 'develop' => sub {
   requires "Perl::Tidy" => "20140711";
   requires "Pod::Coverage::TrustPod" => "0";
   requires "Test::EOL" => "0";
+  requires "Test::Mojibake" => "0";
   requires "Test::More" => "0.88";
   requires "Test::NoTabs" => "0";
   requires "Test::Output" => "0";
