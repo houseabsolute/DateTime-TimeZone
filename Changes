@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- This release is based on version 2016a of the Olson database. This release
+  includes contemporary changes for the Cayman Islands, Iran, and Chrita,
+  Russia.
+
+
 1.94    2015-10-21
 
 - This release is based on version 2015g of the Olson database. This release
