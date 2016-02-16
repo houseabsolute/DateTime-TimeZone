@@ -3,7 +3,6 @@ package DateTime::TimeZone::OlsonDB::Rule;
 use strict;
 use warnings;
 
-use DateTime;
 use DateTime::Duration;
 use DateTime::TimeZone::OlsonDB;
 
