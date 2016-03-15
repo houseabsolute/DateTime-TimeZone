@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2016b of the Olson database. This release
+  includes contemporary changes for Russia, Haiti, and Palestine.
+
+
 1.95    2016-01-27
 
 - This release is based on version 2016a of the Olson database. This release
