@@ -76,7 +76,7 @@ my @pieces = qw( year month day hour minute second );
 my @names
     = @{ $opts{name} } ? @{ $opts{name} } : DateTime::TimeZone::all_names();
 
-my $pm = Parallel::ForkManager->new($opts{jobs});
+my $pm = Parallel::ForkManager->new( $opts{jobs} );
 foreach my $tz_name (@names) {
     my $pid = $pm->start() and next;
 
@@ -201,7 +201,7 @@ sub make_test_file {
             short_name => $short_name,
             is_dst     => 1 * $is_dst,
             offset     => 1 * $offset_from_utc,
-            };
+        };
 
         $last_short_name = $short_name;
     }
