@@ -147,7 +147,7 @@ sub make_test_file {
                             \s+
                             (\d\d\d\d)    # local year
                             \s+
-                            (\w+)         # local short name
+                            ([\-\+\w]+)   # local short name
                             \s+
                             isdst=(1|0)
                             \s+
