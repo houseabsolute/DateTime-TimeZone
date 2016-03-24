@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2016c of the Olson database. This release
+  includes contemporary changes for Azerbaijan and Chile.
+
+
 1.96    2016-03-15
 
 - This release is based on version 2016b of the Olson database. This release
