@@ -4,7 +4,7 @@ DateTime::TimeZone - Time zone object base class and factory
 
 # VERSION
 
-version 1.83
+version 1.97
 
 # SYNOPSIS
 
@@ -22,10 +22,19 @@ This class is the base class for all time zone objects.  A time zone
 is represented internally as a set of observances, each of which
 describes the offset from GMT for a given time period.
 
-Note that without the `DateTime.pm` module, this module does not do
-much.  It's primary interface is through a `DateTime` object, and
+Note that without the [DateTime](https://metacpan.org/pod/DateTime) module, this module does not do
+much.  It's primary interface is through a [DateTime](https://metacpan.org/pod/DateTime) object, and
 most users will not need to directly use `DateTime::TimeZone`
 methods.
+
+## Special Case Platforms
+
+If you are on the Win32 platform, you will want to also install
+[DateTime::TimeZone::Local::Win32](https://metacpan.org/pod/DateTime::TimeZone::Local::Win32). This will enable you to specify a time
+zone of `'local'` when creating a [DateTime](https://metacpan.org/pod/DateTime) object.
+
+If you are on HPUX, install [DateTime::TimeZone::HPUX](https://metacpan.org/pod/DateTime::TimeZone::HPUX). This provides support
+for HPUX style time zones like `'MET-1METDST'`.
 
 # USAGE
 
@@ -223,15 +232,6 @@ If you subclass `DateTime::TimeZone`, you will inherit its hooks,
 which may not work for your module, so please test the interaction of
 your module with Storable.
 
-# SUPPORT
-
-Support for this module is provided via the datetime@perl.org email list. See
-http://datetime.perl.org/wiki/datetime/page/Mailing\_List for details.
-
-Please submit bugs to the CPAN RT system at
-http://rt.cpan.org/NoAuth/ReportBug.html?Queue=datetime%3A%3Atimezone
-or via email at bug-datetime-timezone@rt.cpan.org.
-
 # DONATIONS
 
 If you'd like to thank me for the work I've done on this module,
@@ -270,24 +270,56 @@ two scripts that may be of interest to some people.  They are
 parse\_olson and tests\_from\_zdump.  Please run them with the --help
 flag to see what they can be used for.
 
+# SUPPORT
+
+Support for this module is provided via the datetime@perl.org email list. See
+http://datetime.perl.org/wiki/datetime/page/Mailing\_List for details.
+
+Please submit bugs to the CPAN RT system at
+http://rt.cpan.org/NoAuth/ReportBug.html?Queue=datetime%3A%3Atimezone
+or via email at bug-datetime-timezone@rt.cpan.org.
+
+Bugs may be submitted through [the RT bug tracker](http://rt.cpan.org/Public/Dist/Display.html?Name=DateTime-TimeZone)
+(or [bug-datetime-timezone@rt.cpan.org](mailto:bug-datetime-timezone@rt.cpan.org)).
+
+I am also usually active on IRC as 'drolsky' on `irc://irc.perl.org`.
+
+# DONATIONS
+
+If you'd like to thank me for the work I've done on this module, please
+consider making a "donation" to me via PayPal. I spend a lot of free time
+creating free software, and would appreciate any support you'd care to offer.
+
+Please note that **I am not suggesting that you must do this** in order for me
+to continue working on this particular software. I will continue to do so,
+inasmuch as I have in the past, for as long as it interests me.
+
+Similarly, a donation made in this way will probably not make me work on this
+software much more, unless I get so many donations that I can consider working
+on free software full time (let's all have a chuckle at that together).
+
+To donate, log into PayPal and send money to autarch@urth.org, or use the
+button at [http://www.urth.org/~autarch/fs-donation.html](http://www.urth.org/~autarch/fs-donation.html).
+
 # AUTHOR
 
-Dave Rolsky <autarch@urth.org>
+Dave Rolsky &lt;autarch@urth.org>
 
 # CONTRIBUTORS
 
-- Alexey Molchanov <alexey.molchanov@gmail.com>
-- Alfie John <alfiej@fastmail.fm>
-- Daisuke Maki <dmaki@cpan.org>
-- David Pinkowitz <dave@pinkowitz.com>
-- Iain Truskett <deceased>
-- Joshua Hoblitt <jhoblitt@cpan.org>
-- Karen Etheridge <ether@cpan.org>
-- Peter Rabbitson <ribasushi@cpan.org>
+- Alexey Molchanov &lt;alexey.molchanov@gmail.com>
+- Alfie John &lt;alfiej@fastmail.fm>
+- Daisuke Maki &lt;dmaki@cpan.org>
+- David Pinkowitz &lt;dave@pinkowitz.com>
+- Iain Truskett &lt;deceased>
+- Joshua Hoblitt &lt;jhoblitt@cpan.org>
+- Karen Etheridge &lt;ether@cpan.org>
+- karupanerura &lt;karupa@cpan.org>
+- Peter Rabbitson &lt;ribasushi@cpan.org>
 
-# COPYRIGHT AND LICENSE
+# COPYRIGHT AND LICENCE
 
-This software is copyright (c) 2014 by Dave Rolsky.
+This software is copyright (c) 2016 by Dave Rolsky.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
