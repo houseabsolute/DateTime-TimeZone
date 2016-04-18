@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2016d of the Olson database. This release
+  includes contemporary changes for Russia and Venezuela.
+
+
 1.97    2016-03-23
 
 - This release is based on version 2016c of the Olson database. This release
