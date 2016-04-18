@@ -58,6 +58,7 @@ on 'develop' => sub {
   requires "Perl::Critic" => "1.123";
   requires "Perl::Tidy" => "20140711";
   requires "Pod::Coverage::TrustPod" => "0";
+  requires "Pod::Wordlist" => "0";
   requires "Test::CPAN::Meta::JSON" => "0.16";
   requires "Test::EOL" => "0";
   requires "Test::Mojibake" => "0";
@@ -69,4 +70,5 @@ on 'develop' => sub {
   requires "Test::Spelling" => "0.12";
   requires "Test::Taint" => "0";
   requires "autodie" => "0";
+  requires "blib" => "1.01";
 };
