@@ -33,7 +33,13 @@ install:
   - sudo apt-get update
   - sudo apt-get install rdfind symlinks
   - cpan-install ExtUtils::MakeMaker~6.68 --deps
-  - perl ./tools/update-from-latest-olson --notests
+  - git clone https://github.com/eggert/tz.git /tmp/tz
+  - pushd /tmp/tz
+  - export TZ_VERSION=$(git describe --abbrev=0 --tags)
+  - git checkout $TZ_VERSION
+  - popd
+  - mv /tmp/tz "/tmp/$TZ_VERSION"
+  - perl ./tools/update-from-latest-olson --notests --nodownload --dir "/tmp/$TZ_VERSION"
 script:
   - perl Makefile.PL
   - make
