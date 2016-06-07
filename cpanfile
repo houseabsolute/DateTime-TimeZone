@@ -41,6 +41,7 @@ on 'configure' => sub {
 };
 
 on 'develop' => sub {
+  requires "Code::TidyAll::Plugin::Test::Vars" => "0.02";
   requires "DateTime" => "0";
   requires "File::Find::Rule" => "0";
   requires "File::Spec" => "0";
@@ -55,8 +56,8 @@ on 'develop' => sub {
   requires "Parallel::ForkManager" => "0";
   requires "Params::Validate" => "0";
   requires "Path::Class" => "0";
-  requires "Perl::Critic" => "1.123";
-  requires "Perl::Tidy" => "20140711";
+  requires "Perl::Critic" => "1.126";
+  requires "Perl::Tidy" => "20160302";
   requires "Pod::Coverage::TrustPod" => "0";
   requires "Pod::Wordlist" => "0";
   requires "Test::CPAN::Meta::JSON" => "0.16";
@@ -69,6 +70,7 @@ on 'develop' => sub {
   requires "Test::Pod::Coverage" => "1.08";
   requires "Test::Spelling" => "0.12";
   requires "Test::Taint" => "0";
+  requires "Test::Vars" => "0.009";
   requires "autodie" => "0";
   requires "blib" => "1.01";
 };

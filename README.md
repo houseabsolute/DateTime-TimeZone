@@ -4,7 +4,7 @@ DateTime::TimeZone - Time zone object base class and factory
 
 # VERSION
 
-version 1.98
+version 1.99
 
 # SYNOPSIS
 
@@ -303,19 +303,20 @@ button at [http://www.urth.org/~autarch/fs-donation.html](http://www.urth.org/~a
 
 # AUTHOR
 
-Dave Rolsky &lt;autarch@urth.org>
+Dave Rolsky <autarch@urth.org>
 
 # CONTRIBUTORS
 
-- Alexey Molchanov &lt;alexey.molchanov@gmail.com>
-- Alfie John &lt;alfiej@fastmail.fm>
-- Daisuke Maki &lt;dmaki@cpan.org>
-- David Pinkowitz &lt;dave@pinkowitz.com>
+- Alexey Molchanov <alexey.molchanov@gmail.com>
+- Alfie John <alfiej@fastmail.fm>
+- Bron Gondwana <brong@fastmail.fm>
+- Daisuke Maki <dmaki@cpan.org>
+- David Pinkowitz <dave@pinkowitz.com>
 - Iain Truskett &lt;deceased>
-- Joshua Hoblitt &lt;jhoblitt@cpan.org>
-- Karen Etheridge &lt;ether@cpan.org>
-- karupanerura &lt;karupa@cpan.org>
-- Peter Rabbitson &lt;ribasushi@cpan.org>
+- Joshua Hoblitt <jhoblitt@cpan.org>
+- Karen Etheridge <ether@cpan.org>
+- karupanerura <karupa@cpan.org>
+- Peter Rabbitson <ribasushi@cpan.org>
 
 # COPYRIGHT AND LICENCE
 
