@@ -1,5 +1,13 @@
 {{$NEXT}}
 
+- When parsing the POSIX zones in the etcetera file, don't special case the
+  ETC[+-]NN zones. These are weirdly named, as ETC+8 is 8 hours _behind_ UTC,
+  and -6 is 6 hours _ahead_. Previously, we were swapping these so the name
+  matched the sane usage, but this is confusing for anyone who is explicitly
+  trying to use the POSIX names, expecting the bizarre (but POSIXly correct)
+  interpretation. Patch by Bron Gondwana. GitHub PR #7.
+
+
 1.98    2016-04-18
 
 - This release is based on version 2016d of the Olson database. This release
