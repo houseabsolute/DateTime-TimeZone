@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- The fix in 1.99 broke the parsing of the etcetera zones, which are specified
+  as 1 or 2 digit offsets in hours, unlike all other zones which are written
+  as "1:00" or "-2:00".
+
+
 1.99    2016-06-07
 
 - When parsing the POSIX zones in the etcetera file, don't special case the
