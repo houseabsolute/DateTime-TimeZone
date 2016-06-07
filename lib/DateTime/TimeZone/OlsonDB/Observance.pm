@@ -25,25 +25,8 @@ sub new {
         }
     );
 
-    my $offset_from_utc;
-
-    if ( $p{gmtoff} =~ /^([\+\-]?\d\d?)$/ ) {
-
-        # From the Olson database's etcetera file:
-        #
-        # We use POSIX-style signs in the Zone names and the output
-        # abbreviations, even though this is the opposite of what many people
-        # expect. POSIX has positive signs west of Greenwich, but many people
-        # expect positive signs east of Greenwich.  For example, TZ='Etc/GMT+4'
-        # uses the abbreviation "GMT+4" and corresponds to 4 hours behind UT
-        # (i.e. west of Greenwich) even though many people would expect it to
-        # mean 4 hours ahead of UT (i.e. east of Greenwich).
-        $offset_from_utc = 3600 * $1 * -1;
-    }
-    else {
-        $offset_from_utc
-            = DateTime::TimeZone::offset_as_seconds( $p{gmtoff} );
-    }
+    my $offset_from_utc
+        = DateTime::TimeZone::offset_as_seconds( $p{gmtoff} );
 
     my $offset_from_std
         = DateTime::TimeZone::offset_as_seconds( $p{offset_from_std} );
