@@ -26,7 +26,9 @@ sub new {
     );
 
     my $offset_from_utc
-        = DateTime::TimeZone::offset_as_seconds( $p{gmtoff} );
+        = $p{gmtoff} =~ m/^[+-]?\d?\d$/  # only hours? need to handle specially
+        ? 3600 * $p{gmtoff}
+        : DateTime::TimeZone::offset_as_seconds( $p{gmtoff} );
 
     my $offset_from_std
         = DateTime::TimeZone::offset_as_seconds( $p{offset_from_std} );
