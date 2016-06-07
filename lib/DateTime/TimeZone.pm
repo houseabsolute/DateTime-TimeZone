@@ -456,9 +456,6 @@ sub offset_as_seconds {
     elsif ( $offset =~ /^([\+\-])?(\d\d)(\d\d)(\d\d)?$/ ) {
         ( $sign, $hours, $minutes, $seconds ) = ( $1, $2, $3, $4 );
     }
-    elsif ( $offset =~ /^([\+\-])?(\d\d?)$/ ) {
-        ( $sign, $hours, $minutes, $seconds ) = ( $1, $2, 0, 0);
-    }
     else {
         return undef;
     }
