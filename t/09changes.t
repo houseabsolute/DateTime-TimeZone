@@ -304,7 +304,7 @@ BEGIN { require 'check_datetime_version.pl' }
 
     is( $dt->offset, -18000, 'offset should be -18000' );
     is( $dt->is_dst, 1,      'is not dst' );
-    is( $dt->hour, 1, "crossing DST bounday does not change local hour" );
+    is( $dt->hour, 1, "crossing DST boundary does not change local hour" );
 }
 
 {
