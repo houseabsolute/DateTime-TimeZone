@@ -184,9 +184,12 @@ sub _sorted_rules_for_year {
         push @{ $rules_by_month{ $rule->month() } }, $rule;
     }
 
-    # For horrible cases like Morocco, we have both a "max year" rule and a
-    # "this year" rule for a given month's change. In that case, we want to
-    # pick the more specific ("this year") rule, not apply both.
+    # In some cases we have both a "max year" rule and a "this year" rule for
+    # a given month's change. In that case, we want to pick the more specific
+    # ("this year") rule, not apply both. This only matters for zones that
+    # have a winter transition that follows the Islamic calendar to deal with
+    # Ramadan. So far this has happened with Cairo, El_Aaiun, and other zones
+    # in northern Africa.
     my @final_rules;
     for my $month ( sort { $a <=> $b } keys %rules_by_month ) {
         my @r = @{ $rules_by_month{$month} };
@@ -195,23 +198,16 @@ sub _sorted_rules_for_year {
             my ($this_year)
                 = grep { $_->max_year() && $_->max_year() == $year } @r;
             if ( $repeating && $this_year ) {
-                if ( $year == 2037 ) {
-                    # This is what zic seems to do but I have no idea why
-                    if ($DateTime::TimeZone::OlsonDB::DEBUG) {
-                        print
-                            "Found two rules for the same month, picking the max year one because this year is 2037\n";
-                    }
 
-                    push @final_rules, $repeating;
+                # We used to pick the repeating rule for year 2037 only
+                # because it seemed like that's what zic did in the past. Now
+                # it seems to pick the "this year" rule instead.
+                if ($DateTime::TimeZone::OlsonDB::DEBUG) {
+                    print
+                        "Found two rules for the same month, picking the one for this year\n";
                 }
-                else {
-                    if ($DateTime::TimeZone::OlsonDB::DEBUG) {
-                        print
-                            "Found two rules for the same month, picking the one for this year\n";
-                    }
 
-                    push @final_rules, $this_year;
-                }
+                push @final_rules, $this_year;
                 next;
             }
 
