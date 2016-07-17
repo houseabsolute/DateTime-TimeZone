@@ -68,6 +68,7 @@ on 'develop' => sub {
   requires "Test::Output" => "0";
   requires "Test::Pod" => "1.41";
   requires "Test::Pod::Coverage" => "1.08";
+  requires "Test::Portability::Files" => "0";
   requires "Test::Spelling" => "0.12";
   requires "Test::Taint" => "0";
   requires "Test::Vars" => "0.009";

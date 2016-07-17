@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+2.01    2016-07-17
+
 - This release is based on version 2016f of the Olson database. This release
   includes contemporary changes for Egypt and Russia. The changes for Egypt
   supersede the ones in 2016e.
