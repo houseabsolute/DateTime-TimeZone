@@ -8,6 +8,7 @@ use File::Spec;
 
 use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
+## no critic (Modules::RequireBarewordIncludes)
 BEGIN { require 'check_datetime_version.pl' }
 
 is(
@@ -16,8 +17,10 @@ is(
     'test that OffsetOnly does not allow invalid offsets'
 );
 
-my $off = DateTime::TimeZone::OffsetOnly->new( offset => '-0100' );
-is( $off->name, '-0100', 'name is -0100' );
+{
+    my $off = DateTime::TimeZone::OffsetOnly->new( offset => '-0100' );
+    is( $off->name, '-0100', 'name is -0100' );
+}
 
 my @good_offsets = (
     [ '0',         'UTC' ],

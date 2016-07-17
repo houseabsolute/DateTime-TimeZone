@@ -8,6 +8,7 @@ use File::Spec;
 
 use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
+## no critic (Modules::RequireBarewordIncludes)
 BEGIN { require 'check_datetime_version.pl' }
 
 # The point of this group of tests is to try to check that DST changes
@@ -304,7 +305,7 @@ BEGIN { require 'check_datetime_version.pl' }
 
     is( $dt->offset, -18000, 'offset should be -18000' );
     is( $dt->is_dst, 1,      'is not dst' );
-    is( $dt->hour, 1, "crossing DST boundary does not change local hour" );
+    is( $dt->hour, 1, 'crossing DST boundary does not change local hour' );
 }
 
 {
@@ -366,7 +367,7 @@ BEGIN { require 'check_datetime_version.pl' }
 SKIP:
     {
         skip
-            "DateTime 0.29 has a date math bug that causes this test to fail",
+            'DateTime 0.29 has a date math bug that causes this test to fail',
             1
             if ( DateTime->VERSION >= 0.29 && DateTime->VERSION < 0.30 );
 
@@ -396,7 +397,7 @@ SKIP:
         'add 24 hours should work even if add 1 day does not'
     );
 
-    is( $dt->hour, 3, "hour should no be 3" );
+    is( $dt->hour, 3, 'hour should no be 3' );
 }
 
 {
@@ -516,7 +517,7 @@ SKIP:
 
         $_->[1] = sprintf( '%02d', $_->[1] );
 
-        my $expect = join ' ', @$_;
+        my $expect = join q{ }, @{$_};
 
         is(
             $dt->strftime('%Y %m%e%k %Z'), $expect,
@@ -562,7 +563,7 @@ SKIP:
 
         $_->[1] = sprintf( '%02d', $_->[1] );
 
-        my $expect = join ' ', @$_;
+        my $expect = join q{ }, @{$_};
 
         is(
             $dt->strftime('%Y %m%e%k %Z'), $expect,

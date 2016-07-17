@@ -6,6 +6,7 @@ use Test::More;
 
 use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
+## no critic (Modules::RequireBarewordIncludes)
 BEGIN { require 'check_datetime_version.pl' }
 
 use DateTime::TimeZone;
@@ -44,16 +45,20 @@ sub test_thaw_and_clone {
     is( $tz2->name, $name, "thaw frozen $class" );
 
     if ( exists $tz1->{spans} ) {
-        is( $tz1->{spans}, $tz2->{spans},
-            "spans remain shared for $class after freeze/thaw" );
+        is(
+            $tz1->{spans}, $tz2->{spans},
+            "spans remain shared for $class after freeze/thaw"
+        );
     }
 
     my $tz3 = Storable::dclone($tz1);
     is( $tz3->name, $name, "dclone $class" );
 
     if ( exists $tz1->{spans} ) {
-        is( $tz1->{spans}, $tz3->{spans},
-            "spans remain shared for $class after dclone" );
+        is(
+            $tz1->{spans}, $tz3->{spans},
+            "spans remain shared for $class after dclone"
+        );
     }
 }
 

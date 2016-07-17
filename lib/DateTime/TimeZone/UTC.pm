@@ -9,11 +9,13 @@ sub new {
     return shift->instance;
 }
 
+## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
 sub _new_instance {
     my $class = shift;
 
     return bless { name => 'UTC' }, $class;
 }
+## use critic
 
 sub is_dst_for_datetime {0}
 

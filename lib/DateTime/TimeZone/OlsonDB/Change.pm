@@ -61,7 +61,7 @@ sub offset_from_std      { $_[0]->{offset_from_std} }
 sub total_offset         { $_[0]->offset_from_utc + $_[0]->offset_from_std }
 
 sub two_changes_as_span {
-    my ( $c1, $c2, $last_total_offset ) = @_;
+    my ( $c1, $c2 ) = @_;
 
     my ( $utc_start, $local_start );
 
@@ -87,29 +87,30 @@ sub two_changes_as_span {
     };
 }
 
+## no critic (Subroutines::ProhibitUnusedPrivateSubroutines, InputOutput::RequireCheckedSyscalls)
 sub _debug_output {
     my $self = shift;
 
     my $obs = $self->observance;
 
     if ( $self->utc_start_datetime ) {
-        print " UTC:        ", $self->utc_start_datetime->datetime,   "\n";
-        print " Local:      ", $self->local_start_datetime->datetime, "\n";
+        print ' UTC:        ', $self->utc_start_datetime->datetime,   "\n";
+        print ' Local:      ', $self->local_start_datetime->datetime, "\n";
     }
     else {
         print " First change (starts at -inf)\n";
     }
 
-    print " Short name: ", $self->short_name,     "\n";
-    print " UTC offset: ", $obs->offset_from_utc, "\n";
+    print ' Short name: ', $self->short_name,     "\n";
+    print ' UTC offset: ', $obs->offset_from_utc, "\n";
 
     if ( $obs->offset_from_std || $self->rule ) {
         if ( $obs->offset_from_std ) {
-            print " Std offset: ", $obs->offset_from_std, "\n";
+            print ' Std offset: ', $obs->offset_from_std, "\n";
         }
 
         if ( $self->rule ) {
-            print " Std offset: ", $self->rule->offset_from_std, ' - ',
+            print ' Std offset: ', $self->rule->offset_from_std, ' - ',
                 $self->rule->name, " rule\n";
         }
     }
@@ -119,5 +120,6 @@ sub _debug_output {
 
     print "\n";
 }
+## use critic
 
 1;

@@ -17,7 +17,7 @@ sub new {
             gmtoff               => { type => SCALAR },
             rules                => { type => ARRAYREF },
             format               => { type => SCALAR },
-            until                => { type => SCALAR, default => '' },
+            until                => { type => SCALAR, default => q{} },
             utc_start_datetime   => { type => OBJECT | UNDEF },
             offset_from_std      => { type => SCALAR, default => 0 },
             last_offset_from_utc => { type => SCALAR, default => 0 },
@@ -26,7 +26,7 @@ sub new {
     );
 
     my $offset_from_utc
-        = $p{gmtoff} =~ m/^[+-]?\d?\d$/  # only hours? need to handle specially
+        = $p{gmtoff} =~ m/^[+-]?\d?\d$/ # only hours? need to handle specially
         ? 3600 * $p{gmtoff}
         : DateTime::TimeZone::offset_as_seconds( $p{gmtoff} );
 
@@ -68,7 +68,9 @@ sub total_offset    { $_[0]->offset_from_utc + $_[0]->offset_from_std }
 sub rules      { @{ $_[0]->{rules} } }
 sub first_rule { $_[0]->{first_rule} }
 
+## no critic (Subroutines::ProhibitBuiltinHomonyms)
 sub format { $_[0]->{format} }
+## use critic
 
 sub utc_start_datetime   { $_[0]->{utc_start_datetime} }
 sub local_start_datetime { $_[0]->{local_start_datetime} }
@@ -128,13 +130,16 @@ sub expand_from_rules {
         my @rules = $self->_sorted_rules_for_year($year);
 
         for my $rule (@rules) {
-            my $dt = $rule->utc_start_datetime_for_year( $year,
-                $self->offset_from_utc, $zone->last_change->offset_from_std );
+            my $dt = $rule->utc_start_datetime_for_year(
+                $year,
+                $self->offset_from_utc, $zone->last_change->offset_from_std
+            );
 
             next
                 if $self->utc_start_datetime
-                    && $dt <= $self->utc_start_datetime;
+                && $dt <= $self->utc_start_datetime;
 
+            ## no critic (Variables::ProhibitReusedNames)
             my $until = $self->until( $zone->last_change->offset_from_std );
 
             next if $until && $dt >= $until;
@@ -151,6 +156,7 @@ sub expand_from_rules {
             );
 
             if ($DateTime::TimeZone::OlsonDB::DEBUG) {
+                ## no critic (InputOutput::RequireCheckedSyscalls)
                 print "Adding rule change ...\n";
 
                 $change->_debug_output;
@@ -165,12 +171,15 @@ sub _sorted_rules_for_year {
     my $self = shift;
     my $year = shift;
 
+    ## no critic (BuiltinFunctions::ProhibitComplexMappings)
     my @rules = (
         map      { $_->[0] }
             sort { $a->[1] <=> $b->[1] }
             map {
-            my $dt = $_->utc_start_datetime_for_year( $year,
-                $self->offset_from_utc, 0 );
+            my $dt = $_->utc_start_datetime_for_year(
+                $year,
+                $self->offset_from_utc, 0
+            );
             [ $_, $dt ]
             }
             grep {
@@ -203,6 +212,7 @@ sub _sorted_rules_for_year {
                 # because it seemed like that's what zic did in the past. Now
                 # it seems to pick the "this year" rule instead.
                 if ($DateTime::TimeZone::OlsonDB::DEBUG) {
+                    ## no critic (InputOutput::RequireCheckedSyscalls)
                     print
                         "Found two rules for the same month, picking the one for this year\n";
                 }
@@ -221,6 +231,7 @@ sub _sorted_rules_for_year {
     return @final_rules;
 }
 
+## no critic (Subroutines::ProhibitBuiltinHomonyms)
 sub until {
     my $self = shift;
     my $offset_from_std = shift || $self->offset_from_std;
@@ -238,6 +249,7 @@ sub until {
 
     return $utc;
 }
+## use critic
 
 sub until_year { $_[0]->{until}[0] }
 
@@ -263,6 +275,7 @@ sub until_time_spec {
     defined $_[0]->{until}[3] ? $_[0]->{until}[3] : '00:00:00';
 }
 
+## no critic (Subroutines::ProhibitExcessComplexity)
 sub _first_rule {
     my $self                 = shift;
     my $last_offset_from_utc = shift;
@@ -318,7 +331,8 @@ sub _first_rule {
             # skip rules that can't have applied the year before the
             # observance started.
             if ( $rule->min_year > $y ) {
-                print "Skipping rule beginning in ", $rule->min_year,
+                ## no critic (InputOutput::RequireCheckedSyscalls)
+                print 'Skipping rule beginning in ', $rule->min_year,
                     ".  Year is $y.\n"
                     if $DateTime::TimeZone::OlsonDB::DEBUG;
 
@@ -326,15 +340,18 @@ sub _first_rule {
             }
 
             if ( $rule->max_year && $rule->max_year < $y ) {
-                print "Skipping rule ending in ", $rule->max_year,
+                ## no critic (InputOutput::RequireCheckedSyscalls)
+                print 'Skipping rule ending in ', $rule->max_year,
                     ".     Year is $y.\n"
                     if $DateTime::TimeZone::OlsonDB::DEBUG;
 
                 next RULE;
             }
 
-            my $rule_start = $rule->utc_start_datetime_for_year( $y,
-                $last_offset_from_utc, $last_offset_from_std );
+            my $rule_start = $rule->utc_start_datetime_for_year(
+                $y,
+                $last_offset_from_utc, $last_offset_from_std
+            );
 
             push @rule_dates, [ $rule_start, $rule ];
         }
@@ -342,13 +359,17 @@ sub _first_rule {
 
     @rule_dates = sort { $a->[0] <=> $b->[0] } @rule_dates;
 
+    ## no critic (InputOutput::RequireCheckedSyscalls)
     print "Looking for first rule ...\n"
         if $DateTime::TimeZone::OlsonDB::DEBUG;
-    print " Observance starts: ", $date->datetime, "\n\n"
+    print ' Observance starts: ', $date->datetime, "\n\n"
         if $DateTime::TimeZone::OlsonDB::DEBUG;
+    ## use critic
 
     # ... look through the rules to see if any are still in
     # effect at the beginning of the observance
+
+    ## no critic (ControlStructures::ProhibitCStyleForLoops)
     for ( my $x = 0; $x < @rule_dates; $x++ ) {
         my ( $dt, $rule ) = @{ $rule_dates[$x] };
         my ( $next_dt, $next_rule )
@@ -356,14 +377,16 @@ sub _first_rule {
 
         next if $next_dt && $next_dt < $date;
 
-        print " This rule starts:  ", $dt->datetime, "\n"
+        ## no critic (InputOutput::RequireCheckedSyscalls)
+        print ' This rule starts:  ', $dt->datetime, "\n"
             if $DateTime::TimeZone::OlsonDB::DEBUG;
 
-        print " Next rule starts:  ", $next_dt->datetime, "\n"
+        print ' Next rule starts:  ', $next_dt->datetime, "\n"
             if $next_dt && $DateTime::TimeZone::OlsonDB::DEBUG;
 
-        print " No next rule\n\n"
+        print ' No next rule\n\n'
             if !$next_dt && $DateTime::TimeZone::OlsonDB::DEBUG;
+        ## use critic
 
         if ( $dt <= $date ) {
             if ($next_dt) {
@@ -385,11 +408,12 @@ sub _first_rule {
     my $std_time_rule = $self->_first_no_dst_rule;
 
     die
-        "Cannot find a rule that applies to the observance's date range and cannot find a rule without DST to apply"
+        q{Cannot find a rule that applies to the observance's date range and cannot find a rule without DST to apply}
         unless $std_time_rule;
 
     return $std_time_rule;
 }
+## use critic
 
 sub _first_no_dst_rule {
     my $self = shift;

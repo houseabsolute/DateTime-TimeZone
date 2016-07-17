@@ -4,7 +4,7 @@ use DateTime::TimeZone;
 
 BEGIN {
     # Work around not having a version when using dzil
-    if ( ! $DateTime::TimeZone::VERSION ) {
+    if ( !$DateTime::TimeZone::VERSION ) {
         $DateTime::TimeZone::VERSION = 99;
     }
 

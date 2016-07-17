@@ -9,6 +9,7 @@ use Try::Tiny;
 
 use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
+## no critic (Modules::RequireBarewordIncludes)
 BEGIN { require 'check_datetime_version.pl' }
 
 {
@@ -56,7 +57,7 @@ BEGIN { require 'check_datetime_version.pl' }
         };
 
         my $time = sprintf( '%02d:%02d', @{$hm} );
-        is( $@, '', "made object in America/Caracas at $time" );
+        is( $@, q{}, "made object in America/Caracas at $time" );
     }
 }
 

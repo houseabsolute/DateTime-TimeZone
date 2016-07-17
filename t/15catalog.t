@@ -68,7 +68,8 @@ use DateTime::TimeZone;
     my @names = DateTime::TimeZone->names_in_category('America');
     my %names = map { $_ => 1 } @names;
     for my $n (qw( Chicago Adak )) {
-        ok( exists $names{$n},
+        ok(
+            exists $names{$n},
             "$n is in America category (names_in_category() called as class method)"
         );
     }
@@ -91,8 +92,10 @@ use DateTime::TimeZone;
 {
     my @zones = DateTime::TimeZone::names_in_country('JP');
     is( @zones, 1, 'one zone for Japan' );
-    is( $zones[0], 'Asia/Tokyo',
-        'zone for Japan is Asia/Tokyo (uc country code)' );
+    is(
+        $zones[0], 'Asia/Tokyo',
+        'zone for Japan is Asia/Tokyo (uc country code)'
+    );
 }
 
 {

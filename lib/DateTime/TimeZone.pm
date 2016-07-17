@@ -15,6 +15,7 @@ use Module::Runtime qw( require_module );
 use Params::Validate 0.72 qw( validate validate_pos SCALAR ARRAYREF BOOLEAN );
 use Try::Tiny;
 
+## no critic (ValuesAndExpressions::ProhibitConstantPragma)
 use constant INFINITY => 100**1000;
 use constant NEG_INFINITY => -1 * ( 100**1000 );
 
@@ -31,8 +32,8 @@ my %SpecialName = map { $_ => 1 }
     qw( EST MST HST CET EET MET WET EST5EDT CST6CDT MST7MDT PST8PDT );
 
 sub new {
-    my $class = shift;
-    my %p     = validate(
+    shift;
+    my %p = validate(
         @_,
         { name => { type => SCALAR } },
     );
@@ -73,10 +74,12 @@ sub new {
         unless $real_class =~ /^\w+(::\w+)*$/;
 
     unless ( $real_class->can('instance') ) {
-        ($real_class) = $real_class =~ m{\A([a-zA-Z0-9_]+(?:::[a-zA-Z0-9_]+)*)\z};
+        ($real_class)
+            = $real_class =~ m{\A([a-zA-Z0-9_]+(?:::[a-zA-Z0-9_]+)*)\z};
 
         my $e;
         try {
+            ## no critic (Variables::RequireInitializationForLocalVars)
             local $SIG{__DIE__};
             require_module($real_class);
         }
@@ -116,6 +119,7 @@ sub new {
     return $zone;
 }
 
+## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
 sub _init {
     my $class = shift;
     my %p     = validate(
@@ -139,6 +143,7 @@ sub _init {
 
     return $self;
 }
+## use critic
 
 sub is_olson { $_[0]->{is_olson} }
 
@@ -190,15 +195,17 @@ sub _span_for_datetime {
     }
     else {
         my $until_year = $dt->utc_year + 1;
-        $span = $self->_generate_spans_until_match( $until_year, $seconds,
-            $type );
+        $span = $self->_generate_spans_until_match(
+            $until_year, $seconds,
+            $type
+        );
     }
 
     # This means someone gave a local time that doesn't exist
     # (like during a transition into savings time)
     unless ( defined $span ) {
         my $err = 'Invalid local time for date';
-        $err .= ' ' . $dt->iso8601 if $type eq 'utc';
+        $err .= q{ } . $dt->iso8601 if $type eq 'utc';
         $err .= ' in time zone: ' . $self->name;
         $err .= "\n";
 
@@ -289,8 +296,10 @@ sub _generate_next_span {
     # by looking two years out we can ensure that we will find at
     # least one more span.  Of course, I will no doubt be proved wrong
     # and this will cause errors.
-    $self->_generate_spans_until_match( $self->{max_year} + 2,
-        $max_span->[UTC_END] + ( 366 * 86400 ), 'utc' );
+    $self->_generate_spans_until_match(
+        $self->{max_year} + 2,
+        $max_span->[UTC_END] + ( 366 * 86400 ), 'utc'
+    );
 
     return $self->{spans}[ $last_idx + 1 ];
 }
@@ -304,6 +313,7 @@ sub _generate_spans_until_match {
     my @changes;
     my @rules = @{ $self->_rules };
     foreach my $year ( $self->{max_year} .. $generate_until_year ) {
+        ## no critic (ControlStructures::ProhibitCStyleForLoops)
         for ( my $x = 0; $x < @rules; $x++ ) {
             my $last_offset_from_std;
 
@@ -324,8 +334,10 @@ sub _generate_spans_until_match {
 
             my $rule = $rules[$x];
 
-            my $next = $rule->utc_start_datetime_for_year( $year,
-                $self->{last_offset}, $last_offset_from_std );
+            my $next = $rule->utc_start_datetime_for_year(
+                $year,
+                $self->{last_offset}, $last_offset_from_std
+            );
 
             # don't bother with changes we've seen already
             next if $next->utc_rd_as_seconds < $self->max_span->[UTC_END];
@@ -354,14 +366,10 @@ sub _generate_spans_until_match {
     my ( $start, $end ) = _keys_for_type($type);
 
     my $match;
+    ## no critic (ControlStructures::ProhibitCStyleForLoops)
     for ( my $x = 1; $x < @sorted; $x++ ) {
-        my $last_total_offset
-            = $x == 1
-            ? $self->max_span->[OFFSET]
-            : $sorted[ $x - 2 ]->total_offset;
-
         my $span = DateTime::TimeZone::OlsonDB::Change::two_changes_as_span(
-            @sorted[ $x - 1, $x ], $last_total_offset );
+            @sorted[ $x - 1, $x ] );
 
         $span = _span_as_array($span);
 
@@ -384,7 +392,7 @@ sub _span_as_array {
     [
         @{ $_[0] }{
             qw( utc_start utc_end local_start local_end offset is_dst short_name )
-            }
+        }
     ];
 }
 
@@ -402,6 +410,7 @@ sub is_valid_name {
     my $name  = shift;
 
     my $tz = try {
+        ## no critic (Variables::RequireInitializationForLocalVars)
         local $SIG{__DIE__};
         $class->new( name => $name );
     };
@@ -416,8 +425,8 @@ sub STORABLE_freeze {
 }
 
 sub STORABLE_thaw {
-    my $self       = shift;
-    my $cloning    = shift;
+    my $self = shift;
+    shift;
     my $serialized = shift;
 
     my $class = ref $self || $self;
@@ -441,6 +450,7 @@ sub STORABLE_thaw {
 sub offset_as_seconds {
     my $offset = shift;
     $offset = shift if try {
+        ## no critic (Variables::RequireInitializationForLocalVars)
         local $SIG{__DIE__};
         $offset->isa('DateTime::TimeZone');
     };
@@ -476,6 +486,7 @@ sub offset_as_seconds {
 sub offset_as_string {
     my $offset = shift;
     $offset = shift if try {
+        ## no critic (Variables::RequireInitializationForLocalVars)
         local $SIG{__DIE__};
         $offset->isa('DateTime::TimeZone');
     };
@@ -503,8 +514,7 @@ sub offset_as_string {
 # These methods all operate on data contained in the DateTime/TimeZone/Catalog.pm file.
 
 sub all_names {
-    return
-        wantarray
+    return wantarray
         ? @DateTime::TimeZone::Catalog::ALL
         : [@DateTime::TimeZone::Catalog::ALL];
 }
@@ -516,8 +526,7 @@ sub categories {
 }
 
 sub links {
-    return
-        wantarray
+    return wantarray
         ? %DateTime::TimeZone::Catalog::LINKS
         : {%DateTime::TimeZone::Catalog::LINKS};
 }

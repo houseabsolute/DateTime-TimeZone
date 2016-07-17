@@ -48,6 +48,7 @@ sub TimeZone {
         return $subclass if $subclass->can('Methods');
 
         return $subclass if try {
+            ## no critic (Variables::RequireInitializationForLocalVars)
             local $SIG{__DIE__};
             require_module($subclass);
         };
@@ -66,6 +67,7 @@ sub FromEnv {
     foreach my $var ( $class->EnvVars() ) {
         if ( $class->_IsValidName( $ENV{$var} ) ) {
             my $tz = try {
+                ## no critic (Variables::RequireInitializationForLocalVars)
                 local $SIG{__DIE__};
                 DateTime::TimeZone->new( name => $ENV{$var} );
             };

@@ -9,6 +9,7 @@ use Try::Tiny;
 
 use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
+## no critic (Modules::RequireBarewordIncludes)
 BEGIN { require 'check_datetime_version.pl' }
 
 use DateTime::TimeZone;
@@ -62,14 +63,18 @@ foreach my $name (@names) {
         );
 
         try {
-            $dt = DateTime->new( year => 2000, month => 6, hour => 1,
-                time_zone => $name );
+            $dt = DateTime->new(
+                year      => 2000, month => 6, hour => 1,
+                time_zone => $name
+            );
         };
         is( $dt->hour, 1, 'make sure that local time is always respected' );
 
         try {
-            $dt = DateTime->new( year => 2000, month => 12, hour => 1,
-                time_zone => $name );
+            $dt = DateTime->new(
+                year      => 2000, month => 12, hour => 1,
+                time_zone => $name
+            );
         };
         is( $dt->hour, 1, 'make sure that local time is always respected' );
     }
@@ -121,10 +126,14 @@ my $tz = DateTime::TimeZone->new( name => 'America/Chicago' );
         day       => 2,
         time_zone => 'UTC',
     );
-    is( $tz->offset_for_datetime($dt), -18000,
-        'generated offset should be -1800' );
-    is( $tz->short_name_for_datetime($dt), 'CDT',
-        'generated name should be CDT' );
+    is(
+        $tz->offset_for_datetime($dt), -18000,
+        'generated offset should be -1800'
+    );
+    is(
+        $tz->short_name_for_datetime($dt), 'CDT',
+        'generated name should be CDT'
+    );
 }
 
 {
@@ -136,27 +145,14 @@ my $tz = DateTime::TimeZone->new( name => 'America/Chicago' );
         day       => 3,
         time_zone => 'UTC',
     );
-    is( $tz->offset_for_datetime($dt), -21600,
-        'generated offset should be -21600' );
-    is( $tz->short_name_for_datetime($dt), 'CST',
-        'generated name should be CST' );
-}
-
-{
-
-    # bug when creating new datetime for year just after time zone's
-    # max year
-    my $tz = DateTime::TimeZone->new( name => 'America/Los_Angeles' );
-
-    my $dt = try {
-        DateTime->new(
-            year      => $tz->{max_year} + 1,
-            month     => 5,
-            day       => 20,
-            time_zone => $tz
-        );
-    };
-    ok( $dt, 'was able to create datetime object' );
+    is(
+        $tz->offset_for_datetime($dt), -21600,
+        'generated offset should be -21600'
+    );
+    is(
+        $tz->short_name_for_datetime($dt), 'CST',
+        'generated name should be CST'
+    );
 }
 
 {
@@ -199,7 +195,7 @@ my $tz = DateTime::TimeZone->new( name => 'America/Chicago' );
 
         package TestHack;
 
-        sub new { bless {} }
+        sub new { bless {}, shift }
 
         # UTC RD secs == 63518486401
         sub utc_rd_values { ( 735167, 57601 ) }
@@ -226,8 +222,28 @@ my $tz = DateTime::TimeZone->new( name => 'America/Chicago' );
 }
 
 {
-    my $tz = DateTime::TimeZone->new( name => '-0100' );
-    ok( !$tz->is_olson, 'is_olson is false for offset only time zone' );
+    my $offset_tz = DateTime::TimeZone->new( name => '-0100' );
+    ok(
+        !$offset_tz->is_olson,
+        'is_olson is false for offset only time zone'
+    );
+}
+
+{
+
+    # bug when creating new datetime for year just after time zone's
+    # max year
+    my $la_tz = DateTime::TimeZone->new( name => 'America/Los_Angeles' );
+
+    my $dt = try {
+        DateTime->new(
+            year      => $la_tz->{max_year} + 1,
+            month     => 5,
+            day       => 20,
+            time_zone => $la_tz
+        );
+    };
+    ok( $dt, 'was able to create datetime object' );
 }
 
 done_testing();

@@ -6,48 +6,48 @@ use DateTime::TimeZone;
 use Test::More;
 
 is(
-    DateTime::TimeZone::offset_as_string(0), "+0000",
-    "offset_as_string does the right thing on 0"
+    DateTime::TimeZone::offset_as_string(0), '+0000',
+    'offset_as_string does the right thing on 0'
 );
 is(
-    DateTime::TimeZone::offset_as_string(3600), "+0100",
-    "offset_as_string works on positive whole hours"
+    DateTime::TimeZone::offset_as_string(3600), '+0100',
+    'offset_as_string works on positive whole hours'
 );
 is(
-    DateTime::TimeZone::offset_as_string(-3600), "-0100",
-    "offset_as_string works on negative whole hours"
+    DateTime::TimeZone::offset_as_string(-3600), '-0100',
+    'offset_as_string works on negative whole hours'
 );
 is(
-    DateTime::TimeZone::offset_as_string(5400), "+0130",
-    "offset_as_string works on positive half hours"
+    DateTime::TimeZone::offset_as_string(5400), '+0130',
+    'offset_as_string works on positive half hours'
 );
 is(
-    DateTime::TimeZone::offset_as_string(-5400), "-0130",
-    "offset_as_string works on negative half hours"
+    DateTime::TimeZone::offset_as_string(-5400), '-0130',
+    'offset_as_string works on negative half hours'
 );
 is(
-    DateTime::TimeZone::offset_as_string(20700), "+0545",
-    "offset_as_string works on positive 15min zones"
+    DateTime::TimeZone::offset_as_string(20700), '+0545',
+    'offset_as_string works on positive 15min zones'
 );
 is(
-    DateTime::TimeZone::offset_as_string(-20700), "-0545",
-    "offset_as_string works on negative 15min zones"
+    DateTime::TimeZone::offset_as_string(-20700), '-0545',
+    'offset_as_string works on negative 15min zones'
 );
 is(
-    DateTime::TimeZone::offset_as_string(359999), "+995959",
-    "offset_as_string max value"
+    DateTime::TimeZone::offset_as_string(359999), '+995959',
+    'offset_as_string max value'
 );
 is(
-    DateTime::TimeZone::offset_as_string(-359999), "-995959",
-    "offset_as_string min value"
+    DateTime::TimeZone::offset_as_string(-359999), '-995959',
+    'offset_as_string min value'
 );
 is(
     DateTime::TimeZone::offset_as_string(360000), undef,
-    "offset_as_string exceeded max value"
+    'offset_as_string exceeded max value'
 );
 is(
     DateTime::TimeZone::offset_as_string(-360000), undef,
-    "offset_as_string exceeded min value"
+    'offset_as_string exceeded min value'
 );
 
 my @offset_seconds = qw(
@@ -79,7 +79,7 @@ foreach (@offset_seconds) {
             DateTime::TimeZone::offset_as_string($_)
         ),
         $_,
-        "n -> offset_as_string -> offset_as_seconds = n "
+        'n -> offset_as_string -> offset_as_seconds = n'
     );
 }
 
@@ -89,7 +89,7 @@ foreach (@offset_strings) {
             DateTime::TimeZone::offset_as_seconds($_)
         ),
         $_,
-        "n -> offset_as_seconds -> offset_as_string= n "
+        'n -> offset_as_seconds -> offset_as_string = n'
     );
 }
 
@@ -108,16 +108,16 @@ is(
     DateTime::TimeZone::offset_as_string(3600);
 
     is(
-        $@, '',
+        $@, q{},
         'calling offset_as_string does not leave $@ set'
     );
 }
 
 {
-    DateTime::TimeZone::offset_as_seconds("+0100");
+    DateTime::TimeZone::offset_as_seconds('+0100');
 
     is(
-        $@, '',
+        $@, q{},
         'calling offset_as_string does not leave $@ set'
     );
 }

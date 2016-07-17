@@ -52,6 +52,7 @@ sub expand_observances {
     my $max_year = shift;
 
     my $prev_until;
+    ## no critic (ControlStructures::ProhibitCStyleForLoops)
     for ( my $x = 0; $x < @{ $self->{observances} }; $x++ ) {
         my %p = %{ $self->{observances}[$x] };
 
@@ -71,7 +72,7 @@ sub expand_observances {
         );
 
         my $rule = $obs->first_rule;
-        my $letter = $rule ? $rule->letter : '';
+        my $letter = $rule ? $rule->letter : q{};
 
         my $change = DateTime::TimeZone::OlsonDB::Change->new(
             type                 => 'observance',
@@ -83,6 +84,7 @@ sub expand_observances {
         );
 
         if ($DateTime::TimeZone::OlsonDB::DEBUG) {
+            ## no critic (InputOutput::RequireCheckedSyscalls)
             print "Adding observance change ...\n";
 
             $change->_debug_output;
@@ -118,6 +120,7 @@ sub add_change {
             && $self->{changes}[-1]->utc_start_datetime
             == $change->utc_start_datetime ) {
             if ( $self->{changes}[-1]->rule && $change->observance ) {
+                ## no critic (InputOutput::RequireCheckedSyscalls)
                 print
                     " Ignoring previous rule change, that starts the same time as current observance change\n\n"
                     if $DateTime::TimeZone::OlsonDB::DEBUG;
@@ -137,10 +140,11 @@ sub add_change {
             && $last_change->total_offset == $change->total_offset
             && $last_change->is_dst == $change->is_dst
             && $last_change->observance eq $change->observance ) {
-            my $last_rule = $last_change->rule || '';
-            my $new_rule  = $change->rule      || '';
+            my $last_rule = $last_change->rule || q{};
+            my $new_rule  = $change->rule      || q{};
 
             if ( $last_rule eq $new_rule ) {
+                ## no critic (InputOutput::RequireCheckedSyscalls)
                 print "Skipping identical change\n"
                     if $DateTime::TimeZone::OlsonDB::DEBUG;
 
@@ -152,7 +156,7 @@ sub add_change {
     }
     else {
         if ( $self->{earliest} ) {
-            die "There can only be one earliest time zone change!";
+            die 'There can only be one earliest time zone change!';
         }
         else {
             $self->{earliest} = $change;

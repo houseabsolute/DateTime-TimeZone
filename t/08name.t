@@ -6,6 +6,7 @@ use Test::More;
 
 use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
+## no critic (Modules::RequireBarewordIncludes)
 BEGIN { require 'check_datetime_version.pl' }
 
 {
@@ -15,14 +16,18 @@ BEGIN { require 'check_datetime_version.pl' }
 
 {
     my $tz = DateTime::TimeZone->new( name => 'floating' );
-    is( $tz->name, 'floating',
-        'name should match value given in constructor' );
+    is(
+        $tz->name, 'floating',
+        'name should match value given in constructor'
+    );
 }
 
 {
     my $tz = DateTime::TimeZone->new( name => 'America/Chicago' );
-    is( $tz->name, 'America/Chicago',
-        'name should match value given in constructor' );
+    is(
+        $tz->name, 'America/Chicago',
+        'name should match value given in constructor'
+    );
 }
 
 {

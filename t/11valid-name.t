@@ -6,6 +6,7 @@ use Test::More;
 
 use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
+## no critic (Modules::RequireBarewordIncludes)
 BEGIN { require 'check_datetime_version.pl' }
 
 foreach (
@@ -42,7 +43,7 @@ foreach (
     DateTime::TimeZone->is_valid_name(undef);
 
     is(
-        $@, '',
+        $@, q{},
         'calling is_valid_name with a bad argument does not leave $@ set'
     );
 }

@@ -1,3 +1,4 @@
+## no critic (Modules::ProhibitExcessMainComplexity)
 use strict;
 use warnings;
 
@@ -16,6 +17,7 @@ use Test::Fatal;
 
 use lib catdir( curdir(), 't' );
 
+## no critic (Modules::RequireBarewordIncludes)
 BEGIN { require 'check_datetime_version.pl' }
 
 plan skip_all => 'HPUX is weird'
@@ -23,12 +25,18 @@ plan skip_all => 'HPUX is weird'
 
 # Ensures that we can load our OS-specific subclass. Otherwise this
 # might happen later in an eval, and the error will get lost.
+
+## no critic (Subroutines::ProtectPrivateSubs)
 DateTime::TimeZone::Local->_load_subclass() =~ /Unix$/
     or plan skip_all => 'These tests only run on Unix-ish OSes';
 
 my $IsMaintainer = hostname() =~ /houseabsolute|quasar/ && -d '.hg';
 my $CanWriteEtcLocaltime = -w '/etc/localtime' && -l '/etc/localtime';
-my $CanSymlink = try { symlink q{}, q{}; 1 };
+my $CanSymlink = try {
+## no critic (InputOutput::RequireCheckedSyscalls)
+    symlink q{}, q{};
+    1;
+};
 my ($TestFile) = abs_path($0) =~ /(.+)/;
 
 local $ENV{TZ} = undef;
@@ -88,7 +96,7 @@ local $ENV{TZ} = undef;
     $tz = try { DateTime::TimeZone::Local->TimeZone() };
     is(
         $tz->name(), 'UTC',
-        "\$ENV{TZ} set to 0 returns UTC"
+        '$ENV{TZ} set to 0 returns UTC'
     );
 }
 
@@ -99,7 +107,7 @@ local $ENV{TZ} = undef;
     {
 
         package Foo;
-        use overload '""' => sub {"Foo"}, 'eq' => sub { "$_[0]" eq "$_[1]" };
+        use overload q{""} => sub {'Foo'}, 'eq' => sub { "$_[0]" eq "$_[1]" };
     }
     local $ENV{TZ} = bless [], 'Foo';
 
@@ -129,11 +137,13 @@ SKIP:
         unless $CanSymlink;
 
     my $etc_dir = tempdir( CLEANUP => 1 );
+    ## no critic (Variables::ProhibitPackageVars)
     local $DateTime::TimeZone::Local::Unix::EtcDir = $etc_dir;
 
     # It doesn't matter what this links to since we override _ReadLink below.
-    symlink $TestFile => catfile( $etc_dir, 'localtime' );
+    symlink $TestFile => catfile( $etc_dir, 'localtime' ) or die $!;
 
+    ## no critic (Variables::ProtectPrivateVars)
     local *DateTime::TimeZone::Local::Unix::_Readlink
         = sub {'/usr/share/zoneinfo/US/Eastern'};
 
@@ -178,13 +188,16 @@ SKIP:
 }
 
 {
+    ## no critic (Variables::ProhibitPackageVars, Variables::ProtectPrivateVars)
+
     my $etc_dir = tempdir( CLEANUP => 1 );
     local $DateTime::TimeZone::Local::Unix::EtcDir = $etc_dir;
 
+    ## no critic (ValuesAndExpressions::ProhibitLeadingZeros)
     mkpath( catdir( $etc_dir, 'sysconfig' ), 0, 0755 );
     open my $fh, '>', catfile( $etc_dir, 'sysconfig', 'clock' )
         or die $!;
-    close $fh;
+    close $fh or die $!;
 
     local *DateTime::TimeZone::Local::Unix::_ReadEtcSysconfigClock
         = sub {'US/Eastern'};
@@ -205,13 +218,16 @@ SKIP:
 }
 
 {
+    ## no critic (Variables::ProhibitPackageVars, Variables::ProtectPrivateVars)
+
     my $etc_dir = tempdir( CLEANUP => 1 );
     local $DateTime::TimeZone::Local::Unix::EtcDir = $etc_dir;
 
+    ## no critic (ValuesAndExpressions::ProhibitLeadingZeros)
     mkpath( catdir( $etc_dir, 'default' ), 0, 0755 );
     open my $fh, '>', catfile( $etc_dir, 'default', 'init' )
         or die $!;
-    close $fh;
+    close $fh or die $!;
 
     local *DateTime::TimeZone::Local::Unix::_ReadEtcDefaultInit
         = sub {'Asia/Tokyo'};
@@ -232,6 +248,8 @@ SKIP:
 }
 
 {
+    ## no critic (Variables::ProhibitPackageVars, Variables::ProtectPrivateVars)
+
     my $etc_dir = tempdir( CLEANUP => 1 );
     local $DateTime::TimeZone::Local::Unix::EtcDir = $etc_dir;
 
@@ -251,10 +269,10 @@ SKIP:
         # that matters is the name.
         my $tz_file = catfile( $zoneinfo_dir, 'America', 'Chicago' );
         open my $fh, '>', $tz_file or die $!;
-        print {$fh} 'foo';
-        close $fh;
+        print {$fh} 'foo' or die $!;
+        close $fh or die $!;
 
-        symlink $tz_file => catfile( $etc_dir, 'localtime' );
+        symlink $tz_file => catfile( $etc_dir, 'localtime' ) or die $!;
 
         my $tz;
         is(
@@ -271,8 +289,8 @@ SKIP:
     {
         my $tz_file = catdir( $etc_dir, 'timezone' );
         open my $fh, '>', $tz_file or die $!;
-        print {$fh} "America/Chicago\n";
-        close $fh;
+        print {$fh} "America/Chicago\n" or die $!;
+        close $fh or die $!;
 
         local *DateTime::TimeZone::Local::Unix::FromEtcLocaltime
             = sub {undef};
@@ -291,17 +309,21 @@ SKIP:
 }
 
 {
+    ## no critic (Variables::ProhibitPackageVars, Variables::ProtectPrivateVars)
+
     my $etc_dir = tempdir( CLEANUP => 1 );
     local $DateTime::TimeZone::Local::Unix::EtcDir = $etc_dir;
 
     my $default_dir = catdir( $etc_dir, 'default' );
+
+    ## no critic (ValuesAndExpressions::ProhibitLeadingZeros)
     mkpath( $default_dir, 0, 0755 );
 
     my $tz_file = catfile( $default_dir, 'init' );
 
     open my $fh, '>', $tz_file or die $!;
-    print {$fh} "TZ=Australia/Melbourne\n";
-    close $fh;
+    print {$fh} "TZ=Australia/Melbourne\n" or die $!;
+    close $fh or die $!;
 
     {
         # requires that /etc/default/init contain
@@ -325,6 +347,8 @@ SKIP:
 }
 
 {
+    ## no critic (Variables::ProhibitPackageVars)
+
     my $etc_dir = tempdir( CLEANUP => 1 );
     local $DateTime::TimeZone::Local::Unix::EtcDir = $etc_dir;
 
@@ -332,8 +356,8 @@ SKIP:
 
     open my $fh, '>', $tz_file
         or die "Cannot write to $tz_file: $!";
-    print {$fh} 'Foo/Bar';
-    close $fh;
+    print {$fh} 'Foo/Bar' or die $!;
+    close $fh or die $!;
 
     DateTime::TimeZone::Local::Unix->FromEtcTimezone();
     is(
@@ -343,6 +367,8 @@ SKIP:
 }
 
 {
+    ## no critic (Variables::ProhibitPackageVars)
+
     my $etc_dir = tempdir( CLEANUP => 1 );
     local $DateTime::TimeZone::Local::Unix::EtcDir = $etc_dir;
 
@@ -350,8 +376,8 @@ SKIP:
 
     open my $fh, '>', $tz_file
         or die "Cannot write to $tz_file: $!";
-    print {$fh} "TZ = Foo/Bar\n";
-    close $fh;
+    print {$fh} "TZ = Foo/Bar\n" or die $!;
+    close $fh or die $!;
 
     DateTime::TimeZone::Local::Unix->FromEtcTIMEZONE();
     is(
@@ -362,6 +388,8 @@ SKIP:
 
 SKIP:
 {
+    ## no critic (Variables::ProhibitPackageVars)
+
     my $zone_file = '/usr/share/zoneinfo/Asia/Kolkata';
     skip
         'These tests require an up to date IANA database under /usr/share/zoneinfo',
@@ -440,7 +468,7 @@ SKIP:
     my $first = File::Spec->catfile( $tempdir, 'first' );
     open my $fh, '>', $first
         or die "Cannot open $first: $!";
-    close $fh;
+    close $fh or die $!;
 
     my $second = File::Spec->catfile( $tempdir, 'second' );
     symlink $first => $second

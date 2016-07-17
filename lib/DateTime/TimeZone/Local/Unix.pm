@@ -21,7 +21,9 @@ sub Methods {
 
 sub EnvVars { return 'TZ' }
 
+## no critic (Variables::ProhibitPackageVars)
 our $EtcDir = '/etc';
+## use critic
 
 sub _EtcFile {
     shift;
@@ -44,10 +46,10 @@ sub FromEtcLocaltime {
     $real_name ||= $class->_FindMatchingZoneinfoFile($lt_file);
 
     if ( defined $real_name ) {
-        my ( $vol, $dirs, $file ) = File::Spec->splitpath($real_name);
+        my ( undef, $dirs, $file ) = File::Spec->splitpath($real_name);
 
-        my @parts
-            = grep { defined && length } File::Spec->splitdir($dirs), $file;
+        my @parts = grep { defined && length } File::Spec->splitdir($dirs),
+            $file;
 
         foreach my $x ( reverse 0 .. $#parts ) {
             my $name = (
@@ -57,6 +59,7 @@ sub FromEtcLocaltime {
             );
 
             my $tz = try {
+                ## no critic (Variables::RequireInitializationForLocalVars)
                 local $SIG{__DIE__};
                 DateTime::TimeZone->new( name => $name );
             };
@@ -74,10 +77,13 @@ sub _Readlink {
     return Cwd::abs_path($link);
 }
 
+## no critic (Variables::ProhibitPackageVars)
 our $ZoneinfoDir = '/usr/share/zoneinfo';
+## use critic
+
 # for systems where /etc/localtime is a copy of a zoneinfo file
 sub _FindMatchingZoneinfoFile {
-    my $class         = shift;
+    shift;
     my $file_to_match = shift;
 
     return unless -d $ZoneinfoDir;
@@ -90,6 +96,7 @@ sub _FindMatchingZoneinfoFile {
 
     my $real_name;
     try {
+        ## no critic (Variables::RequireInitializationForLocalVars)
         local $SIG{__DIE__};
         local $_;
 
@@ -135,14 +142,15 @@ sub FromEtcTimezone {
 
     open my $fh, '<', $tz_file
         or die "Cannot read $tz_file: $!";
-    my $name = join '', <$fh>;
-    close $fh;
+    my $name = do { local $/ = undef; <$fh> };
+    close $fh or die $!;
 
     $name =~ s/^\s+|\s+$//g;
 
     return unless $class->_IsValidName($name);
 
     return try {
+        ## no critic (Variables::RequireInitializationForLocalVars)
         local $SIG{__DIE__};
         DateTime::TimeZone->new( name => $name );
     };
@@ -154,6 +162,7 @@ sub FromEtcTIMEZONE {
     my $tz_file = $class->_EtcFile('TIMEZONE');
     return unless -f $tz_file && -r _;
 
+    ## no critic (InputOutput::RequireBriefOpen)
     open my $fh, '<', $tz_file
         or die "Cannot read $tz_file: $!";
 
@@ -165,11 +174,12 @@ sub FromEtcTIMEZONE {
         }
     }
 
-    close $fh;
+    close $fh or die $!;
 
     return unless $class->_IsValidName($name);
 
     return try {
+        ## no critic (Variables::RequireInitializationForLocalVars)
         local $SIG{__DIE__};
         DateTime::TimeZone->new( name => $name );
     };
@@ -187,6 +197,7 @@ sub FromEtcSysconfigClock {
     return unless $class->_IsValidName($name);
 
     return try {
+        ## no critic (Variables::RequireInitializationForLocalVars)
         local $SIG{__DIE__};
         DateTime::TimeZone->new( name => $name );
     };
@@ -194,16 +205,19 @@ sub FromEtcSysconfigClock {
 
 # this is a separate function so that it can be overridden in the test suite
 sub _ReadEtcSysconfigClock {
-    my $class      = shift;
+    shift;
     my $clock_file = shift;
 
     open my $fh, '<', $clock_file
         or die "Cannot read $clock_file: $!";
 
+    ## no critic (Variables::RequireInitializationForLocalVars)
     local $_;
     while (<$fh>) {
         return $1 if /^(?:TIME)?ZONE="([^"]+)"/;
     }
+
+    close $fh or die $!;
 }
 
 sub FromEtcDefaultInit {
@@ -217,6 +231,7 @@ sub FromEtcDefaultInit {
     return unless $class->_IsValidName($name);
 
     return try {
+        ## no critic (Variables::RequireInitializationForLocalVars)
         local $SIG{__DIE__};
         DateTime::TimeZone->new( name => $name );
     };
@@ -225,16 +240,19 @@ sub FromEtcDefaultInit {
 # this is a separate function so that it can be overridden in the test
 # suite
 sub _ReadEtcDefaultInit {
-    my $class     = shift;
+    shift;
     my $init_file = shift;
 
     open my $fh, '<', $init_file
         or die "Cannot read $init_file: $!";
 
+    ## no critic (Variables::RequireInitializationForLocalVars)
     local $_;
     while (<$fh>) {
         return $1 if /^TZ=(.+)/;
     }
+
+    close $fh or die $!;
 }
 
 1;

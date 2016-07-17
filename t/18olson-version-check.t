@@ -8,6 +8,7 @@ use File::Spec;
 
 use lib File::Spec->catdir( File::Spec->curdir, 't' );
 
+## no critic (Modules::RequireBarewordIncludes)
 BEGIN { require 'check_datetime_version.pl' }
 
 {
@@ -28,28 +29,33 @@ BEGIN { require 'check_datetime_version.pl' }
 
 done_testing();
 
-package DateTime::TimeZone::Fake::TZ;
+## no critic (Modules::ProhibitMultiplePackages)
+{
+    package DateTime::TimeZone::Fake::TZ;
 
-use strict;
+    use strict;
 
-use Class::Singleton;
-use DateTime::TimeZone;
-use DateTime::TimeZone::OlsonDB;
+    use Class::Singleton;
+    use DateTime::TimeZone;
+    use DateTime::TimeZone::OlsonDB;
 
-use base 'Class::Singleton', 'DateTime::TimeZone';
+    use base 'Class::Singleton', 'DateTime::TimeZone';
 
-sub is_olson {1}
+    sub is_olson {1}
+}
 
-package DateTime::TimeZone::Fake::TZ2;
+{
+    package DateTime::TimeZone::Fake::TZ2;
 
-use strict;
+    use strict;
 
-use Class::Singleton;
-use DateTime::TimeZone;
-use DateTime::TimeZone::OlsonDB;
+    use Class::Singleton;
+    use DateTime::TimeZone;
+    use DateTime::TimeZone::OlsonDB;
 
-use base 'Class::Singleton', 'DateTime::TimeZone';
+    use base 'Class::Singleton', 'DateTime::TimeZone';
 
-sub is_olson {1}
+    sub is_olson {1}
 
-sub olson_version {'2000a'}
+    sub olson_version {'2000a'}
+}

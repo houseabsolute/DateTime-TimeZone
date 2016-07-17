@@ -9,6 +9,7 @@ sub new {
     return shift->instance;
 }
 
+## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
 sub _new_instance {
     my $class = shift;
 
@@ -17,13 +18,12 @@ sub _new_instance {
         offset => 0
     }, $class;
 }
+## use critic
 
 sub is_floating {1}
 
 sub STORABLE_thaw {
-    my $self       = shift;
-    my $cloning    = shift;
-    my $serialized = shift;
+    my $self = shift;
 
     my $class = ref $self || $self;
 
