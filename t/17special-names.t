@@ -1,15 +1,13 @@
 use strict;
 use warnings;
 
+use lib 't/lib';
+use T::RequireDateTime;
+
 use Test::More;
 
-use File::Spec;
+use DateTime::TimeZone;
 use Try::Tiny;
-
-use lib File::Spec->catdir( File::Spec->curdir, 't' );
-
-## no critic (Modules::RequireBarewordIncludes)
-BEGIN { require 'check_datetime_version.pl' }
 
 for my $name (
     qw( EST MST HST CET EET MET WET EST5EDT CST6CDT MST7MDT PST8PDT )) {

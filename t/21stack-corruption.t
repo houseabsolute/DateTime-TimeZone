@@ -1,14 +1,12 @@
 use strict;
 use warnings;
 
-use DateTime::TimeZone::Local;
+use lib 't/lib';
+use T::RequireDateTime;
 
 use Test::More;
 
-use lib File::Spec->catdir( File::Spec->curdir, 't' );
-
-## no critic (Modules::RequireBarewordIncludes)
-BEGIN { require 'check_datetime_version.pl' }
+use DateTime::TimeZone::Local;
 
 # We need to make sure that we can determine the local tz
 local $ENV{TZ} = 'America/Chicago';

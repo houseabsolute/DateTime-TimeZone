@@ -2,18 +2,15 @@
 use strict;
 use warnings;
 
+use lib 't/lib';
+use T::RequireDateTime;
+
 use Test::Requires {
     'Test::Taint' => 0,
 };
 
 use Test::Fatal qw( lives_ok );
 use Test::More;
-
-use File::Spec;
-use lib File::Spec->catdir( File::Spec->curdir, 't' );
-
-## no critic (Modules::RequireBarewordIncludes)
-BEGIN { require 'check_datetime_version.pl' }
 
 use DateTime::TimeZone;
 use DateTime::TimeZone::Local;

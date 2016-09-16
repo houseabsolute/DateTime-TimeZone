@@ -2,6 +2,12 @@
 use strict;
 use warnings;
 
+use lib 't/lib';
+use T::RequireDateTime;
+
+use Test::More;
+use Test::Fatal;
+
 use Cwd qw( abs_path cwd );
 use DateTime::TimeZone::Local;
 use DateTime::TimeZone::Local::Unix;
@@ -11,14 +17,6 @@ use File::Path qw( mkpath );
 use File::Temp qw( tempdir );
 use Sys::Hostname qw( hostname );
 use Try::Tiny;
-
-use Test::More;
-use Test::Fatal;
-
-use lib catdir( curdir(), 't' );
-
-## no critic (Modules::RequireBarewordIncludes)
-BEGIN { require 'check_datetime_version.pl' }
 
 plan skip_all => 'HPUX is weird'
     if $^O eq 'hpux';

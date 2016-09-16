@@ -1,15 +1,13 @@
 use strict;
 use warnings;
 
+use lib 't/lib';
+use T::RequireDateTime;
+
 use Test::More;
 use Test::Requires qw( Test::Output );
 
-use File::Spec;
-
-use lib File::Spec->catdir( File::Spec->curdir, 't' );
-
-## no critic (Modules::RequireBarewordIncludes)
-BEGIN { require 'check_datetime_version.pl' }
+use DateTime::TimeZone;
 
 {
     stderr_like(

@@ -1,13 +1,12 @@
 use strict;
 use warnings;
 
-use File::Spec;
+use lib 't/lib';
+use T::RequireDateTime;
+
 use Test::More;
 
-use lib File::Spec->catdir( File::Spec->curdir, 't' );
-
-## no critic (Modules::RequireBarewordIncludes)
-BEGIN { require 'check_datetime_version.pl' }
+use DateTime::TimeZone;
 
 {
     my $tz = DateTime::TimeZone->new( name => '-0300' );

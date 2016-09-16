@@ -1,15 +1,11 @@
 use strict;
 use warnings;
 
+use lib 't/lib';
+use T::RequireDateTime;
+
 use Test::More;
 use Test::Fatal;
-
-use File::Spec;
-
-use lib File::Spec->catdir( File::Spec->curdir, 't' );
-
-## no critic (Modules::RequireBarewordIncludes)
-BEGIN { require 'check_datetime_version.pl' }
 
 # The point of this group of tests is to try to check that DST changes
 # are occuring at exactly the right time in various time zones.  It's
