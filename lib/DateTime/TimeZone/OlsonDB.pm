@@ -6,20 +6,18 @@ use namespace::autoclean;
 
 our $VERSION = '2.02';
 
-use vars qw( %MONTHS %DAYS $PLUS_ONE_DAY_DUR $MINUS_ONE_DAY_DUR );
-
 use DateTime::TimeZone::OlsonDB::Rule;
 use DateTime::TimeZone::OlsonDB::Zone;
 
 my $x = 1;
-%MONTHS = map { $_ => $x++ } qw( Jan Feb Mar Apr May Jun
+our %MONTHS = map { $_ => $x++ } qw( Jan Feb Mar Apr May Jun
     Jul Aug Sep Oct Nov Dec);
 
 $x = 1;
-%DAYS = map { $_ => $x++ } qw( Mon Tue Wed Thu Fri Sat Sun );
+our %DAYS = map { $_ => $x++ } qw( Mon Tue Wed Thu Fri Sat Sun );
 
-$PLUS_ONE_DAY_DUR  = DateTime::Duration->new( days => 1 );
-$MINUS_ONE_DAY_DUR = DateTime::Duration->new( days => -1 );
+our $PLUS_ONE_DAY_DUR  = DateTime::Duration->new( days => 1 );
+our $MINUS_ONE_DAY_DUR = DateTime::Duration->new( days => -1 );
 
 sub new {
     my $class = shift;
