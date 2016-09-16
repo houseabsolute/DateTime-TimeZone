@@ -6,24 +6,15 @@ use warnings;
 use DateTime::Duration;
 use DateTime::TimeZone::OlsonDB;
 use DateTime::TimeZone::OlsonDB::Change;
-
 use List::Util 1.33 qw( any first );
-use Params::Validate qw( validate SCALAR ARRAYREF UNDEF OBJECT );
 
 sub new {
     my $class = shift;
-    my %p     = validate(
-        @_, {
-            gmtoff               => { type => SCALAR },
-            rules                => { type => ARRAYREF },
-            format               => { type => SCALAR },
-            until                => { type => SCALAR, default => q{} },
-            utc_start_datetime   => { type => OBJECT | UNDEF },
-            offset_from_std      => { type => SCALAR, default => 0 },
-            last_offset_from_utc => { type => SCALAR, default => 0 },
-            last_offset_from_std => { type => SCALAR, default => 0 },
-        }
-    );
+    my %p     = @_;
+
+    $p{until} ||= q{};
+    $p{$_} ||= 0
+        for qw( offset_from_std last_offset_from_std last_offset_from_utc );
 
     my $offset_from_utc
         = $p{gmtoff} =~ m/^[+-]?\d?\d$/ # only hours? need to handle specially

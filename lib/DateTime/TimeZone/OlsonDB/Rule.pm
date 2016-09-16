@@ -6,23 +6,11 @@ use warnings;
 use DateTime::Duration;
 use DateTime::TimeZone::OlsonDB;
 
-use Params::Validate qw( validate SCALAR );
-
 sub new {
     my $class = shift;
-    my %p     = validate(
-        @_, {
-            name   => { type => SCALAR },
-            from   => { type => SCALAR },
-            to     => { type => SCALAR },
-            type   => { type => SCALAR, default => undef },
-            in     => { type => SCALAR },
-            on     => { type => SCALAR },
-            at     => { type => SCALAR },
-            save   => { type => SCALAR },
-            letter => { type => SCALAR, default => q{} },
-        },
-    );
+    my %p     = @_;
+
+    $p{letter} ||= q{};
 
     my $save = $p{save};
 

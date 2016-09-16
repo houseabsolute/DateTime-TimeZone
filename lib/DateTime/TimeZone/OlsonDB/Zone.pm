@@ -7,19 +7,11 @@ use DateTime::TimeZone;
 use DateTime::TimeZone::OlsonDB;
 use DateTime::TimeZone::OlsonDB::Change;
 use DateTime::TimeZone::OlsonDB::Observance;
-
 use List::Util qw( first max );
-use Params::Validate qw( validate SCALAR ARRAYREF );
 
 sub new {
     my $class = shift;
-    my %p     = validate(
-        @_, {
-            name        => { type => SCALAR },
-            observances => { type => ARRAYREF },
-            olson_db    => 1,
-        }
-    );
+    my %p     = @_;
 
     my $self = {
         name           => $p{name},

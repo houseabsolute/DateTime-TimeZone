@@ -6,28 +6,37 @@ use warnings;
 use parent 'DateTime::TimeZone';
 
 use DateTime::TimeZone::UTC;
-use Params::Validate qw( validate SCALAR );
+use Params::ValidationCompiler 0.13 qw( validation_for );
+use Specio::Library::String;
 
-sub new {
-    my $class = shift;
-    my %p     = validate(
-        @_, {
-            offset => { type => SCALAR },
-        }
+{
+    my $validator = validation_for(
+        name             => '_check_new_params',
+        name_is_optional => 1,
+        params           => {
+            offset => {
+                type => t('NonEmptyStr'),
+            },
+        },
     );
 
-    my $offset = DateTime::TimeZone::offset_as_seconds( $p{offset} );
+    sub new {
+        my $class = shift;
+        my %p     = $validator->(@_);
 
-    die "Invalid offset: $p{offset}\n" unless defined $offset;
+        my $offset = DateTime::TimeZone::offset_as_seconds( $p{offset} );
 
-    return DateTime::TimeZone::UTC->new unless $offset;
+        die "Invalid offset: $p{offset}\n" unless defined $offset;
 
-    my $self = {
-        name   => DateTime::TimeZone::offset_as_string($offset),
-        offset => $offset,
-    };
+        return DateTime::TimeZone::UTC->new unless $offset;
 
-    return bless $self, $class;
+        my $self = {
+            name   => DateTime::TimeZone::offset_as_string($offset),
+            offset => $offset,
+        };
+
+        return bless $self, $class;
+    }
 }
 
 sub is_dst_for_datetime {0}

@@ -7,7 +7,6 @@ use vars qw( %MONTHS %DAYS $PLUS_ONE_DAY_DUR $MINUS_ONE_DAY_DUR );
 
 use DateTime::TimeZone::OlsonDB::Rule;
 use DateTime::TimeZone::OlsonDB::Zone;
-use Params::Validate qw( validate SCALAR );
 
 my $x = 1;
 %MONTHS = map { $_ => $x++ } qw( Jan Feb Mar Apr May Jun
@@ -152,15 +151,9 @@ sub zone {
 
 sub expanded_zone {
     my $self = shift;
-    my %p    = validate(
-        @_, {
-            name           => { type => SCALAR },
-            expand_to_year => {
-                type    => SCALAR,
-                default => (localtime)[5] + 1910
-            },
-        }
-    );
+    my %p    = @_;
+
+    $p{expand_to_year} ||= (localtime)[5] + 1910;
 
     my $zone = $self->zone( $p{name} );
 
@@ -232,16 +225,7 @@ sub parse_day_spec {
 }
 
 sub utc_datetime_for_time_spec {
-    my %p = validate(
-        @_, {
-            spec            => { type => SCALAR },
-            year            => { type => SCALAR },
-            month           => { type => SCALAR },
-            day             => { type => SCALAR },
-            offset_from_utc => { type => SCALAR },
-            offset_from_std => { type => SCALAR },
-        },
-    );
+    my %p = @_;
 
     # 'w'all - ignore it, because that's the default
     $p{spec} =~ s/w$//;

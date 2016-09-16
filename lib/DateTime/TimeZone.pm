@@ -4,6 +4,7 @@ use 5.006;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 use DateTime::TimeZone::Catalog;
 use DateTime::TimeZone::Floating;
@@ -12,7 +13,9 @@ use DateTime::TimeZone::OffsetOnly;
 use DateTime::TimeZone::OlsonDB::Change;
 use DateTime::TimeZone::UTC;
 use Module::Runtime qw( require_module );
-use Params::Validate 0.72 qw( validate validate_pos SCALAR ARRAYREF BOOLEAN );
+use Params::ValidationCompiler 0.13 qw( validation_for );
+use Specio::Library::Builtins;
+use Specio::Library::String;
 use Try::Tiny;
 
 ## no critic (ValuesAndExpressions::ProhibitConstantPragma)
@@ -31,119 +34,141 @@ use constant SHORT_NAME  => 6;
 my %SpecialName = map { $_ => 1 }
     qw( EST MST HST CET EET MET WET EST5EDT CST6CDT MST7MDT PST8PDT );
 
-sub new {
-    shift;
-    my %p = validate(
-        @_,
-        { name => { type => SCALAR } },
-    );
-
-    if ( exists $DateTime::TimeZone::Catalog::LINKS{ $p{name} } ) {
-        $p{name} = $DateTime::TimeZone::Catalog::LINKS{ $p{name} };
-    }
-    elsif ( exists $DateTime::TimeZone::Catalog::LINKS{ uc $p{name} } ) {
-        $p{name} = $DateTime::TimeZone::Catalog::LINKS{ uc $p{name} };
-    }
-
-    unless ( $p{name} =~ m{/}
-        || $SpecialName{ $p{name} } ) {
-        if ( $p{name} eq 'floating' ) {
-            return DateTime::TimeZone::Floating->instance;
-        }
-
-        if ( $p{name} eq 'local' ) {
-            return DateTime::TimeZone::Local->TimeZone();
-        }
-
-        if ( $p{name} eq 'UTC' || $p{name} eq 'Z' ) {
-            return DateTime::TimeZone::UTC->instance;
-        }
-
-        return DateTime::TimeZone::OffsetOnly->new( offset => $p{name} );
-    }
-
-    my $subclass = $p{name};
-    $subclass =~ s{/}{::}g;
-    $subclass =~ s/-(\d)/_Minus$1/;
-    $subclass =~ s/\+/_Plus/;
-    $subclass =~ s/-/_/g;
-
-    my $real_class = "DateTime::TimeZone::$subclass";
-
-    die "The timezone '$p{name}' is an invalid name.\n"
-        unless $real_class =~ /^\w+(::\w+)*$/;
-
-    unless ( $real_class->can('instance') ) {
-        ($real_class)
-            = $real_class =~ m{\A([a-zA-Z0-9_]+(?:::[a-zA-Z0-9_]+)*)\z};
-
-        my $e;
-        try {
-            ## no critic (Variables::RequireInitializationForLocalVars)
-            local $SIG{__DIE__};
-            require_module($real_class);
-        }
-        catch {
-            $e = $_;
-        };
-
-        if ($e) {
-            my $regex = join '.', split /::/, $real_class;
-            $regex .= '\\.pm';
-
-            if ( $e =~ /^Can't locate $regex/i ) {
-                die
-                    "The timezone '$p{name}' could not be loaded, or is an invalid name.\n";
-            }
-            else {
-                die $e;
-            }
-        }
-    }
-
-    my $zone = $real_class->instance( name => $p{name}, is_olson => 1 );
-
-    if ( $zone->is_olson() ) {
-        my $object_version
-            = $zone->can('olson_version')
-            ? $zone->olson_version()
-            : 'unknown';
-        my $catalog_version = DateTime::TimeZone::Catalog->OlsonVersion();
-
-        if ( $object_version ne $catalog_version ) {
-            warn
-                "Loaded $real_class, which is from a different version ($object_version) of the Olson database than this installation of DateTime::TimeZone ($catalog_version).\n";
-        }
-    }
-
-    return $zone;
-}
-
-## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
-sub _init {
-    my $class = shift;
-    my %p     = validate(
-        @_, {
-            name     => { type => SCALAR },
-            spans    => { type => ARRAYREF },
-            is_olson => { type => BOOLEAN, default => 0 },
+{
+    my $validator = validation_for(
+        name             => '_check_new_params',
+        name_is_optional => 1,
+        params           => {
+            name => {
+                type => t('NonEmptyStr'),
+            },
         },
     );
 
-    my $self = bless {
-        name     => $p{name},
-        spans    => $p{spans},
-        is_olson => $p{is_olson},
-    }, $class;
+    sub new {
+        shift;
+        my %p = $validator->(@_);
 
-    foreach my $k (qw( last_offset last_observance rules max_year )) {
-        my $m = "_$k";
-        $self->{$k} = $self->$m() if $self->can($m);
+        if ( exists $DateTime::TimeZone::Catalog::LINKS{ $p{name} } ) {
+            $p{name} = $DateTime::TimeZone::Catalog::LINKS{ $p{name} };
+        }
+        elsif ( exists $DateTime::TimeZone::Catalog::LINKS{ uc $p{name} } ) {
+            $p{name} = $DateTime::TimeZone::Catalog::LINKS{ uc $p{name} };
+        }
+
+        unless ( $p{name} =~ m{/}
+            || $SpecialName{ $p{name} } ) {
+            if ( $p{name} eq 'floating' ) {
+                return DateTime::TimeZone::Floating->instance;
+            }
+
+            if ( $p{name} eq 'local' ) {
+                return DateTime::TimeZone::Local->TimeZone();
+            }
+
+            if ( $p{name} eq 'UTC' || $p{name} eq 'Z' ) {
+                return DateTime::TimeZone::UTC->instance;
+            }
+
+            return DateTime::TimeZone::OffsetOnly->new( offset => $p{name} );
+        }
+
+        my $subclass = $p{name};
+        $subclass =~ s{/}{::}g;
+        $subclass =~ s/-(\d)/_Minus$1/;
+        $subclass =~ s/\+/_Plus/;
+        $subclass =~ s/-/_/g;
+
+        my $real_class = "DateTime::TimeZone::$subclass";
+
+        die "The timezone '$p{name}' is an invalid name.\n"
+            unless $real_class =~ /^\w+(::\w+)*$/;
+
+        unless ( $real_class->can('instance') ) {
+            ($real_class)
+                = $real_class =~ m{\A([a-zA-Z0-9_]+(?:::[a-zA-Z0-9_]+)*)\z};
+
+            my $e;
+            try {
+                ## no critic (Variables::RequireInitializationForLocalVars)
+                local $SIG{__DIE__};
+                require_module($real_class);
+            }
+            catch {
+                $e = $_;
+            };
+
+            if ($e) {
+                my $regex = join '.', split /::/, $real_class;
+                $regex .= '\\.pm';
+
+                if ( $e =~ /^Can't locate $regex/i ) {
+                    die
+                        "The timezone '$p{name}' could not be loaded, or is an invalid name.\n";
+                }
+                else {
+                    die $e;
+                }
+            }
+        }
+
+        my $zone = $real_class->instance( name => $p{name}, is_olson => 1 );
+
+        if ( $zone->is_olson() ) {
+            my $object_version
+                = $zone->can('olson_version')
+                ? $zone->olson_version()
+                : 'unknown';
+            my $catalog_version = DateTime::TimeZone::Catalog->OlsonVersion();
+
+            if ( $object_version ne $catalog_version ) {
+                warn
+                    "Loaded $real_class, which is from a different version ($object_version) of the Olson database than this installation of DateTime::TimeZone ($catalog_version).\n";
+            }
+        }
+
+        return $zone;
     }
-
-    return $self;
 }
-## use critic
+
+{
+    my $validator = validation_for(
+        name             => '_check_init_params',
+        name_is_optional => 1,
+        params           => {
+            name => {
+                type => t('NonEmptyStr'),
+            },
+            spans => {
+                type => t('ArrayRef'),
+            },
+            is_olson => {
+                type    => t('Bool'),
+                default => 0,
+            },
+        },
+    );
+
+    ## no critic (Subroutines::ProhibitUnusedPrivateSubroutines)
+    sub _init {
+        my $class = shift;
+        my %p     = $validator->(@_);
+
+        my $self = bless {
+            name     => $p{name},
+            spans    => $p{spans},
+            is_olson => $p{is_olson},
+        }, $class;
+
+        foreach my $k (qw( last_offset last_observance rules max_year )) {
+            my $m = "_$k";
+            $self->{$k} = $self->$m() if $self->can($m);
+        }
+
+        return $self;
+    }
+    ## use critic
+}
 
 sub is_olson { $_[0]->{is_olson} }
 

@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- Replaced Params::Validate with Params::ValidationCompiler.
+
+
 2.01    2016-07-17
 
 - This release is based on version 2016f of the Olson database. This release
