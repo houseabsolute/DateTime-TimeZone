@@ -4,7 +4,7 @@ DateTime::TimeZone - Time zone object base class and factory
 
 # VERSION
 
-version 2.01
+version 2.02
 
 # SYNOPSIS
 
@@ -319,7 +319,7 @@ Dave Rolsky <autarch@urth.org>
 - Olaf Alders <olaf@wundersolutions.com>
 - Peter Rabbitson <ribasushi@cpan.org>
 
-# COPYRIGHT AND LICENCE
+# COPYRIGHT AND LICENSE
 
 This software is copyright (c) 2016 by Dave Rolsky.
 

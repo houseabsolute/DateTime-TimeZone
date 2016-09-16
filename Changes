@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+2.02    2016-09-16
+
 - Replaced Params::Validate with Params::ValidationCompiler.
 
 
