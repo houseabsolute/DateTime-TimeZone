@@ -65,8 +65,6 @@ die "No zoneinfo directory at $opts{zoneinfo}!\n" unless -d $opts{zoneinfo};
 
 $opts{zdump} ||= 'zdump';
 
-my $dist_version = dist_version();
-
 my $x = 1;
 my %months = map { $_ => $x++ } qw( Jan Feb Mar Apr May Jun
     Jul Aug Sep Oct Nov Dec);
@@ -212,8 +210,6 @@ sub make_test_file {
 use strict;
 use warnings;
 
-BEGIN { \$DateTime::TimeZone::VERSION = '$dist_version' }
-
 use DateTime;
 
 use Test::More tests => $test_count;
@@ -255,13 +251,4 @@ EOF
     }
 
     close $fh;
-}
-
-sub dist_version {
-    my $ini = read_file('dist.ini');
-
-    my ($version) = $ini =~ /version\s*=\s*(\S+)/
-        or die "No version in dist.ini";
-
-    return $version;
 }
