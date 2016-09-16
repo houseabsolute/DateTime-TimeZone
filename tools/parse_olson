@@ -242,6 +242,8 @@ $autogen_warning
 $pkg;
 
 use strict;
+use warnings;
+use namespace::autoclean;
 
 use Class::Singleton 1.03;
 use DateTime::TimeZone;
