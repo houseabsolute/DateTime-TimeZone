@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
+our $VERSION = '2.02';
+
 use DateTime::TimeZone;
 use File::Spec;
 use Module::Runtime qw( require_module );

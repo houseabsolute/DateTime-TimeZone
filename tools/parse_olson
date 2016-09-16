@@ -5,9 +5,6 @@ use warnings;
 
 use lib './lib';
 
-# Hack so loading DateTime.pm doesn't blow up
-BEGIN { $DateTime::TimeZone::VERSION = '2.00' }
-
 use Data::Dumper;
 use DateTime;
 use DateTime::TimeZone::OlsonDB;
@@ -24,7 +21,7 @@ $Data::Dumper::Indent   = 1;
 $Data::Dumper::Sortkeys = 1;
 $Data::Dumper::Terse    = 1;
 
-my $VERSION = "0.07";
+my $VERSION = '0.08';
 
 my $INFINITY = 100**100**100;
 
@@ -114,6 +111,8 @@ my $autogen_warning = <<"EOF";
 # code generator ($VERSION) This code generator comes with the
 # DateTime::TimeZone module distribution in the tools/ directory
 EOF
+
+my $dt_tz_version = DateTime::TimeZone::OlsonDB->VERSION;
 
 my $pm = Parallel::ForkManager->new( $opts{jobs} );
 
@@ -244,6 +243,8 @@ $pkg;
 use strict;
 use warnings;
 use namespace::autoclean;
+
+our \$VERSION = '$dt_tz_version';
 
 use Class::Singleton 1.03;
 use DateTime::TimeZone;
@@ -529,30 +530,32 @@ $autogen_warning
 $pkg;
 
 use strict;
+use warnings;
+use namespace::autoclean;
 
-use vars qw( \@ALL \@CATEGORY_NAMES \%CATEGORIES \%ZONES_BY_COUNTRY \%LINKS );
+our \$VERSION = '$dt_tz_version';
 
-\@ALL =
+our \@ALL =
 qw(
 $zones
 );
 
-\@CATEGORY_NAMES =
+our \@CATEGORY_NAMES =
 qw(
 $cat_names
 );
 
-\%CATEGORIES =
+our \%CATEGORIES =
 (
 $cat
 );
 
-\%ZONES_BY_COUNTRY =
+our \%ZONES_BY_COUNTRY =
 (
 $countries
 );
 
-\%LINKS =
+our \%LINKS =
 $links
 ;
 

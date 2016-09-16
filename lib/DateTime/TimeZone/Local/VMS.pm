@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
+our $VERSION = '2.02';
+
 use parent 'DateTime::TimeZone::Local';
 
 sub Methods { return qw( FromEnv ) }
