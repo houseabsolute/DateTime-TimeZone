@@ -2,6 +2,7 @@ package DateTime::TimeZone::UTC;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 use parent 'Class::Singleton', 'DateTime::TimeZone';
 

@@ -2,6 +2,7 @@ package DateTime::TimeZone::OffsetOnly;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 use parent 'DateTime::TimeZone';
 

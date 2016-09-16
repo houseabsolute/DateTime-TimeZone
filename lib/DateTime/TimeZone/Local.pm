@@ -2,6 +2,7 @@ package DateTime::TimeZone::Local;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 use DateTime::TimeZone;
 use File::Spec;

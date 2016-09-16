@@ -2,6 +2,7 @@ package DateTime::TimeZone::OlsonDB::Zone;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 use DateTime::TimeZone;
 use DateTime::TimeZone::OlsonDB;

@@ -2,6 +2,7 @@ package DateTime::TimeZone::Local::Unix;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 use Cwd 3;
 use Try::Tiny;

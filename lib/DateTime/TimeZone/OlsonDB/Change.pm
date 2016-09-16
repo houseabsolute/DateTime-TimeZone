@@ -2,6 +2,7 @@ package DateTime::TimeZone::OlsonDB::Change;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 sub new {
     my $class = shift;

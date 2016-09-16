@@ -2,6 +2,7 @@ package DateTime::TimeZone::OlsonDB;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 use vars qw( %MONTHS %DAYS $PLUS_ONE_DAY_DUR $MINUS_ONE_DAY_DUR );
 

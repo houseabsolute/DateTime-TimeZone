@@ -2,6 +2,7 @@ package DateTime::TimeZone::Local::Android;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 use Try::Tiny;
 

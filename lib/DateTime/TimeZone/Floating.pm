@@ -2,6 +2,7 @@ package DateTime::TimeZone::Floating;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 use parent 'Class::Singleton', 'DateTime::TimeZone::OffsetOnly';
 

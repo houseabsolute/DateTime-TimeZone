@@ -2,6 +2,7 @@ package DateTime::TimeZone::Local::VMS;
 
 use strict;
 use warnings;
+use namespace::autoclean;
 
 use parent 'DateTime::TimeZone::Local';
 
