@@ -209,9 +209,8 @@ sub make_test_file {
     my $test_count = scalar @tests * 9;
 
     print {$fh} <<"EOF" or die "$file: $!";
-#!/usr/bin/perl -w
-
 use strict;
+use warnings;
 
 BEGIN { \$DateTime::TimeZone::VERSION = '$dist_version' }
 
