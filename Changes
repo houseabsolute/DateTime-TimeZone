@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Bump minimum required Perl to 5.8.4 from 5.8.1. This matches DateTime.pm
+  itself.
+
+
 2.02    2016-09-16
 
 - Replaced Params::Validate with Params::ValidationCompiler.
