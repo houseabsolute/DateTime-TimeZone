@@ -13,7 +13,7 @@ requires "Try::Tiny" => "0";
 requires "constant" => "0";
 requires "namespace::autoclean" => "0";
 requires "parent" => "0";
-requires "perl" => "5.006";
+requires "perl" => "5.008004";
 requires "strict" => "0";
 requires "warnings" => "0";
 
@@ -76,7 +76,7 @@ on 'develop' => sub {
   requires "Test::Spelling" => "0.12";
   requires "Test::Taint" => "0";
   requires "Test::Vars" => "0.009";
-  requires "Test::Version" => "1";
+  requires "Test::Version" => "2.05";
   requires "autodie" => "0";
   requires "blib" => "1.01";
 };
