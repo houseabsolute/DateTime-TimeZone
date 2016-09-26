@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Automatically add the latest version of DateTime::Time::Local::Win32 as a
+  prereqs on Windows system automatically when building the release.
+
+
 2.03    2016-09-17
 
 - Bump minimum required Perl to 5.8.4 from 5.8.1. This matches DateTime.pm
