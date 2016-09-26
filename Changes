@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+2.04    2016-09-26
+
 - Automatically add the latest version of DateTime::Time::Local::Win32 as a
   prereqs on Windows system automatically when building the release.
 
