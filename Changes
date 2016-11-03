@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+2.07    2016-11-02
+
 - This release is based on version 2016i of the Olson database. This release
   includes contemporary changes for Tonga and Antarctica/Casey. There is also
   a new zone for Northern Cyprus, Asia/Famagusta, which differs from other
