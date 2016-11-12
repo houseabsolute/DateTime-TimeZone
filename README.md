@@ -4,7 +4,7 @@ DateTime::TimeZone - Time zone object base class and factory
 
 # VERSION
 
-version 2.07
+version 2.08
 
 # SYNOPSIS
 
@@ -279,8 +279,7 @@ Please submit bugs to the CPAN RT system at
 http://rt.cpan.org/NoAuth/ReportBug.html?Queue=datetime%3A%3Atimezone
 or via email at bug-datetime-timezone@rt.cpan.org.
 
-Bugs may be submitted through [the RT bug tracker](http://rt.cpan.org/Public/Dist/Display.html?Name=DateTime-TimeZone)
-(or [bug-datetime-timezone@rt.cpan.org](mailto:bug-datetime-timezone@rt.cpan.org)).
+Bugs may be submitted through [https://github.com/houseabsolute/DateTime-TimeZone/issues](https://github.com/houseabsolute/DateTime-TimeZone/issues).
 
 I am also usually active on IRC as 'drolsky' on `irc://irc.perl.org`.
 
