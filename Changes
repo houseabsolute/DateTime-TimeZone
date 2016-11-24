@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+
+- This release is based on version 2016j of the Olson database. This release
+  includes contemporary changes for Russia (Europe/Saratov).
+
+
 2.08    2016-11-12
 
 - Switched from RT to the GitHub issue tracker.
