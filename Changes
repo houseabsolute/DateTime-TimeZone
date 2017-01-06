@@ -821,7 +821,7 @@
   change _from_ DST, but that's governments for you).
 
 - Made sure to local-ize $@ before any eval, to prevent errors
-  accidentally propogating out to your code.
+  accidentally propagating out to your code.
 
 
 0.91    2009-05-26
@@ -1507,7 +1507,7 @@
 
 0.2505   2003-10-27
 
-- The change in 0.2504 to accomodate SuSE's /etc/sysconfig/clock file
+- The change in 0.2504 to accommodate SuSE's /etc/sysconfig/clock file
   broke this feature on RedHat.  Sigh.  Reported by John Siracusa.
 
 
@@ -1670,7 +1670,7 @@
   this is America/Belem.
 
 - Fixed a bug in the generated time zone code that caused it to do
-  more work than it should when calculting offsets for future
+  more work than it should when calculating offsets for future
   datetimes.
 
 
