@@ -100,11 +100,11 @@ use DateTime::TimeZone;
 
 {
     my @zones = DateTime::TimeZone->names_in_country('cl');
-    is( @zones, 2, 'two zones for Chile' );
+    is( @zones, 3, 'two zones for Chile' );
     is_deeply(
         [ sort @zones ],
-        [ 'America/Santiago', 'Pacific/Easter' ],
-        'zones for Chile are America/Santiago and Pacific/Easter'
+        [ 'America/Punta_Arenas', 'America/Santiago', 'Pacific/Easter' ],
+        'zones for Chile are America/Punta_Arenas, America/Santiago, and Pacific/Easter'
     );
 }
 
