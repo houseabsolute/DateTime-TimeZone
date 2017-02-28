@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2017a of the Olson database. This release
+  includes contemporary changes for Mongolia and Chile.
+
+
 2.09    2016-11-24
 
 - This release is based on version 2016j of the Olson database. This release
