@@ -4,7 +4,7 @@ DateTime::TimeZone - Time zone object base class and factory
 
 # VERSION
 
-version 2.10
+version 2.11
 
 # SYNOPSIS
 
@@ -231,6 +231,13 @@ the serialized structure.
 If you subclass `DateTime::TimeZone`, you will inherit its hooks,
 which may not work for your module, so please test the interaction of
 your module with Storable.
+
+# LOADING TIME ZONES IN A PRE-FORKING SYSTEM
+
+If you are running an application that does pre-forking (for example with
+Starman), then you should try to load all the time zones that you'll need in
+the parent process. Time zones are loaded on-demand, so loading them once in
+each child will waste memory that could otherwise be shared.
 
 # DONATIONS
 

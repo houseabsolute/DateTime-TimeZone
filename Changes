@@ -1,5 +1,11 @@
 {{$NEXT}}
 
+2.11    2017-03-22
+
+- This release is based on version 2017b of the Olson database. This release
+  includes contemporary changes for Haiti.
+
+
 2.10    2017-03-01
 
 - This release is based on version 2017a of the Olson database. This release
