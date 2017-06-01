@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+2.12    2017-06-01
+
 - Attempting to fix indexing of DateTime::TimeZone::Catalog on metacpan
   again. No real code or zone changes. Reported by Greg Oscwhald. GH #19.
 
