@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+2.13    2017-06-01
+
 - Really fix the indexing issue. For reals this time. I'm totally not
   kidding. Thanks to Grinnz on #metacpan for giving me the solution.
 
