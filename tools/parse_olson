@@ -229,7 +229,8 @@ sub parse_file {
             if defined $opts{version};
 
         # Helps avoid mis indexing on (meta)cpan
-        my $pkg = 'package DateTime::TimeZone::' . $mod_name;
+        my $keyword = 'package';
+        my $pkg     = "$keyword DateTime::TimeZone::$mod_name";
 
         my $body = <<"EOF";
 $autogen_warning
@@ -333,7 +334,7 @@ sub zone_as_spans {
                 short_name => $last_change->short_name,
                 offset     => $last_change->total_offset,
                 is_dst     => $last_change->is_dst,
-                };
+            };
         }
 
         # This happens with zones that have only one rule and no real changes (Pacific/Johnston)
@@ -348,7 +349,7 @@ sub zone_as_spans {
                 short_name  => $last_observance->formatted_short_name(q{}),
                 offset      => $last_observance->total_offset,
                 is_dst      => 0,
-                };
+            };
         }
     }
 
@@ -520,7 +521,8 @@ sub make_catalog_pm {
     }
 
     # Helps avoid mis indexing on (meta)cpan
-    my $pkg = 'package' . ' DateTime::TimeZone::Catalog';
+    my $keyword = 'package';
+    my $pkg     = "$keyword DateTime::TimeZone::Catalog";
 
     my $zonecatalog = <<"EOF";
 $autogen_warning
