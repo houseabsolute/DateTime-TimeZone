@@ -89,7 +89,16 @@ sub _FindMatchingZoneinfoFile {
     shift;
     my $file_to_match = shift;
 
-    return unless -d $ZoneinfoDir;
+    # For some reason, under at least macOS 10.13 High Sierra,
+    # /usr/share/zoneinfo is a link to a link to a directory. And no, I didn't
+    # stutter. This is fine, and it passes the -d below. But File::Find does
+    # not understand a link to be a directory, so rather than incur the
+    # overhead of telling File::Find::find() to follow symbolic links, we just
+    # resolve it here.
+    my $zone_info_dir = $ZoneinfoDir;
+    $zone_info_dir = readlink $zone_info_dir while -l $zone_info_dir;
+
+    return unless -d $zone_info_dir;
 
     require File::Basename;
     require File::Compare;
@@ -127,7 +136,7 @@ sub _FindMatchingZoneinfoFile {
                 },
                 no_chdir => 1,
             },
-            $ZoneinfoDir,
+            $zone_info_dir,
         );
     }
     catch {
