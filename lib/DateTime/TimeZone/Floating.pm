@@ -62,7 +62,7 @@ A floating time has no time zone, and has an effective offset of zero.
 =head1 USAGE
 
 This class has the same methods as a real time zone object. The
-C<short_name_for_datetime()> return the string "floating" and the and
+C<short_name_for_datetime()> method returns the string "floating" and the
 C<category()> method returns C<undef>.
 
 =cut
