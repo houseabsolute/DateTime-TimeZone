@@ -126,7 +126,7 @@ sub _FindMatchingZoneinfoFile {
                         # false positive
                         && File::Basename::basename($_) ne 'posixrules'
                         && File::Compare::compare( $_, $file_to_match ) == 0
-                        ) {
+                    ) {
                         $real_name = $_;
 
                         # File::Find has no mechanism for bailing in the
