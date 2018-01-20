@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+2.16    2018-01-19
+
 - This release is based on version 2018b of the Olson database. This release
   includes contemporary changes for São Tomé and Príncipe, Brazil, and
   Ireland. The 2018a was skipped because it was missing a file, but there are
