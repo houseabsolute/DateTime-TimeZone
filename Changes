@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2018d of the Olson database. This release
+  includes contemporary changes for Palestine and Casey Station.
+
+
 2.17    2018-01-23
 
 - This release is based on version 2018b of the Olson database. This release
