@@ -6,7 +6,7 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '2.18';
+our $VERSION = '2.19';
 
 use DateTime::TimeZone::Catalog;
 use DateTime::TimeZone::Floating;
