@@ -331,4 +331,23 @@ If this file exists, it is opened and we look for a line starting like
 
 =back
 
+B<Note:> Some systems such as virtual machine boxes may lack any of these
+files. You can confirm that this is case by running:
+
+    $ ls -l /etc/localtime /etc/timezone /etc/TIMEZONE \
+        /etc/sysconfig/clock /etc/default/init
+
+If this is the case, then when checking for timezone handling you are
+likely to get an exception:
+
+    $ perl -wle 'use DateTime; DateTime->now( time_zone => "local" )'
+    Cannot determine local time zone
+
+In that case, you should consult your system F<man> pages for details on how
+to address that problem. In one such case reported to us, a FreeBSD virtual
+machine had been built without any of these files. The user was able to run
+the FreeBSD F<tzsetup> utility. That installed F</etc/localtime>, after which
+the above timezone diagnostic ran silently, I<i.e.>, without throwing an
+exception.
+
 =cut
