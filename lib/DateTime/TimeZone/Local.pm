@@ -142,7 +142,7 @@ of methods that will be called to try to determine the local time
 zone.
 
 Each of these methods is expected to return a new C<DateTime::TimeZone> object
-if it can succesfully determine the time zone.
+if it can successfully determine the time zone.
 
 =head2 $class->FromEnv()
 
