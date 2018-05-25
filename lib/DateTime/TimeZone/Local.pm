@@ -30,16 +30,16 @@ sub TimeZone {
     # the non-existent modules if they feel a need, and release them
     # to CPAN separately.
     my %subclass = (
-        MSWin32 => 'Win32',
-        VMS     => 'VMS',
-        MacOS   => 'Mac',
-        os2     => 'OS2',
-        epoc    => 'Epoc',
-        NetWare => 'Win32',
-        symbian => 'Win32',
-        dos     => 'OS2',
         android => 'Android',
         cygwin  => 'Unix',
+        dos     => 'OS2',
+        epoc    => 'Epoc',
+        MacOS   => 'Mac',
+        MSWin32 => 'Win32',
+        NetWare => 'Win32',
+        os2     => 'OS2',
+        symbian => 'Win32',
+        VMS     => 'VMS',
     );
 
     sub _load_subclass {
@@ -126,8 +126,8 @@ will be used instead of falling back to the Unix subclass.
 If no OS-specific module exists, we fall back to using the Unix
 subclass.
 
-See L<DateTime::TimeZone::Local::Unix>,
-L<DateTime::TimeZone::Local::Win32>, and
+See L<DateTime::TimeZone::Local::Unix>, L<DateTime::TimeZone::Local::Android>,
+L<DateTime::TimeZone::Local::hpux>, L<DateTime::TimeZone::Local::Win32>, and
 L<DateTime::TimeZone::Local::VMS> for OS-specific details.
 
 =head1 SUBCLASSING
@@ -141,8 +141,8 @@ This method should be provided by your class. It should provide a list
 of methods that will be called to try to determine the local time
 zone.
 
-Each of these methods is expected to return a new
-C<DateTime::TimeZone> object if it determines the time zone.
+Each of these methods is expected to return a new C<DateTime::TimeZone> object
+if it can succesfully determine the time zone.
 
 =head2 $class->FromEnv()
 
@@ -156,6 +156,9 @@ items from C<< $class->Methods() >>.
 
 This method should be provided by your subclass. It should return a
 list of env vars to be checked by C<< $class->FromEnv() >>.
+
+Your class should always include the C<TZ> key as one of the variables to
+check.
 
 =head2 $class->_IsValidName($name)
 
