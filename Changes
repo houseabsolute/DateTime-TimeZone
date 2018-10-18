@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+2.20    2018-10-18
+
 - Added more documentation on how local time zones work, and a warning to set
   $ENV{TZ} if you're writing tests for code that tries to use the local time
   zone.
