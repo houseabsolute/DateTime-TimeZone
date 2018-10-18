@@ -243,8 +243,8 @@ sub utc_datetime_for_time_spec {
     $second = 0 unless defined $second;
 
     my $add_day = 0;
-    if ( $hour == 24 ) {
-        $hour    = 0;
+    if ( $hour >= 24 ) {
+        $hour    = $hour - 24;
         $add_day = 1;
     }
 
