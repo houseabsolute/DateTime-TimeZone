@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '2.21';
+our $VERSION = '2.22';
 
 use parent 'Class::Singleton', 'DateTime::TimeZone::OffsetOnly';
 
