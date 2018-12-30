@@ -103,7 +103,7 @@ delete $WriteMakefileArgs{CONFIGURE_REQUIRES}
   unless eval { ExtUtils::MakeMaker->VERSION(6.52) };
 
 if ( $^O eq 'MSWin32' ) {
-	$WriteMakefileArgs{PREREQ_PM}{'DateTime::TimeZone::Local::Win32'} = $FallbackPrereqs{'DateTime::TimeZone::Local::Win32'} = '2.02';
+	$WriteMakefileArgs{PREREQ_PM}{'DateTime::TimeZone::Local::Win32'} = $FallbackPrereqs{'DateTime::TimeZone::Local::Win32'} = '2.03';
 }
 
 WriteMakefile(%WriteMakefileArgs);
