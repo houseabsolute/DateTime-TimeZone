@@ -21,7 +21,7 @@ use Specio::Library::String;
 use Try::Tiny;
 
 ## no critic (ValuesAndExpressions::ProhibitConstantPragma)
-use constant INFINITY => 100**1000;
+use constant INFINITY     => 100**1000;
 use constant NEG_INFINITY => -1 * ( 100**1000 );
 
 # the offsets for each span element

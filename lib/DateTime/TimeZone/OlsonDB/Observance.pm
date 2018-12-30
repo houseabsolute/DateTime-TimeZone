@@ -227,7 +227,7 @@ sub _sorted_rules_for_year {
 
 ## no critic (Subroutines::ProhibitBuiltinHomonyms)
 sub until {
-    my $self = shift;
+    my $self            = shift;
     my $offset_from_std = shift || $self->offset_from_std;
 
     return unless defined $self->until_year;

@@ -45,7 +45,7 @@ sub TimeZone {
     sub _load_subclass {
         my $class = shift;
 
-        my $os_name = $subclass{$^O} || $^O;
+        my $os_name  = $subclass{$^O} || $^O;
         my $subclass = $class . '::' . $os_name;
 
         return $subclass if $subclass->can('Methods');

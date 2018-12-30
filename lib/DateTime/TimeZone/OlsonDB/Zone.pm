@@ -66,7 +66,7 @@ sub expand_observances {
             last_offset_from_std => $last_offset_from_std,
         );
 
-        my $rule = $obs->first_rule;
+        my $rule   = $obs->first_rule;
         my $letter = $rule ? $rule->letter : q{};
 
         my $change = DateTime::TimeZone::OlsonDB::Change->new(
