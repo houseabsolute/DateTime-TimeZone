@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2018i of the Olson database. This release
+  includes contemporary changes for São Tomé and Príncipe.
+
+
 2.22    2018-12-29
 
 - This release is based on version 2018h of the Olson database. This release
