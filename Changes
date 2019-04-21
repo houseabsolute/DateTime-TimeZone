@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+2.35    2019-04-21
+
 - Handle "infinity" as a representation of infinite values in serialized
   objects. On Solaris we end up with "infinity" and "-infinity" as opposed to
   just "inf" and "-inf". Fixed by Andrew Paprocki. GH #36.
