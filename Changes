@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2019b of the Olson database. This release
+  includes contemporary changes for Brazil and Palestine.
+
+
 2.35    2019-04-21
 
 - Handle "infinity" as a representation of infinite values in serialized
