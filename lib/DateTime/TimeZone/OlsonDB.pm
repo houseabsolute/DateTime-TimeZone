@@ -96,7 +96,7 @@ sub _parse_zone {
     my $name = shift;
 
     my $expect = $name ? 5 : 6;
-    my @items = grep { defined && length } split /\s+/, $zone, $expect;
+    my @items  = grep { defined && length } split /\s+/, $zone, $expect;
 
     my %obs;
     unless ($name) {
