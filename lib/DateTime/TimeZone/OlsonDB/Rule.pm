@@ -6,7 +6,6 @@ use namespace::autoclean;
 
 our $VERSION = '2.37';
 
-use DateTime::Duration;
 use DateTime::TimeZone::OlsonDB;
 
 sub new {
