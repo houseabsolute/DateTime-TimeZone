@@ -78,6 +78,15 @@ my %SpecialName = map { $_ => 1 }
             return DateTime::TimeZone::OffsetOnly->new( offset => $p{name} );
         }
 
+        if ( uc( $p{name} ) =~ m{ETC/(?:GMT|UTC)(\+|-)(\d{1,2})} ) {
+            my $sign  = $1;
+            my $hours = $2;
+            die "The timezone '$p{name}' is an invalid name.\n"
+                unless $hours <= 14;
+            return DateTime::TimeZone::OffsetOnly->new(
+                offset => "${sign}${hours}:00" );
+        }
+
         my $subclass = $p{name};
         $subclass =~ s{/}{::}g;
         $subclass =~ s/-(\d)/_Minus$1/;
