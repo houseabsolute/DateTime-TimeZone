@@ -508,7 +508,7 @@ sub offset_as_seconds {
 
     my $total = $hours * 3600 + $minutes * 60;
     $total += $seconds if $seconds;
-    $total *= -1 if $sign eq '-';
+    $total *= -1       if $sign eq '-';
 
     return $total;
 }
