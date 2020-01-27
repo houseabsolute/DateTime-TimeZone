@@ -807,8 +807,10 @@ Returns a sorted list of all the valid country codes (in lower-case)
 which can be passed to C<names_in_country()>. In scalar context, it
 returns an array reference, while in list context it returns an array.
 
-If you need to convert country codes to names or vice versa you can
-use C<Locale::Country> to do so.
+If you need to convert country codes to names or vice versa you can use
+C<Locale::Country> to do so. Note that one of the codes returned is "uk",
+which is an alias for the country code "gb", and is not a valid ISO country
+code.
 
 =head2 DateTime::TimeZone->names_in_country( $country_code )
 
