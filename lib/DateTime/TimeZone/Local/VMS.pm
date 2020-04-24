@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '2.39';
+our $VERSION = '2.40';
 
 use parent 'DateTime::TimeZone::Local';
 
