@@ -441,7 +441,7 @@ sub is_utc {0}
 
 sub has_dst_changes {0}
 
-sub name { $_[0]->{name} }
+sub name     { $_[0]->{name} }
 sub category { ( split /\//, $_[0]->{name}, 2 )[0] }
 
 sub is_valid_name {

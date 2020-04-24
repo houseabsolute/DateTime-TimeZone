@@ -381,7 +381,7 @@ sub _first_rule {
 
         if ( $dt <= $date ) {
             if ($next_dt) {
-                return $rule if $date < $next_dt;
+                return $rule      if $date < $next_dt;
                 return $next_rule if $date == $next_dt;
             }
             else {
