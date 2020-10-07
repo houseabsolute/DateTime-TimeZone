@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+2.41    2020-10-07
+
 - The last release was missing all the generated data files. Oops! Reported by
   Paul Howarth. GH #43.
 
