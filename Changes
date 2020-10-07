@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+2.40    2020-10-07
+
 - This release is based on version 2020b of the Olson database. This release
   includes contemporary changes for Morocco, Casey Station, and the
   Yukon. This release also removes the very long-deprecated "US/Pacific-New"
