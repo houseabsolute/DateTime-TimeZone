@@ -1,5 +1,12 @@
 {{$NEXT}}
 
+- The last release was missing all the generated data files. Oops! Reported by
+  Paul Howarth. GH #43.
+
+- Added a custom dzil plugin to make sure that the release has all of the
+  generated data files.
+
+
 2.40    2020-10-07
 
 - This release is based on version 2020b of the Olson database. This release
