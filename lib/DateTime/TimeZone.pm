@@ -509,7 +509,7 @@ sub offset_as_seconds {
         return undef;
     }
 
-    $sign = '+' unless defined $sign;
+    $sign = '+'  unless defined $sign;
     return undef unless $hours >= 0   && $hours <= 99;
     return undef unless $minutes >= 0 && $minutes <= 59;
     return undef
