@@ -56,7 +56,7 @@ override configure => sub {
     my $self = shift;
     super();
 
-    return if $ENV{TRAVIS};
+    return if $ENV{CI};
 
     my $version;
     my $release
