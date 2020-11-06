@@ -529,6 +529,7 @@ sub offset_as_string {
         local $SIG{__DIE__};
         $offset->isa('DateTime::TimeZone');
     };
+    my $sep = shift || q{};
 
     return undef unless defined $offset;
     return undef unless $offset >= -359999 && $offset <= 359999;
@@ -545,8 +546,10 @@ sub offset_as_string {
 
     return (
         $secs
-        ? sprintf( '%s%02d%02d%02d', $sign, $hours, $mins, $secs )
-        : sprintf( '%s%02d%02d',     $sign, $hours, $mins )
+        ? sprintf(
+            '%s%02d%s%02d%s%02d', $sign, $hours, $sep, $mins, $sep, $secs
+            )
+        : sprintf( '%s%02d%s%02d', $sign, $hours, $sep, $mins )
     );
 }
 
@@ -838,10 +841,13 @@ these, C<undef> will be returned.
 This means that if you want to specify hours as a single digit, then
 each element of the offset must be separated by a colon (:).
 
-=head2 DateTime::TimeZone->offset_as_string( $offset )
+=head2 DateTime::TimeZone->offset_as_string( $offset, $sep )
 
 Given an offset as a number, this returns the offset as a string.
 Returns C<undef> if $offset is not in the range C<-359999> to C<359999>.
+
+You can also provide an optional separator which will go between the hours,
+minutes, and seconds (if applicable) portions of the offset.
 
 =head2 Storable Hooks
 
