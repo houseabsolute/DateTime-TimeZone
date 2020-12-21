@@ -79,7 +79,10 @@ my %SpecialName = map { $_ => 1 }
         }
 
         if ( $p{name} =~ m{Etc/(?:GMT|UTC)(\+|-)(\d{1,2})}i ) {
-            my $sign  = $1;
+
+            # Etc/GMT+4 is actually UTC-4. For more info, see
+            # https://data.iana.org/time-zones/tzdb/etcetera
+            my $sign  = $1 eq '-' ? '+' : '-';
             my $hours = $2;
             die "The timezone '$p{name}' is an invalid name.\n"
                 unless $hours <= 14;
