@@ -10,15 +10,15 @@ use Test::Fatal;
 my %tz_to_offset = (
     'Etc/GMT-0'   => 0,
     'etc/gmt-0'   => 0,
-    'Etc/GMT+1'   => 3600,
-    'Etc/GMT+12'  => 43200,
-    'Etc/GMT-1'   => -3600,
-    'Etc/GMT-14'  => -50400,
+    'Etc/GMT+1'   => -3600,
+    'Etc/GMT+12'  => -43200,
+    'Etc/GMT-1'   => 3600,
+    'Etc/GMT-14'  => 50400,
     'Etc/GMT-20'  => undef,
     'Etc/GMT-999' => undef,
-    'Etc/UTC+7'   => 25200,
-    'etc/utc+7'   => 25200,
-    'Etc/UTC-9'   => -32400,
+    'Etc/UTC+7'   => -25200,
+    'etc/utc+7'   => -25200,
+    'Etc/UTC-9'   => 32400,
     'Etc/UTC+20'  => undef,
 );
 
