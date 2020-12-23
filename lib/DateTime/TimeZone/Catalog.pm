@@ -11,7 +11,7 @@ use strict;
 use warnings;
 use namespace::autoclean;
 
-our $VERSION = '2.46';
+our $VERSION = '2.47';
 
 our @ALL =
 qw(
