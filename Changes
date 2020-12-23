@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+2.46    2020-12-22
+
 - This release is based on version 2020e of the Olson database. This release
   includes contemporary changes for Russia (Volograd).
 
