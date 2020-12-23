@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2020e of the Olson database. This release
+  includes contemporary changes for Russia (Volograd).
+
+
 2.45    2020-12-21
 
 - Fixed handling of Etc/GMT[+-]XX zones. Confusingly, the POSIX interpretation
