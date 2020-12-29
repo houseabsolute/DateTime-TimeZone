@@ -180,6 +180,10 @@ sub sorted_changes {
     );
 }
 
-sub infinite_rules { values %{ $_[0]->{infinite_rules} } }
+sub infinite_rules {
+    my @v = sort { $a->min_year <=> $b->min_year || $a->month cmp $b->month }
+        values %{ $_[0]->{infinite_rules} };
+    return @v;
+}
 
 1;
