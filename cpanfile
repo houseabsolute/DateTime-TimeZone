@@ -46,9 +46,7 @@ on 'configure' => sub {
 };
 
 on 'develop' => sub {
-  requires "Code::TidyAll" => "0.56";
-  requires "Code::TidyAll::Plugin::SortLines::Naturally" => "0.000003";
-  requires "Code::TidyAll::Plugin::Test::Vars" => "0.02";
+  requires "Code::TidyAll::Plugin::SortLines::Naturally" => "0";
   requires "DateTime" => "0";
   requires "Dist::Zilla::Plugin::OSPrereqs" => "0";
   requires "File::Find::Rule" => "0";
@@ -62,12 +60,13 @@ on 'develop' => sub {
   requires "List::Util" => "1.33";
   requires "Locale::Country" => "3.11";
   requires "Net::FTP" => "0";
-  requires "Parallel::ForkManager" => "1.19";
+  requires "Parallel::ForkManager" => "0";
   requires "Path::Class" => "0";
-  requires "Perl::Critic" => "1.138";
-  requires "Perl::Critic::Moose" => "1.05";
-  requires "Perl::Tidy" => "20201207";
+  requires "Perl::Critic" => "1.126";
+  requires "Perl::Tidy" => "20160302";
+  requires "Pod::Checker" => "1.74";
   requires "Pod::Coverage::TrustPod" => "0";
+  requires "Pod::Tidy" => "0.10";
   requires "Pod::Wordlist" => "0";
   requires "Test::CPAN::Changes" => "0.19";
   requires "Test::CPAN::Meta::JSON" => "0.16";
@@ -83,7 +82,6 @@ on 'develop' => sub {
   requires "Test::Portability::Files" => "0";
   requires "Test::Spelling" => "0.12";
   requires "Test::Taint" => "0";
-  requires "Test::Vars" => "0.009";
   requires "Test::Version" => "2.05";
   requires "autodie" => "0";
 };

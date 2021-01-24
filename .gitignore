@@ -1,7 +1,7 @@
+/.tidyall.d
 *~
 .\#*
 .build
-/.tidyall.d
 Build
 DateTime-TimeZone-*
 Debian_CPANTS.txt
