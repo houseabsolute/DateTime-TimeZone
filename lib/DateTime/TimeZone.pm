@@ -871,12 +871,7 @@ each child will waste memory that could otherwise be shared.
 
 =head1 SUPPORT
 
-Support for this module is provided via the datetime@perl.org email list. See
-http://datetime.perl.org/wiki/datetime/page/Mailing_List for details.
-
-Please submit bugs to the CPAN RT system at
-http://rt.cpan.org/NoAuth/ReportBug.html?Queue=datetime%3A%3Atimezone
-or via email at bug-datetime-timezone@rt.cpan.org.
+Support for this module is provided via the datetime@perl.org email list.
 
 =head1 CREDITS
 
@@ -887,8 +882,6 @@ datetime@perl.org list.
 =head1 SEE ALSO
 
 datetime@perl.org mailing list
-
-http://datetime.perl.org/
 
 The tools directory of the DateTime::TimeZone distribution includes
 two scripts that may be of interest to some people.  They are
