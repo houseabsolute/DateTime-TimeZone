@@ -28,16 +28,15 @@ __END__
 
 =head1 DESCRIPTION
 
-This module provides methods for determining the local time zone on a
-VMS platform.
+This module provides methods for determining the local time zone on a VMS
+platform.
 
-NOTE: This is basically a stub pending an implementation by someone
-who knows something about VMS.
+NOTE: This is basically a stub pending an implementation by someone who knows
+something about VMS.
 
 =head1 HOW THE TIME ZONE IS DETERMINED
 
-This class tries the following methods of determining the local time
-zone:
+This class tries the following methods of determining the local time zone:
 
 =over 4
 

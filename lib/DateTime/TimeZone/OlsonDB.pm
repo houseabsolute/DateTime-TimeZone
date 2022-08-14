@@ -297,26 +297,24 @@ __END__
 
 =head1 DESCRIPTION
 
-This module parses the Olson database time zone definition files and
-creates various objects representing time zone data.
+This module parses the Olson database time zone definition files and creates
+various objects representing time zone data.
 
-Each time zone is broken down into several parts.  The first piece is
-an observance, which is an offset from UTC and an abbreviation.  A
-single zone may contain many observances, reflecting historical
-changes in that time zone over time.  An observance may also refer to
-a set of rules.
+Each time zone is broken down into several parts.  The first piece is an
+observance, which is an offset from UTC and an abbreviation.  A single zone may
+contain many observances, reflecting historical changes in that time zone over
+time.  An observance may also refer to a set of rules.
 
-Rules are named, and may apply to many different zones.  For example,
-the "US" rules apply to most of the time zones in the US,
-unsurprisingly.  Rules are made of an offset from standard time and a
-definition of when that offset changes.  Changes can be a one time
-thing, or they can recur at regular times through a span of years.
+Rules are named, and may apply to many different zones.  For example, the "US"
+rules apply to most of the time zones in the US, unsurprisingly.  Rules are
+made of an offset from standard time and a definition of when that offset
+changes.  Changes can be a one time thing, or they can recur at regular times
+through a span of years.
 
 Each rule may have an associated letter, which is used to generate an
-abbreviated name for the time zone, along with the offset's
-abbreviation.  For example, if the offset's abbreviation is "C%sT",
-and the a rule specifies the letter "S", then the abbreviation when
-that rule is in effect is "CST".
+abbreviated name for the time zone, along with the offset's abbreviation.  For
+example, if the offset's abbreviation is "C%sT", and the a rule specifies the
+letter "S", then the abbreviation when that rule is in effect is "CST".
 
 =head1 USAGE
 

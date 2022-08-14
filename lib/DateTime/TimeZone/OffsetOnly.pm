@@ -91,10 +91,9 @@ __END__
 
 =head1 DESCRIPTION
 
-This class is used to provide the DateTime::TimeZone API needed by
-DateTime.pm, but with a fixed offset.  An object in this class always
-returns the same offset as was given in its constructor, regardless of
-the date.
+This class is used to provide the DateTime::TimeZone API needed by DateTime.pm,
+but with a fixed offset.  An object in this class always returns the same
+offset as was given in its constructor, regardless of the date.
 
 =head1 USAGE
 
@@ -103,14 +102,14 @@ C<category()> method returns undef.
 
 =head2 DateTime::TimeZone::OffsetOnly->new ( offset => $offset )
 
-The value given to the offset parameter must be a string such as
-"+0300".  Strings will be converted into numbers by the
+The value given to the offset parameter must be a string such as "+0300". 
+Strings will be converted into numbers by the
 C<DateTime::TimeZone::offset_as_seconds()> function.
 
 =head2 $tz->offset_for_datetime( $datetime )
 
-No matter what date is given, the offset provided to the constructor
-is always used.
+No matter what date is given, the offset provided to the constructor is always
+used.
 
 =head2 $tz->name()
 

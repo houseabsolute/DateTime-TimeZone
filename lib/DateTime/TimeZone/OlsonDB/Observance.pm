@@ -410,7 +410,7 @@ sub _first_no_dst_rule {
     my $self = shift;
 
     return first { !$_->offset_from_std }
-    sort { $a->min_year <=> $b->min_year } $self->rules;
+        sort { $a->min_year <=> $b->min_year } $self->rules;
 }
 
 1;

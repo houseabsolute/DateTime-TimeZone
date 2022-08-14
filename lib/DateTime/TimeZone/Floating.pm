@@ -55,9 +55,9 @@ __END__
 
 =head1 DESCRIPTION
 
-This class is used to provide the DateTime::TimeZone API needed by
-DateTime.pm, but for floating times, as defined by the RFC 2445 spec.
-A floating time has no time zone, and has an effective offset of zero.
+This class is used to provide the DateTime::TimeZone API needed by DateTime.pm,
+but for floating times, as defined by the RFC 2445 spec. A floating time has no
+time zone, and has an effective offset of zero.
 
 =head1 USAGE
 

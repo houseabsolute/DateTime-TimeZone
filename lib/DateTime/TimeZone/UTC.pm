@@ -43,9 +43,9 @@ __END__
 
 =head1 DESCRIPTION
 
-This class is used to provide the DateTime::TimeZone API needed by
-DateTime.pm for the UTC time zone, which is not explicitly included in
-the Olson time zone database.
+This class is used to provide the DateTime::TimeZone API needed by DateTime.pm
+for the UTC time zone, which is not explicitly included in the Olson time zone
+database.
 
 The offset for this object will always be zero.
 
