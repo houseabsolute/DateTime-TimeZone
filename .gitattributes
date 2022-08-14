@@ -1,0 +1,9 @@
+lib/DateTime/TimeZone/Africa/**/*.pm linguist-generated
+lib/DateTime/TimeZone/America/**/*.pm linguist-generated
+lib/DateTime/TimeZone/Antarctica/**/*.pm linguist-generated
+lib/DateTime/TimeZone/Asia/**/*.pm linguist-generated
+lib/DateTime/TimeZone/Atlantic/**/*.pm linguist-generated
+lib/DateTime/TimeZone/Australia/**/*.pm linguist-generated
+lib/DateTime/TimeZone/Europe/**/*.pm linguist-generated
+lib/DateTime/TimeZone/Indian/**/*.pm linguist-generated
+lib/DateTime/TimeZone/Pacific/**/*.pm linguist-generated
