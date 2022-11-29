@@ -375,7 +375,7 @@ sub _first_rule {
         print ' Next rule starts:  ', $next_dt->datetime, "\n"
             if $next_dt && $DateTime::TimeZone::OlsonDB::DEBUG;
 
-        print ' No next rule\n\n'
+        print " No next rule\n\n"
             if !$next_dt && $DateTime::TimeZone::OlsonDB::DEBUG;
         ## use critic
 
