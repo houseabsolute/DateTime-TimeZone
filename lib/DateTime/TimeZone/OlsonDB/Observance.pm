@@ -59,6 +59,20 @@ sub offset_from_utc { $_[0]->{offset_from_utc} || 0 }
 sub offset_from_std { $_[0]->{offset_from_std} || 0 }
 sub total_offset    { $_[0]->offset_from_utc + $_[0]->offset_from_std }
 
+sub offset_from_utc_as_hm {
+    my $offset = $_[0]->offset_from_utc;
+    my $h      = int( $offset / 3600 );
+    my $m      = ( $offset % 3600 ) / 60;
+    return sprintf( '%02d:%02d', $h, $m );
+}
+
+sub offset_from_std_as_hm {
+    my $offset = $_[0]->offset_from_std;
+    my $h      = int( $offset / 3600 );
+    my $m      = ( $offset % 3600 ) / 60;
+    return sprintf( '%02d:%02d', $h, $m );
+}
+
 sub rules      { @{ $_[0]->{rules} } }
 sub first_rule { $_[0]->{first_rule} }
 
