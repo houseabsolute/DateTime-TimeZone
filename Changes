@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+2.57    2022-12-13
+
 - This release is based on version 2022g of the Olson database. This release
   includes contemporary changes for Greenland and Mexico.
 
