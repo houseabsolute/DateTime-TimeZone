@@ -151,8 +151,8 @@ sub make_test_file {
                             ([\-\+\w]+)   # local short name
                             \s+
                             isdst=(1|0)
-                            \s+
-                            gmtoff=(-?\d+)
+                            (\s+
+                            gmtoff=(-?\d+))?
                         /x;
 
         unless ($1) {
@@ -167,6 +167,7 @@ sub make_test_file {
         my $utc_month = $months{$utc_mon_name};
         my $loc_month = $months{$loc_mon_name};
 
+        $offset_from_utc //= 0;
         # use '1 * ' to make sure everything is treated as numbers,
         push @tests, {
             time_zone => $tz_name,
