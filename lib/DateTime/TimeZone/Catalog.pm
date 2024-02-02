@@ -1863,7 +1863,7 @@ our %LINKS =
 
 ;
 
-sub OlsonVersion { '2023d' }
+sub OlsonVersion { '2024a' }
 
 
 1;
@@ -2950,7 +2950,7 @@ so that applications can easily present a list of timezones.
 
   Asia/Kathmandu
 
-=head3 Netherlands (NL)
+=head3 Netherlands (Kingdom of the) (NL)
 
   Europe/Amsterdam
 
