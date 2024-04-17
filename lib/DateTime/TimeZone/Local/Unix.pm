@@ -286,13 +286,18 @@ platform.
 
 =head1 HOW THE TIME ZONE IS DETERMINED
 
-This class tries the following methods of determining the local time zone:
+This class tries the following methods of determining the local time zone, in
+the order listed here:
 
 =over 4
 
 =item * $ENV{TZ}
 
 It checks C<< $ENV{TZ} >> for a valid time zone name.
+
+=item * F</etc/timezone>
+
+If this file exists, it is read and its contents are used as a time zone name.
 
 =item * F</etc/localtime>
 
@@ -305,10 +310,6 @@ Some systems just copy the relevant file to F</etc/localtime> instead of making
 a symlink.  In this case, we look in F</usr/share/zoneinfo> for a file that has
 the same size and content as F</etc/localtime> to determine the local time
 zone.
-
-=item * F</etc/timezone>
-
-If this file exists, it is read and its contents are used as a time zone name.
 
 =item * F</etc/TIMEZONE>
 
