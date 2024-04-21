@@ -299,6 +299,11 @@ It checks C<< $ENV{TZ} >> for a valid time zone name.
 
 If this file exists, it is read and its contents are used as a time zone name.
 
+Note that this file may be out of date on many systems, as modern distros may
+not do a good job of updating this file. If you find that this file is not
+being updated, you may want to consider deleting it so that one of the
+following methods can be used.
+
 =item * F</etc/localtime>
 
 If this file is a symlink to an Olson database time zone file (usually in
