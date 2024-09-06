@@ -20,7 +20,7 @@ $MONTHS{April} = $MONTHS{Apr};
 $x = 1;
 our %DAYS = map { $_ => $x++ } qw( Mon Tue Wed Thu Fri Sat Sun );
 
-our $PLUS_ONE_DAY_DUR  = DateTime::Duration->new( days => 1 );
+our $PLUS_ONE_DAY_DUR  = DateTime::Duration->new( days =>  1 );
 our $MINUS_ONE_DAY_DUR = DateTime::Duration->new( days => -1 );
 
 sub new {
