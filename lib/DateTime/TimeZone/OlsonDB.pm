@@ -14,6 +14,9 @@ my $x = 1;
 our %MONTHS = map { $_ => $x++ } qw( Jan Feb Mar Apr May Jun
     Jul Aug Sep Oct Nov Dec);
 
+# 2024b accidentally used "April" instead of "Apr".
+$MONTHS{April} = $MONTHS{Apr};
+
 $x = 1;
 our %DAYS = map { $_ => $x++ } qw( Mon Tue Wed Thu Fri Sat Sun );
 
