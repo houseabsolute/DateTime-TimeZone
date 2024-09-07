@@ -393,7 +393,7 @@ sub _generate_spans_until_match {
                         + $rule->offset_from_std
                 ),
                 short_name => $self->{last_observance}
-                    ->formatted_short_name( $rule->letter ),
+                    ->formatted_short_name( $rule->letter, $rule ),
                 observance => $self->{last_observance},
                 rule       => $rule,
                 );

@@ -73,8 +73,8 @@ sub expand_observances {
             type                 => 'observance',
             utc_start_datetime   => $obs->utc_start_datetime,
             local_start_datetime => $obs->local_start_datetime,
-            short_name           => $obs->formatted_short_name($letter),
-            observance           => $obs,
+            short_name => $obs->formatted_short_name( $letter, $rule ),
+            observance => $obs,
             $rule ? ( rule => $rule ) : (),
         );
 
