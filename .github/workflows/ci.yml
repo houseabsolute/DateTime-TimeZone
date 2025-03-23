@@ -1,0 +1,54 @@
+name: Run tests
+
+on: [push, pull_request]
+
+jobs:
+  test-matrix:
+    name: ${{ matrix.platform.os-name }} with Perl ${{ matrix.perl-version }}
+    runs-on: ${{ matrix.platform.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - os-name: Linux
+            runs-on: ubuntu-24.04
+
+        perl-version:
+          - "latest"
+#          - 5.14
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: ${{ matrix.perl-version }}
+          enable-modules-cache: false
+
+      - name: Install Dist::Zilla and Test::Harness
+        run: cpm install --global Dist::Zilla Test::Harness
+
+      - name: Generate list of author deps
+        run: dzil authordeps | grep -v '^inc::' > /tmp/dzil-authordeps.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "dzil-authordeps-${{matrix.platform.os-name}}-perl-${{ matrix.perl-version }}.txt"
+          path: /tmp/dzil-authordeps.txt
+
+      - name: Install author deps
+        run: cpm install --show-build-log-on-failure --global $(cat /tmp/dzil-authordeps.txt)
+
+      - name: Generate list of module deps
+        run: dzil listdeps --develop | grep -v '^inc::' | grep -v '^lib$' > /tmp/dzil-listdeps.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: "dzil-listdeps-${{matrix.platform.os-name}}-perl-${{ matrix.perl-version }}.txt"
+          path: /tmp/dzil-listdeps.txt
+
+      - name: Install module deps
+        run: cpm install --show-build-log-on-failure --global $(cat /tmp/dzil-listdeps.txt)
+
+      - name: Run tests
+        run: dzil test --all
