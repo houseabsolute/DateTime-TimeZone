@@ -5,6 +5,8 @@ exclude = [
     "lib/DateTime/TimeZone/Catalog.pm",
     "lib/DateTime/TimeZone/{Africa,America,Antarctica,Asia,Atlantic,Australia,Europe,Indian,Pacific}/**/*",
     "lib/DateTime/TimeZone/{CET,CST6CDT,EET,EST5EDT,EST,HST,MET,MST7MDT,MST,PST8PDT,WET}.pm",
+    "META.yml",
+    "MYMETA.yml",
     "t/00-*",
     "t/author-*",
     "t/release-*",
