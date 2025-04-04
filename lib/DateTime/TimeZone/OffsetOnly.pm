@@ -113,8 +113,10 @@ used.
 
 =head2 $tz->name()
 
+This returns the offset string form.
+
 =head2 $tz->short_name_for_datetime()
 
-Both of these methods return the offset in string form.
+This returns the offset string form.
 
 =cut
