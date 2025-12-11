@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- This release is based on version 2025c of the Olson database. This release only includes
+  historical changes.
+
+
 2.65    2025-03-25
 
 - This release is based on version 2025b of the Olson database. This release includes contemporary
