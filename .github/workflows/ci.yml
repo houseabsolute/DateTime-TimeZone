@@ -9,4 +9,5 @@ jobs:
     uses: houseabsolute/workflow-perl-dzil-ci/.github/workflows/ci.yml@v0
     with:
       dist: DateTime-TimeZone
+      additional-modules: DateTime
       ref: v0
