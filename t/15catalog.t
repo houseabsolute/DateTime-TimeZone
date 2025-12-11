@@ -1,6 +1,9 @@
 use strict;
 use warnings;
 
+use lib 't/lib';
+use T::RequireDateTime;
+
 use File::Spec;
 use Test::More;
 
