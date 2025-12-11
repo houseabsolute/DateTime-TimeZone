@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+2.66    2025-12-11
+
 - This release is based on version 2025c of the Olson database. This release only includes
   historical changes.
 
