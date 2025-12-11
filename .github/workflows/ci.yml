@@ -6,8 +6,8 @@ on:
 
 jobs:
   ci:
-    uses: houseabsolute/workflow-perl-dzil-ci/.github/workflows/ci.yml@v0
+    uses: houseabsolute/workflow-perl-dzil-ci/.github/workflows/ci.yml@verbose
     with:
       dist: DateTime-TimeZone
       additional-modules: DateTime
-      ref: v0
+      ref: verbose
