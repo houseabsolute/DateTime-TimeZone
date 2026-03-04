@@ -4,6 +4,9 @@ on:
   - pull_request
   - push
 
+env:
+  PERL_MM_USE_DEFAULT: 1
+
 jobs:
   ci:
     uses: houseabsolute/workflow-perl-dzil-ci/.github/workflows/ci.yml@v0
