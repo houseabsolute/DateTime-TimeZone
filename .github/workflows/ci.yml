@@ -26,12 +26,14 @@ jobs:
           $log = "$env:USERPROFILE\.cpanm\work\$(Get-ChildItem $env:USERPROFILE\.cpanm\work | Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty Name)\build.log"
           if (Test-Path $log) { Get-Content $log }
 
-      - name: Install DateTime with cpanm (verbose)
-        run: cpanm --verbose --notest DateTime
-
-      - name: Show cpanm build log on DateTime failure
-        if: failure()
+      - name: Run DateTime Makefile.PL directly
         shell: pwsh
         run: |
-          $log = "$env:USERPROFILE\.cpanm\work\$(Get-ChildItem $env:USERPROFILE\.cpanm\work | Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty Name)\build.log"
-          if (Test-Path $log) { Get-Content $log }
+          Set-StrictMode -Version Latest
+          $ErrorActionPreference = "Stop"
+          Invoke-WebRequest https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/DateTime-1.66.tar.gz -OutFile dt.tar.gz
+          tar -xzf dt.tar.gz
+          Push-Location DateTime-1.66
+          Write-Host "=== Running perl Makefile.PL ==="
+          perl Makefile.PL
+          Write-Host "=== Exit code: $LastExitCode ==="
