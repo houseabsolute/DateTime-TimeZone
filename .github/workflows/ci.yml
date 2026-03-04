@@ -5,9 +5,16 @@ on:
   - push
 
 jobs:
-  ci:
-    uses: houseabsolute/workflow-perl-dzil-ci/.github/workflows/ci.yml@v0
-    with:
-      dist: DateTime-TimeZone
-      ref: v0
-      additional-modules: DateTime
+  diagnose-windows-datetime:
+    runs-on: windows-latest
+    steps:
+      - name: Set up Perl
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: latest
+
+      - name: Perl version
+        run: perl -V
+
+      - name: Install DateTime with cpanm (verbose)
+        run: cpanm --verbose --notest DateTime
