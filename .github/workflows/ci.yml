@@ -28,3 +28,10 @@ jobs:
 
       - name: Install DateTime with cpanm (verbose)
         run: cpanm --verbose --notest DateTime
+
+      - name: Show cpanm build log on DateTime failure
+        if: failure()
+        shell: pwsh
+        run: |
+          $log = "$env:USERPROFILE\.cpanm\work\$(Get-ChildItem $env:USERPROFILE\.cpanm\work | Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty Name)\build.log"
+          if (Test-Path $log) { Get-Content $log }
