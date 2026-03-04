@@ -16,5 +16,15 @@ jobs:
       - name: Perl version
         run: perl -V
 
+      - name: Install DateTime::Locale with cpanm (verbose)
+        run: cpanm --verbose --notest DateTime::Locale
+
+      - name: Show cpanm build log on failure
+        if: failure()
+        shell: pwsh
+        run: |
+          $log = "$env:USERPROFILE\.cpanm\work\$(Get-ChildItem $env:USERPROFILE\.cpanm\work | Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty Name)\build.log"
+          if (Test-Path $log) { Get-Content $log }
+
       - name: Install DateTime with cpanm (verbose)
         run: cpanm --verbose --notest DateTime
