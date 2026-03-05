@@ -5,10 +5,11 @@ on:
   - push
 
 jobs:
-  diagnose-windows-datetime:
+  diagnose-perl542:
+    name: Perl 5.42 (latest) - DateTime Makefile.PL crash
     runs-on: windows-latest
     steps:
-      - name: Set up Perl
+      - name: Set up Perl 5.42
         uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: latest
@@ -16,24 +17,49 @@ jobs:
       - name: Perl version
         run: perl -V
 
-      - name: Install DateTime::Locale with cpanm (verbose)
-        run: cpanm --verbose --notest DateTime::Locale
-
-      - name: Show cpanm build log on failure
-        if: failure()
+      - name: Run DateTime Makefile.PL directly (with action PERL5LIB)
         shell: pwsh
         run: |
-          $log = "$env:USERPROFILE\.cpanm\work\$(Get-ChildItem $env:USERPROFILE\.cpanm\work | Sort-Object LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty Name)\build.log"
-          if (Test-Path $log) { Get-Content $log }
+          Invoke-WebRequest https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/DateTime-1.66.tar.gz -OutFile dt.tar.gz
+          tar -xzf dt.tar.gz
+          Push-Location DateTime-1.66
+          Write-Host "=== PERL5LIB: $env:PERL5LIB ==="
+          Write-Host "=== Running perl Makefile.PL ==="
+          perl Makefile.PL
+          Write-Host "=== Exit code: $LastExitCode ==="
+
+      - name: Run DateTime Makefile.PL directly (without action PERL5LIB)
+        if: always()
+        shell: pwsh
+        run: |
+          $env:PERL5LIB = ""
+          Push-Location DateTime-1.66
+          Write-Host "=== PERL5LIB cleared ==="
+          Write-Host "=== Running perl Makefile.PL ==="
+          perl Makefile.PL
+          Write-Host "=== Exit code: $LastExitCode ==="
+
+  diagnose-perl540:
+    name: Perl 5.40 - DateTime Makefile.PL
+    runs-on: windows-latest
+    steps:
+      - name: Set up Perl 5.40
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: "5.40"
+
+      - name: Perl version
+        run: perl -V
 
       - name: Run DateTime Makefile.PL directly
         shell: pwsh
         run: |
-          Set-StrictMode -Version Latest
-          $ErrorActionPreference = "Stop"
           Invoke-WebRequest https://cpan.metacpan.org/authors/id/D/DR/DROLSKY/DateTime-1.66.tar.gz -OutFile dt.tar.gz
           tar -xzf dt.tar.gz
           Push-Location DateTime-1.66
           Write-Host "=== Running perl Makefile.PL ==="
           perl Makefile.PL
           Write-Host "=== Exit code: $LastExitCode ==="
+
+      - name: Install DateTime with cpanm (verbose)
+        run: cpanm --verbose --notest DateTime
